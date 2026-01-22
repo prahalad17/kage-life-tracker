@@ -1,0 +1,8 @@
+<h2>Users</h2>
+
+<app-data-table
+  [rows]="(users$ | async) ?? []"
+  [config]="tableConfig"
+  (action)="onTableAction($event)"
+  (create)="onCreateUser()">
+</app-data-table>

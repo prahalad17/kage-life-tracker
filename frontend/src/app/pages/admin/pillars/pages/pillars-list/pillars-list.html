@@ -1,0 +1,26 @@
+<h3>Pillars List</h3>
+<button class="btn btn-success mb-3" (click)="openCreate()">
+  Create Pillar
+</button>
+
+<app-pillar-table
+  [pillars]="(pillars$ | async) ?? []"
+  (edit)="openEdit($event)"
+  (delete)="confirmDelete($event)">
+</app-pillar-table>
+
+<app-pillar-form
+  *ngIf="showForm"
+  [pillar]="selectedPillar"
+  (save)="onSavePillar($event)"
+  (cancel)="onCancel()">
+</app-pillar-form>
+
+
+<app-confirm-dialog
+  *ngIf="showConfirm"
+  title="Delete Pillar"
+  [message]="deleteMessage"
+  (confirm)="onConfirmDelete()"
+  (cancel)="onCancelDelete()">
+</app-confirm-dialog>

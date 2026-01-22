@@ -1,0 +1,41 @@
+<div class="table-responsive">
+
+  <div class="table-header" *ngIf="config.create?.enabled">
+    <button (click)="onCreateClick()">
+      {{ config.create?.label || 'Create' }}
+    </button>
+  </div>
+
+  <table class="table table-striped table-hover align-middle">
+    <thead  class="table-dark">
+      <tr>
+        <th *ngFor="let column of config.columns">
+          {{ column.header }}
+        </th>
+
+        <th *ngIf="config.actions?.length">
+          Actions
+        </th>
+      </tr>
+    </thead>
+
+    <tbody class="table-light" >
+      <tr *ngFor="let row of rows">
+
+        <td *ngFor="let column of config.columns">
+          {{ row[column.key] }}
+        </td>
+
+        <td *ngIf="config.actions?.length">
+          <button class="btn btn-sm btn-outline-secondary me-1"
+            *ngFor="let action of config.actions"
+            (click)="onActionClick(action.type, row)">
+            {{ action.label }}
+          </button>
+        </td>
+
+      </tr>
+    </tbody>
+  </table>
+
+</div>

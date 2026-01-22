@@ -1,0 +1,11 @@
+.nav-link {
+  cursor: pointer;
+}
+
+.nav-link.active {
+  font-weight: 600;
+}
+
+aside {
+  min-height: calc(100vh - 56px);
+}

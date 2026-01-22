@@ -1,0 +1,29 @@
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let activity of activities">
+      <td>{{ activity.id }}</td>
+      <td>{{ activity.name }}</td>
+      <td>
+        <button
+          class="btn btn-sm btn-primary"
+          (click)="onEdit(activity)">
+          Edit
+        </button>
+
+        <button
+          class="btn btn-sm btn-danger"
+          (click)="onDelete(activity)">
+          Delete
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,29 @@
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let pillar of pillars">
+      <td>{{ pillar.id }}</td>
+      <td>{{ pillar.name }}</td>
+      <td>
+        <button
+          class="btn btn-sm btn-primary"
+          (click)="onEdit(pillar)">
+          Edit
+        </button>
+
+        <button
+          class="btn btn-sm btn-danger"
+          (click)="onDelete(pillar)">
+          Delete
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>

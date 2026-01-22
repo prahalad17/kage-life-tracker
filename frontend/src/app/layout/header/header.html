@@ -1,0 +1,21 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+  <div class="container-fluid">
+    
+    <!-- App Title -->
+    <span class="navbar-brand mb-0 h1">
+      Productivity App
+    </span>
+
+    <!-- Right side -->
+    <div class="d-flex align-items-center gap-3">
+      <span class="text-muted">
+        Hello, {{ userName }}
+      </span>
+
+      <button class="btn btn-outline-danger btn-sm" (click)="logout()">
+        Logout
+      </button>
+    </div>
+
+  </div>
+</nav>

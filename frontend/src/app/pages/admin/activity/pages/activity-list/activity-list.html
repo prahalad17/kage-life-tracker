@@ -1,0 +1,26 @@
+
+<button class="btn btn-success mb-3" (click)="openCreate()">
+  Create Activity
+</button>
+
+<app-activity-table
+[activities] = "(activity$ | async ) ?? []"
+(edit)="openEdit($event)"
+(delete)="confirmDelete($event)">
+</app-activity-table>
+
+<app-activity-form
+*ngIf="showForm"
+  [activity]="selectedActivity"
+  (save)="onSaveActivity($event)"
+  (cancel)="onCancel()"> 
+</app-activity-form>
+
+<app-confirm-dialog
+  *ngIf="showConfirm"
+  title="Delete Pillar"
+  [message]="deleteMessage"
+  (confirm)="onConfirmDelete()"></app-confirm-dialog>
+  <!-- (cancel)="onCancelDelete()"> -->
+ 
+

@@ -1,0 +1,66 @@
+import { Routes } from '@angular/router';
+import { LoginComponent } from './auth/login/login';
+import { authGuard } from './core/guards/auth/auth-guard';
+import { PublicLayout } from './core/layouts/public-layout/public-layout';
+import { Landing } from './core/pages/landing/landing';
+
+import { Register } from './auth/register/register';
+import { CheckEmail } from './auth/check-email/check-email';
+import { MainLayout } from './layout/main-layout/main-layout';
+import { roleGuard } from './core/guards/role/role-guard';
+import { guestGuard } from './core/guards/guest/guest-guard';
+export const routes: Routes = [
+
+
+ 
+  /* ----------------------------
+   * 🔓 Public area
+   * ---------------------------- */
+  { path: '', 
+    component: PublicLayout,
+    children: [
+      {
+        path: '',
+        component: Landing
+      },
+      {
+        path: 'auth',
+        canActivate: [guestGuard],
+        children: [
+          { path: 'login', component: LoginComponent },
+          { path: 'register', component: Register },
+          { path: 'check-email', component: CheckEmail }
+        ]
+      }
+    ]
+   },
+
+
+   /* ----------------------------
+   * 🔒 Protected area
+   * ---------------------------- */
+
+  {
+    path:'',
+    canActivate: [authGuard],
+    component: MainLayout,
+    children:[
+
+       /* ----------------------------
+       *  Admin routes (ADMIN only)
+       * ---------------------------- */
+      {
+        path: 'admin',
+        canActivate: [roleGuard],
+        data: { roles: ['ADMIN'] },
+        loadChildren: () =>
+          import('./pages/admin/admin.routes')
+          .then(m => m.default)
+      }
+    ]
+  },
+
+
+  // Default redirect
+  //{ path: '', redirectTo: 'login', pathMatch: 'full' }
+];

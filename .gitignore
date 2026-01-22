@@ -1,0 +1,30 @@
+# ========================
+# Backend (Spring Boot)
+# ========================
+backend/target/
+backend/.classpath
+backend/.project
+backend/.settings/
+backend/.idea/
+
+# Spring Boot local configs
+backend/src/main/resources/application-local.yml
+backend/src/main/resources/application-*.local.yml
+
+# ========================
+# Frontend (Angular)
+# ========================
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/.vscode/
+
+# ========================
+# Environment files
+# ========================
+*.env
+
+# ========================
+# OS files
+# ========================
+.DS_Store

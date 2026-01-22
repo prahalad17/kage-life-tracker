@@ -1,0 +1,17 @@
+<nav class="sidebar bg-dark text-light d-flex flex-column">
+  <div class="p-3 text-center border-bottom">
+    <h4 class="m-0 text-info fw-bold">KAGE</h4>
+  </div>
+
+  <ul class="nav nav-pills flex-column p-2 gap-1">
+    <li class="nav-item" *ngFor="let item of menu">
+      <a
+        class="nav-link text-light"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+      >
+        {{ item.label }}
+      </a>
+    </li>
+  </ul>
+</nav>
