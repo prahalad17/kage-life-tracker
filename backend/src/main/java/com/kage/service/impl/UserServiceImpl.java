@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setUserStatus(UserStatus.PENDING_VERIFICATION);
         user.setStatus(RecordStatus.ACTIVE);
-        user.setUserRole(UserRole.USER);
+        user.setUserRole(UserRole.ROLE_USER);
 
         return userRepository.save(user);
     }

@@ -2,8 +2,10 @@ package com.kage.service.impl;
 
 import com.kage.dto.request.LoginRequest;
 import com.kage.dto.request.RegisterUserRequest;
+import com.kage.dto.response.AccessTokenResponse;
 import com.kage.dto.response.LoginResponse;
 import com.kage.dto.response.RegisterResponse;
+import com.kage.entity.RefreshToken;
 import com.kage.entity.User;
 import com.kage.entity.VerificationToken;
 import com.kage.enums.RecordStatus;
@@ -12,12 +14,20 @@ import com.kage.exception.AuthenticationException;
 import com.kage.exception.BadRequestException;
 import com.kage.repository.UserRepository;
 import com.kage.repository.VerificationTokenRepository;
+import com.kage.security.CustomUserDetails;
+import com.kage.security.GeneratedRefreshToken;
+import com.kage.security.JwtService;
+import com.kage.security.RefreshTokenService;
 import com.kage.service.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,9 +43,12 @@ public class AuthService {
     private final JwtService jwtService;
 
     private final UserService userService;
+
     private final VerificationTokenRepository verificationTokenRepository;
 
     private final EmailService emailService;
+
+    private final RefreshTokenService refreshTokenService;
 
    /* public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService , UserService userService) {
         this.userRepository = userRepository;
@@ -49,9 +62,6 @@ public class AuthService {
         //Normalization
         String email = loginRequest.getEmail().trim().toLowerCase();
 
-
-
-
         User user = userRepository.findByEmailAndUserStatusAndStatus(email, UserStatus.ACTIVE, RecordStatus.ACTIVE)
                 .orElseThrow(() ->
                         new AuthenticationException("Invalid email or password")
@@ -64,12 +74,21 @@ public class AuthService {
             throw new AuthenticationException("Invalid email or password");
         }
 
-        String token = jwtService.generateToken(user);
+        // Access token
+        String accessToken =
+                jwtService.generateToken(
+                        new CustomUserDetails(user)
+                );
+
+        //  Refresh token
+        GeneratedRefreshToken refreshToken =  refreshTokenService.createRefreshToken(user);
 
         LoginResponse res = new LoginResponse();
-        res.setToken(token);
+        res.setAccessToken(accessToken);
         res.setUserRole(user.getUserRole());
         res.setName(user.getName());
+
+        res.setRefreshToken(refreshToken.token());
 
         return res;
     }
@@ -98,7 +117,7 @@ public class AuthService {
 
             //Rate Limiting
             if (existingToken.getCreatedAt()
-                    .isAfter(LocalDateTime.now().minusMinutes(1))) {
+                    .isAfter(Instant.now().minusSeconds(5))){
                 throw new BadRequestException("Please wait before requesting again");
             }
 
@@ -156,4 +175,25 @@ public class AuthService {
         verificationTokenRepository.delete(verificationToken);
 
     }
+
+    public AccessTokenResponse refreshAccessToken(String refreshToken) {
+
+        RefreshToken storedToken =
+                refreshTokenService.validateRefreshToken(refreshToken);
+
+                refreshTokenService.rotateRefreshToken(storedToken);
+
+        String newAccessToken =
+                jwtService.generateToken(
+                        new CustomUserDetails(storedToken.getUser())
+                );
+
+        return new AccessTokenResponse(newAccessToken);
+    }
+
+    public void logout(String refreshToken) {
+
+        refreshTokenService.revokeRefreshToken(refreshToken);
+    }
+
 }

@@ -26,6 +26,7 @@ public interface  MasterUserMapper  {
     @Mapping(target = "remarks", ignore = true)
     User toEntity(RegisterUserRequest request);
 
+
     UserResponse toResponse(User user);
 
     List<UserResponse> toResponse(List<User> users);

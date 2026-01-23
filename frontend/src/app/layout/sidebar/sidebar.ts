@@ -4,7 +4,7 @@ import { AuthService } from '../../auth/services/auth.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ADMIN_SIDEBAR_MENU, SidebarItem, USER_SIDEBAR_MENU } from '../../shared/components/sidebar-menu.constant';
-import { UserContextService } from '../../core/services/user-context.service';
+import { AuthStateService } from '../../auth/services/auth-state.service';
 
 @Component({
   standalone: true,
@@ -16,23 +16,22 @@ import { UserContextService } from '../../core/services/user-context.service';
 export class SidebarComponent implements OnInit{
 
   constructor(
-    private userContext : UserContextService
+    private authState : AuthStateService
   ) {}
 
     menu: SidebarItem[] = [];
 
      ngOnInit(): void {
-    const role = this.userContext.getRole();
+    const role = this.authState.getUserRole();
 
-    console.log(role)
-    console.log(typeof(role))
+    // console.log(role)
+    // console.log(typeof(role))
     
     
     this.menu =
-      role == 'ADMIN'
+      role === 'ROLE_ADMIN'
         ? ADMIN_SIDEBAR_MENU
         : USER_SIDEBAR_MENU;
-        console.log(this.menu)
   }
 
 

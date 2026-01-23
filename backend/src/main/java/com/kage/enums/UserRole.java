@@ -5,7 +5,7 @@ package com.kage.enums;
  */
 public enum UserRole {
 
-    ADMIN,
-    USER
+    ROLE_ADMIN,
+    ROLE_USER
 
 }

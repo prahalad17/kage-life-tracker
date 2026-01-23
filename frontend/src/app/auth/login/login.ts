@@ -1,9 +1,12 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
+import { LoginResponse } from '../models/login-response';
+import { AuthStateService } from '../services/auth-state.service';
+import { AuthUser } from '../models/auth-user';
 
 @Component({
   standalone: true,
@@ -23,7 +26,9 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private authState: AuthStateService,
+    private router: Router,
+    private cdr : ChangeDetectorRef
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -43,18 +48,32 @@ export class LoginComponent {
 
     this.authService.login(credentials).subscribe({
      next: user => {
-      // console.log(user)
-      // UI decision only
-      if (user.userRole === 'ADMIN') {
-        this.router.navigate(['admin/dashboard']);
-      } else {
-        this.router.navigate(['/dashboard']);
-      }
+
+
+    //  ✅ store auth state (in memory)
+        this.authState.setAccessToken(user.accessToken);
+
+         const { accessToken, name, userRole } = user;
+
+          const authUser: AuthUser= {accessToken, name, userRole };
+
+        this.authState.setUser(authUser);
+
+
+         // ✅ UI-only decision
+        if (user.userRole === 'ROLE_ADMIN') {
+          this.router.navigate(['/admin/dashboard']);
+        } else {
+          this.router.navigate(['/dashboard']);
+        }
+
+        this.loading = false;
     },
     error: err => {
+      console.log(err)
        this.errorMessage = err.message || 'Login failed';
        this.loading = false;
-      // this.cdr.detectChanges()
+      this.cdr.detectChanges()
     }
   });
   }

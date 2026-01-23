@@ -23,7 +23,7 @@ export class UsersListComponent implements OnInit{
     columns: [
       { key: 'name', header: 'Name' },
       { key: 'email', header: 'Email' },
-      { key: 'role', header: 'Role' }
+      { key: 'userRole', header: 'Role' }
     ],
     actions: [
       { type: 'view', label: 'View' },
