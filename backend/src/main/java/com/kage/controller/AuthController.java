@@ -104,7 +104,7 @@ public class AuthController {
                 return cookie.getValue();
             }
         }
-
+ 
         throw new IllegalStateException("Refresh token missing");
     }
 

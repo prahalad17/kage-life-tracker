@@ -1,26 +1,19 @@
-<h3>Pillars List</h3>
-<button class="btn btn-success mb-3" (click)="openCreate()">
-  Create Pillar
-</button>
+<h2>Pillars</h2>
 
-<app-pillar-table
-  [pillars]="(pillars$ | async) ?? []"
-  (edit)="openEdit($event)"
-  (delete)="confirmDelete($event)">
-</app-pillar-table>
-
-<app-pillar-form
-  *ngIf="showForm"
-  [pillar]="selectedPillar"
-  (save)="onSavePillar($event)"
-  (cancel)="onCancel()">
-</app-pillar-form>
+<app-data-table
+  [rows]="(pillars$ | async) ?? []"
+  [config]="tableConfig"
+  (action)="onTableAction($event)"
+  (create)="onCreatePillar()">
+</app-data-table>
 
 
-<app-confirm-dialog
-  *ngIf="showConfirm"
-  title="Delete Pillar"
-  [message]="deleteMessage"
-  (confirm)="onConfirmDelete()"
-  (cancel)="onCancelDelete()">
-</app-confirm-dialog>
+<button (click)="openOverlay()">Open Overlay</button>
+
+<app-overlay
+  [open]="overlayOpen"
+  title="Test Overlay"
+  (close)="overlayOpen = false"
+>
+  <p>This is dummy content</p>
+</app-overlay>

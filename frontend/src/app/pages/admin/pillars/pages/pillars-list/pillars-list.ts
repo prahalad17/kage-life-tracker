@@ -9,15 +9,20 @@ import { PillarForm } from '../../components/pillar-form/pillar-form';
 
 import { Observable } from 'rxjs';
 import { ConfirmDialog } from '../../../../../shared/components/confirm-dialog/confirm-dialog';
+import { DataTable } from '../../../../../shared/components/data-table/data-table';
+import { TableConfig } from '../../../../../shared/models/table/table-config.model';
+import { Overlay } from '../../../../../shared/components/overlay/overlay';
 
 @Component({
   standalone: true,
   selector: 'app-pillars-list',
   imports: [
     CommonModule,
+    DataTable,
     PillarTableComponent,
     PillarForm,
-    ConfirmDialog
+    ConfirmDialog,
+    Overlay
     
   ],
   templateUrl: './pillars-list.html',
@@ -27,6 +32,21 @@ export class PillarsListComponent implements OnInit {
 
   // ===== DATA =====
   pillars$!: Observable<Pillar[]>;
+
+  tableConfig: TableConfig = {
+      columns: [
+        { key: 'pillar', header: 'Pillar' }
+      ],
+      actions: [
+        { type: 'view', label: 'View' },
+        { type: 'edit', label: 'Edit' },
+        { type: 'delete', label: 'Delete', confirm: true }
+      ],
+      create: {
+        enabled: true,
+        label: 'Add Pillar'
+      }
+    };
 
   // ===== FORM MODAL STATE =====
   showForm = false;
@@ -41,6 +61,26 @@ export class PillarsListComponent implements OnInit {
   // ===== LIFECYCLE =====
   ngOnInit(): void {
     this.pillars$ = this.pillarService.getAll();
+  }
+
+  onTableAction(event: { type: string; row: any }): void {
+    switch (event.type) {
+      case 's':
+        console.log('View user', event.row);
+        break;
+
+      case 'edit':
+        console.log('Edit user', event.row);
+        break;
+
+      case 'delete':
+        console.log('Delete user', event.row);
+        break;
+    }
+  }
+
+  onCreatePillar(): void {
+    console.log('Create new user');
   }
 
   // ===== LOAD DATA =====
@@ -114,5 +154,12 @@ export class PillarsListComponent implements OnInit {
     return this.pillarToDelete
       ? `Are you sure you want to delete "${this.pillarToDelete.name}"?`
       : 'Are you sure?';
+  }
+
+
+  overlayOpen = false;
+
+  openOverlay() {
+    this.overlayOpen = true;
   }
 }

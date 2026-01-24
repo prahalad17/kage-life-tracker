@@ -6,3 +6,18 @@
   (action)="onTableAction($event)"
   (create)="onCreateUser()">
 </app-data-table>
+
+<app-overlay
+  [open]="overlayOpen"
+  [title]="overlayTitle"
+  (close)="closeOverlay()"
+>
+      <app-data-form
+        [config]="formConfig"
+        [data]="selectedRow"
+        (submitForm)="onFormSubmit($event)"
+        (cancel)="closeOverlay()">
+      </app-data-form>
+
+</app-overlay>
+ 

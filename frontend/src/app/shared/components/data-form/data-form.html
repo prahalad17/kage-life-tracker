@@ -1,0 +1,46 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+  <div *ngFor="let field of config.fields" [hidden]="field.hidden">
+
+    <label>{{ field.label }}</label>
+
+    <ng-container [ngSwitch]="field.type">
+
+      <input *ngSwitchCase="'text'"
+             type="text"
+             [formControlName]="field.name"
+             [placeholder]="field.placeholder" />
+
+      <input *ngSwitchCase="'email'"
+             type="email"
+             [formControlName]="field.name" />
+
+      <textarea *ngSwitchCase="'textarea'"
+                [formControlName]="field.name"></textarea>
+
+      <select *ngSwitchCase="'select'"
+              [formControlName]="field.name">
+        <option *ngFor="let opt of field.options"
+                [value]="opt.value">
+          {{ opt.label }}
+        </option>
+      </select>
+
+    </ng-container>
+
+    <div class="error" *ngIf="form.get(field.name)?.touched && form.get(field.name)?.invalid">
+      Invalid {{ field.label }}
+    </div>
+
+  </div>
+
+  <div class="actions">
+    <button *ngFor="let action of config.actions"
+            type="{{ action.type }}"
+            [disabled]="action.disabled"
+            (click)="action.action === 'cancel' && onCancel()">
+      {{ action.label }}
+    </button>
+  </div>
+
+</form>
