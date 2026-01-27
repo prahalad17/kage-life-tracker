@@ -10,7 +10,6 @@ import { PillarForm } from '../../components/pillar-form/pillar-form';
 import { Observable } from 'rxjs';
 import { DataTable } from '../../../../../shared/components/data-table/data-table';
 import { TableConfig } from '../../../../../shared/models/table/table-config.model';
-import { Overlay } from '../../../../../shared/components/overlay/overlay';
 
 @Component({
   standalone: true,
@@ -19,8 +18,7 @@ import { Overlay } from '../../../../../shared/components/overlay/overlay';
     CommonModule,
     DataTable,
     PillarTableComponent,
-    PillarForm,
-    Overlay
+    PillarForm
     
   ],
   templateUrl: './pillars-list.html',
@@ -152,12 +150,5 @@ export class PillarsListComponent implements OnInit {
     return this.pillarToDelete
       ? `Are you sure you want to delete "${this.pillarToDelete.name}"?`
       : 'Are you sure?';
-  }
-
-
-  overlayOpen = false;
-
-  openOverlay() {
-    this.overlayOpen = true;
   }
 }

@@ -51,8 +51,8 @@ export class AuthService {
   }
 
   // ===== REFRESH =====
-  refresh(): Observable<{ accessToken: string }> {
-    return this.http.post<{ accessToken: string }>(
+  refresh():  Observable<AuthUser> {
+    return this.http.post<AuthUser>(
       `${this.BASE_URL}/refresh`,
       {},
       { withCredentials: true }

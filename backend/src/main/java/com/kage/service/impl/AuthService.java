@@ -2,9 +2,10 @@ package com.kage.service.impl;
 
 import com.kage.dto.request.LoginRequest;
 import com.kage.dto.request.RegisterUserRequest;
-import com.kage.dto.response.AccessTokenResponse;
+import com.kage.dto.response.RefreshTokenResponse;
 import com.kage.dto.response.LoginResponse;
 import com.kage.dto.response.RegisterResponse;
+import com.kage.dto.response.UserDto;
 import com.kage.entity.RefreshToken;
 import com.kage.entity.User;
 import com.kage.entity.VerificationToken;
@@ -19,9 +20,6 @@ import com.kage.security.GeneratedRefreshToken;
 import com.kage.security.JwtService;
 import com.kage.security.RefreshTokenService;
 import com.kage.service.UserService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -176,19 +174,30 @@ public class AuthService {
 
     }
 
-    public AccessTokenResponse refreshAccessToken(String refreshToken) {
+    @Transactional
+    public RefreshTokenResponse refreshAccessToken(String refreshToken) {
 
         RefreshToken storedToken =
                 refreshTokenService.validateRefreshToken(refreshToken);
 
-                refreshTokenService.rotateRefreshToken(storedToken);
+        GeneratedRefreshToken rotatedRefreshToken =   refreshTokenService.rotateRefreshToken(storedToken);
 
         String newAccessToken =
                 jwtService.generateToken(
                         new CustomUserDetails(storedToken.getUser())
                 );
 
-        return new AccessTokenResponse(newAccessToken);
+
+        RefreshTokenResponse res = new RefreshTokenResponse();
+
+        res.setAccessToken(newAccessToken);
+        res.setName(storedToken.getUser().getName());
+        res.setRefreshToken(rotatedRefreshToken.token());
+        res.setEmail(storedToken.getUser().getEmail());
+        res.setUserRole(storedToken.getUser().getUserRole());
+
+        return res;
+
     }
 
     public void logout(String refreshToken) {

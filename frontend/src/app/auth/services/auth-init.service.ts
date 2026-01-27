@@ -16,6 +16,8 @@ export class AuthInitService {
     return this.authService.refresh().pipe(
       tap(res => {
         this.authState.setAccessToken(res.accessToken);
+        this.authState.setUser(res);
+
       }),
       catchError(() => {
         this.authState.clear();

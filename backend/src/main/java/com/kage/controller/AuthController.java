@@ -2,7 +2,7 @@ package com.kage.controller;
 
 import com.kage.dto.request.LoginRequest;
 import com.kage.dto.request.RegisterUserRequest;
-import com.kage.dto.response.AccessTokenResponse;
+import com.kage.dto.response.RefreshTokenResponse;
 import com.kage.dto.response.ApiResponse;
 import com.kage.dto.response.LoginResponse;
 import com.kage.dto.response.RegisterResponse;
@@ -36,8 +36,14 @@ public class AuthController {
 
         setRefreshTokenCookie(response, loginResponse.getRefreshToken());
 
+        LoginResponse res = new LoginResponse();
+        res.setName(loginResponse.getName());
+        res.setEmail(loginResponse.getEmail());
+        res.setAccessToken(loginResponse.getAccessToken());
+        res.setUserRole(loginResponse.getUserRole());
+
         return ResponseEntity.ok(
-                new ApiResponse<>(true, "Success", loginResponse));
+                new ApiResponse<>(true, "Success", res));
     }
 
     @PostMapping("/register")
@@ -59,24 +65,30 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AccessTokenResponse> refreshToken(
+    public ResponseEntity<ApiResponse<RefreshTokenResponse>> refreshToken(
              HttpServletRequest request,
             HttpServletResponse response,
              @RequestHeader(value = "Authorization", required = false) String authHeader) {
 
         String refreshToken = extractRefreshTokenFromCookie(request);
 
-        // 🔁 Backward-compatible fallback
+        //  Backward-compatible fallback
         if (refreshToken == null && authHeader != null && authHeader.startsWith("Bearer ")) {
             refreshToken = authHeader.substring(7);
         }
 
-        AccessTokenResponse tokenResponse =
+        RefreshTokenResponse tokenResponse =
                 authService.refreshAccessToken(refreshToken);
 
-        setRefreshTokenCookie(response, refreshToken);
+        setRefreshTokenCookie(response, tokenResponse.getRefreshToken());
 
-        return ResponseEntity.ok(tokenResponse);
+        RefreshTokenResponse res = new RefreshTokenResponse();
+        res.setName(tokenResponse.getName());
+        res.setEmail(tokenResponse.getEmail());
+        res.setAccessToken(tokenResponse.getAccessToken());
+        res.setUserRole(tokenResponse.getUserRole());
+
+        return ResponseEntity.ok(new  ApiResponse<>(true, "Success", res));
     }
 
     @PostMapping("/logout")

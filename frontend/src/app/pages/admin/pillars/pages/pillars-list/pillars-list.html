@@ -6,14 +6,3 @@
   (action)="onTableAction($event)"
   (create)="onCreatePillar()">
 </app-data-table>
-
-
-<button (click)="openOverlay()">Open Overlay</button>
-
-<app-overlay
-  [open]="overlayOpen"
-  title="Test Overlay"
-  (close)="overlayOpen = false"
->
-  <p>This is dummy content</p>
-</app-overlay>
