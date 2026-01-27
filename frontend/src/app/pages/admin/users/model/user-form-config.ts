@@ -1,4 +1,6 @@
+import { FormActionConfig } from "../../../../shared/models/form/form-action-config";
 import { FormConfig } from "../../../../shared/models/form/form-config";
+import { FormFieldConfig } from "../../../../shared/models/form/form-field-config";
 
 export function buildUserFormConfig(
   mode: 'create' | 'edit' | 'view'
@@ -21,7 +23,7 @@ export function buildUserFormConfig(
     actions: getUserActions(mode)
   };
 }
-function getUserFields(mode: string) {
+function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
   return [
     {
       name: 'name',
@@ -51,21 +53,42 @@ function getUserFields(mode: string) {
         { label: 'Admin', value: 'ADMIN' },
         { label: 'User', value: 'USER' }
       ]
+    },
+     {
+      name: 'adminCode',
+      label: 'Admin Code',
+      type: 'text',
+      hidden: true,
+      dependsOn: {
+        field: 'role',
+        value: 'ADMIN',
+        action: 'show'
+      }
     }
   ];
 }
-function getUserActions(mode: string) {
+
+function getUserActions(mode: 'create' | 'edit' | 'view'): FormActionConfig[] {
   if (mode === 'view') {
     return [
-      { label: 'Close', type: 'button', action: 'cancel' }
+      {
+        label: 'Close',
+        type: 'button',
+        action: 'cancel'
+      }
     ];
   }
 
   return [
-    { label: 'Cancel', type: 'button', action: 'cancel' },
+    {
+      label: 'Cancel',
+      type: 'button',
+      action: 'cancel'
+    },
     {
       label: mode === 'create' ? 'Create' : 'Update',
       type: 'submit'
     }
   ];
 }
+

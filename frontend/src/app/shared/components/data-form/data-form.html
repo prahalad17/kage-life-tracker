@@ -1,46 +1,108 @@
-<form [formGroup]="form" (ngSubmit)="onSubmit()">
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="p-3">
 
-  <div *ngFor="let field of config.fields" [hidden]="field.hidden">
+  <div class="row g-3">
 
-    <label>{{ field.label }}</label>
+    @for (field of config.fields; track field.name) {
+      @if (!field.hidden) {
 
-    <ng-container [ngSwitch]="field.type">
+        <div
+          class="col-12"
+          [class.col-md-6]="config.layout === 'grid' && config.gridColumns === 2"
+        >
 
-      <input *ngSwitchCase="'text'"
-             type="text"
-             [formControlName]="field.name"
-             [placeholder]="field.placeholder" />
+          <label class="form-label">
+            {{ field.label }}
+            @if (field.required) {
+              <span class="text-danger">*</span>
+            }
+          </label>
 
-      <input *ngSwitchCase="'email'"
-             type="email"
-             [formControlName]="field.name" />
+          <!-- FIELD TYPES -->
+          @switch (field.type) {
 
-      <textarea *ngSwitchCase="'textarea'"
-                [formControlName]="field.name"></textarea>
+            @case ('text') {
+              <input
+                type="text"
+                class="form-control"
+                [formControlName]="field.name"
+                [placeholder]="field.placeholder"
+              />
+            }
 
-      <select *ngSwitchCase="'select'"
-              [formControlName]="field.name">
-        <option *ngFor="let opt of field.options"
-                [value]="opt.value">
-          {{ opt.label }}
-        </option>
-      </select>
+            @case ('email') {
+              <input
+                type="email"
+                class="form-control"
+                [formControlName]="field.name"
+                [placeholder]="field.placeholder"
+              />
+            }
 
-    </ng-container>
+            @case ('password') {
+              <input
+                type="password"
+                class="form-control"
+                [formControlName]="field.name"
+                [placeholder]="field.placeholder"
+              />
+            }
 
-    <div class="error" *ngIf="form.get(field.name)?.touched && form.get(field.name)?.invalid">
-      Invalid {{ field.label }}
-    </div>
+            @case ('textarea') {
+              <textarea
+                class="form-control"
+                rows="3"
+                [formControlName]="field.name"
+                [placeholder]="field.placeholder">
+              </textarea>
+            }
+
+            @case ('select') {
+              <select
+                class="form-select"
+                [formControlName]="field.name">
+                <option value="">Select {{ field.label }}</option>
+                @for (opt of field.options; track opt.value) {
+                  <option [value]="opt.value">
+                    {{ opt.label }}
+                  </option>
+                }
+              </select>
+            }
+          }
+
+          <!-- VALIDATION ERROR -->
+          @if (
+            form.get(field.name)?.touched &&
+            form.get(field.name)?.invalid
+          ) {
+            <div class="text-danger small mt-1">
+              {{ field.label }} is invalid
+            </div>
+          }
+
+        </div>
+      }
+    }
 
   </div>
 
-  <div class="actions">
-    <button *ngFor="let action of config.actions"
-            type="{{ action.type }}"
-            [disabled]="action.disabled"
-            (click)="action.action === 'cancel' && onCancel()">
-      {{ action.label }}
-    </button>
+  <!-- ACTION BUTTONS -->
+  <div class="d-flex justify-content-end gap-2 mt-4">
+
+    @for (action of config.actions; track action.label) {
+      <button
+        class="btn"
+        [ngClass]="{
+          'btn-primary': action.color === 'primary',
+          'btn-secondary': !action.color
+        }"
+        [type]="action.type"
+        [disabled]="action.disabled"
+        (click)="action.action === 'cancel' && onCancel()">
+        {{ action.label }}
+      </button>
+    }
+
   </div>
 
 </form>

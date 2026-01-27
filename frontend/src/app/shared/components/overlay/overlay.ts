@@ -12,6 +12,7 @@ export class Overlay {
   @Input() open = false;
   @Input() title? : string;
   @Input() width: string = '600px';
+  @Input() closeOnBackdropClick = true;
 
   @Output() close = new EventEmitter<void>();
 
@@ -19,6 +20,10 @@ export class Overlay {
     this.close.emit();
   }
 
-
+   onBackdropClick() {
+    if (this.closeOnBackdropClick) {
+      this.close.emit();
+    }
+  }
 
 }

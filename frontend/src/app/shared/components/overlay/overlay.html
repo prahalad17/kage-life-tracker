@@ -1,12 +1,12 @@
-<div class="overlay-backdrop" *ngIf="open" (click)="onClose()"></div>
+<div class="overlay-backdrop" (click)="onBackdropClick()"></div>
 
-<div class="overlay-panel" *ngIf="open" [style.width]="width">
+<div class="overlay-panel">
   <div class="overlay-header">
-    <h3>{{ title }}</h3>
-    <button class="close-btn" (click)="onClose()">✕</button>
+    <h5>{{ title }}</h5>
+    <button class="btn-close" (click)="close.emit()"></button>
   </div>
 
-  <div class="overlay-content">
+  <div class="overlay-body">
     <ng-content></ng-content>
   </div>
 </div>

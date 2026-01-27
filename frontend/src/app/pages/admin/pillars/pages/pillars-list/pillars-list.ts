@@ -8,7 +8,6 @@ import { PillarTableComponent } from '../../components/pillar-table/pillar-table
 import { PillarForm } from '../../components/pillar-form/pillar-form';
 
 import { Observable } from 'rxjs';
-import { ConfirmDialog } from '../../../../../shared/components/confirm-dialog/confirm-dialog';
 import { DataTable } from '../../../../../shared/components/data-table/data-table';
 import { TableConfig } from '../../../../../shared/models/table/table-config.model';
 import { Overlay } from '../../../../../shared/components/overlay/overlay';
@@ -21,7 +20,6 @@ import { Overlay } from '../../../../../shared/components/overlay/overlay';
     DataTable,
     PillarTableComponent,
     PillarForm,
-    ConfirmDialog,
     Overlay
     
   ],

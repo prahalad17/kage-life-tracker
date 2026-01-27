@@ -4,20 +4,28 @@
   [rows]="(users$ | async) ?? []"
   [config]="tableConfig"
   (action)="onTableAction($event)"
-  (create)="onCreateUser()">
+  (create)="openCreate()">
 </app-data-table>
 
-<app-overlay
+
+  @if (overlayOpen) {
+    <app-overlay
   [open]="overlayOpen"
   [title]="overlayTitle"
+  [closeOnBackdropClick]="closeOnBackdrop"
   (close)="closeOverlay()"
 >
-      <app-data-form
-        [config]="formConfig"
-        [data]="selectedRow"
-        (submitForm)="onFormSubmit($event)"
-        (cancel)="closeOverlay()">
-      </app-data-form>
+      @if (formConfig) {
+        <app-data-form
+          [config]="formConfig"
+          [data]="selectedRow"
+          (submitForm)="onFormSubmit($event)"
+          (cancel)="closeOverlay()">
+        </app-data-form>
+      }
 
 </app-overlay>
+
+  }
+
  

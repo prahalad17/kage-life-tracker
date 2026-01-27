@@ -9,6 +9,13 @@ export type FieldType =
   | 'radio'
   | 'date';
 
+  export interface FieldDependency {
+  field: string;          // controlling field
+  value?: any;            // value to match
+  condition?: (val: any) => boolean; // advanced use
+  action?: 'show' | 'hide' | 'enable' | 'disable';
+}
+
   export interface FormFieldConfig {
   name: string;
   label: string;
@@ -39,6 +46,6 @@ export type FieldType =
   cssClass?: string;
 
   // Advanced
-  dependsOn?: string; // field dependency
+  dependsOn?: FieldDependency; // field dependency
 }
 

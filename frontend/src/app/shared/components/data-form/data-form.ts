@@ -9,7 +9,7 @@ import {
 } from '@angular/forms';
 
 import { FormConfig } from '../../models/form/form-config';
-import { FormFieldConfig } from '../../models/form/form-field-config';
+import { FieldDependency, FormFieldConfig } from '../../models/form/form-field-config';
 import { FormActionConfig } from '../../models/form/form-action-config';
 @Component({
   selector: 'app-data-form',
@@ -31,37 +31,48 @@ export class DataForm implements OnChanges {
   constructor(private fb: FormBuilder) {}
 
   ngOnChanges() {
-    if (this.config) {
-      this.buildForm();
-    }}
+  if (this.config && !this.form) {
+    this.buildForm();
+  }
+
+  if (this.form && this.data) {
+    this.form.patchValue(this.data);
+  }
+}
 
   private buildForm() {
-    const group: any = {};
+  const group: Record<string, any> = {};
 
-    this.config.fields.forEach(field => {
-      if (field.hidden) return;
+  this.config.fields.forEach(field => {
+    if (field.hidden) return;
 
-      const validators = [];
+    group[field.name] = this.fb.control(
+      field.defaultValue ?? '',
+      this.buildValidators(field)
+    );
+  });
 
-      if (field.required) validators.push(Validators.required);
-      if (field.minLength) validators.push(Validators.minLength(field.minLength));
-      if (field.maxLength) validators.push(Validators.maxLength(field.maxLength));
-      if (field.min !== undefined) validators.push(Validators.min(field.min));
-      if (field.max !== undefined) validators.push(Validators.max(field.max));
-      if (field.pattern) validators.push(Validators.pattern(field.pattern));
+  this.form = this.fb.group(group);
 
-      group[field.name] = [
-        this.data?.[field.name] ?? field.defaultValue ?? '',
-        validators
-      ];
-    });
+   this.setupDependencies();
 
-    this.form = this.fb.group(group);
-
-    if (this.config.readOnly || this.config.mode === 'view') {
-      this.form.disable();
-    }
+  if (this.config.readOnly || this.config.mode === 'view') {
+    this.form.disable();
   }
+}
+
+  private buildValidators(field: FormFieldConfig) {
+  const validators = [];
+
+  if (field.required) validators.push(Validators.required);
+  if (field.minLength) validators.push(Validators.minLength(field.minLength));
+  if (field.maxLength) validators.push(Validators.maxLength(field.maxLength));
+  if (field.min !== undefined) validators.push(Validators.min(field.min));
+  if (field.max !== undefined) validators.push(Validators.max(field.max));
+  if (field.pattern) validators.push(Validators.pattern(field.pattern));
+
+  return validators;
+}
 
    onSubmit() {
     if (this.form.invalid) {
@@ -76,5 +87,51 @@ export class DataForm implements OnChanges {
     this.cancel.emit();
   }
 
-  
+  private setupDependencies() {
+  this.config.fields.forEach(field => {
+    if (!field.dependsOn) return;
+
+    const dep = field.dependsOn;
+    const controller = this.form.get(dep.field);
+    const target = this.form.get(field.name);
+
+    if (!controller || !target) return;
+
+    controller.valueChanges.subscribe(value => {
+      this.applyDependency(dep, value, field);
+    });
+  });
+}
+
+private applyDependency(
+  dep: FieldDependency,
+  value: any,
+  field: FormFieldConfig
+) {
+  const control = this.form.get(field.name);
+  if (!control) return;
+
+  const conditionMet = dep.condition
+    ? dep.condition(value)
+    : value === dep.value;
+
+  switch (dep.action) {
+    case 'show':
+      field.hidden = !conditionMet;
+      break;
+
+    case 'hide':
+      field.hidden = conditionMet;
+      break;
+
+    case 'enable':
+      conditionMet ? control.enable() : control.disable();
+      break;
+
+    case 'disable':
+      conditionMet ? control.disable() : control.enable();
+      break;
+  }
+}
+
 }
