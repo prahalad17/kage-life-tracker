@@ -1,8 +1,36 @@
-<h2>Pillars</h2>
-
 <app-data-table
   [rows]="(pillars$ | async) ?? []"
   [config]="tableConfig"
   (action)="onTableAction($event)"
-  (create)="onCreatePillar()">
+  (create)="openCreate()">
 </app-data-table>
+
+@if (overlayState.open) {
+  <app-overlay
+    [title]="overlayState.title"
+    [closeOnBackdropClick]="overlayState.closeOnBackdrop"
+    (close)="closeOverlay()"
+  >
+    @if (formConfig) {
+      <app-data-form
+        [config]="formConfig"
+        [data]="selectedRow"
+        [message]="formErrorMessage"
+        (submitForm)="onFormSubmit($event)"
+        (cancel)="closeOverlay()">
+      </app-data-form>
+    }
+  </app-overlay>
+}
+
+@if (dialogState.open) {
+  <app-confirm-dialog
+    [title]="dialogState.title"
+    [message]="dialogState.message"
+    [dialogType]="dialogState.type"
+    [data]="selectedRow"
+    (ok)="closeDialog()"
+    (cancel)="closeDialog()"
+    (confirm)="onDialogConfirm($event)">
+  </app-confirm-dialog>
+}

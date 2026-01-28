@@ -1,49 +1,59 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
-import { TableConfig } from '../../../../../shared/models/table/table-config.model';
-import { DataTable } from '../../../../../shared/components/data-table/data-table';
+
 import { UsersService } from '../../service/user.service';
 import { User } from '../../model/User';
+
+import { TableConfig } from '../../../../../shared/models/table/table-config.model';
 import { FormConfig } from '../../../../../shared/models/form/form-config';
+
+import { DataTable } from '../../../../../shared/components/data-table/data-table';
 import { Overlay } from '../../../../../shared/components/overlay/overlay';
 import { DataForm } from '../../../../../shared/components/data-form/data-form';
-import { buildUserFormConfig } from '../../model/user-form-config';
-import { UpdateUserRequest } from '../../model/update-user-request';
-import { CreateUserRequest } from '../../model/create-user-request copy';
 import { ConfirmDialog } from '../../../../../shared/components/confirm-dialog/confirm-dialog';
+
+import { buildUserFormConfig } from '../../model/user-form-config';
+import { CreateUserRequest } from '../../model/create-user-request';
+import { UpdateUserRequest } from '../../model/update-user-request';
+
+type DialogType = 'info' | 'delete' | '';
 
 @Component({
   standalone: true,
   selector: 'app-users-list',
   templateUrl: './users-list.html',
-  imports: [CommonModule, DataTable, Overlay, DataForm ,ConfirmDialog]
+  imports: [CommonModule, DataTable, Overlay, DataForm, ConfirmDialog]
 })
 export class UsersListComponent implements OnInit {
 
   constructor(private userService: UsersService) {}
 
+  // ===== DATA =====
   users$!: Observable<User[]>;
 
-  overlayOpen = false;
-  overlayTitle = '';
-
+  selectedRow: User | null = null;
   formConfig: FormConfig | null = null;
-  selectedRow: any = null;
+  formErrorMessage = '';
 
-  closeOnBackdrop = true;
+  // ===== OVERLAY STATE =====
+  overlayState = {
+    open: false,
+    title: '',
+    closeOnBackdrop: true
+  };
 
-  errorMessage = ''
+  // ===== DIALOG STATE =====
+  dialogState = {
+    open: false,
+    title: '',
+    message: '',
+    type: '' as DialogType
+  };
 
-
-  ///Dialog Box Var
-
-  dialogType = '';
-  dialogMessage = '';
-  dialogTitle = '';
-  dialogOpen = false;
-
+  // ===== TABLE CONFIG =====
   tableConfig: TableConfig = {
+    tableName: 'Users',
     columns: [
       { key: 'name', header: 'Name' },
       { key: 'email', header: 'Email' },
@@ -60,11 +70,34 @@ export class UsersListComponent implements OnInit {
     }
   };
 
+  // ===== LIFECYCLE =====
   ngOnInit(): void {
+    this.loadUsers();
+  }
+
+  loadUsers() {
     this.users$ = this.userService.getUsers();
   }
 
-  onTableAction(event: { type: string; row: any }) {
+   // ===== OVERLAY HANDLING =====
+  openForm(
+    mode: 'create' | 'view' | 'edit',
+    title: string,
+    row: User | null,
+    closeOnBackdrop: boolean
+  ) {
+    this.formConfig = buildUserFormConfig(mode);
+    this.selectedRow = row;
+
+    this.overlayState = {
+      open: true,
+      title,
+      closeOnBackdrop
+    };
+  }
+
+  // ===== TABLE ACTIONS =====
+  onTableAction(event: { type: string; row: User }) {
     switch (event.type) {
       case 'view':
         this.openView(event.row);
@@ -81,135 +114,124 @@ export class UsersListComponent implements OnInit {
   }
 
   openCreate() {
-    this.overlayTitle = 'Add User';
-    this.formConfig = buildUserFormConfig('create');
-    this.selectedRow = null;
-    this.closeOnBackdrop = false;
-    this.overlayOpen = true;
+    this.openForm('create', 'Add User', null, false);
   }
 
-  openView(row: any) {
-    this.overlayTitle = 'View User';
-    this.formConfig = buildUserFormConfig('view');
-    this.selectedRow = row;
-     this.closeOnBackdrop = true;
-    this.overlayOpen = true;
+  openView(row: User) {
+    this.openForm('view', 'View User', row, true);
   }
 
-  openEdit(row: any) {
-    this.overlayTitle = 'Edit User';
-    this.formConfig = buildUserFormConfig('edit');
-    this.selectedRow = row;
-    this.closeOnBackdrop = false;
-    this.overlayOpen = true;
-  }
-
-  openDelete(row:any){
-    console.log(row);
-    
-    this.dialogTitle = ' Delete User';
-    this.dialogMessage = ' Are You Sure To delete User : ' + row.name;
-    this.dialogType = 'delete';
-    this.selectedRow = row;
-    this.dialogOpen = true;
-  }
-
-  onDialogConfirm(row :any){
-
-    if(this.dialogType === 'delete'){
-
-      this.userService.deleteUser(row.id).subscribe({
-        next:  () => {
-          this.closeDialog;
-          this.dialogTitle = 'User Deleted';
-            this.dialogMessage = 'User Deleted  : ' + row.email;
-            this.dialogType = 'info';
-            this.dialogOpen = true;
-            this.ngOnInit();
-        },
-        error: (err) => {
-          this.closeDialog;
-          this.dialogTitle = 'Error';
-            this.dialogMessage = 'Error In Deleting  : ' + row.email;
-            this.dialogType = 'info';
-            this.dialogOpen = true;
-        }
-});
-
-      
-    }
-
-  }
-
-  closeDialog(){
-      this.dialogOpen = false;
-      this.dialogTitle = '';
-      this.dialogMessage = '';
-      this.dialogType = '';
+  openEdit(row: User) {
+    this.openForm('edit', 'Edit User', row, false);
   }
 
   closeOverlay() {
-    this.overlayOpen = false;
+    this.overlayState.open = false;
     this.formConfig = null;
     this.selectedRow = null;
-    this.errorMessage = ''
+    this.formErrorMessage = '';
   }
 
+  // ===== DIALOG HANDLING =====
+  openDelete(row: User) {
+    this.selectedRow = row;
+    this.dialogState = {
+      open: true,
+      title: 'Delete User',
+      message: `Are you sure you want to delete user: ${row.name}?`,
+      type: 'delete'
+    };
+  }
+
+  closeDialog() {
+    this.dialogState = {
+      open: false,
+      title: '',
+      message: '',
+      type: ''
+    };
+  }
+
+  onDialogConfirm(row: any) {
+    if (this.dialogState.type !== 'delete') return;
+
+    this.userService.deleteUser(row.id).subscribe({
+      next: () => {
+        this.closeDialog();
+        this.loadUsers();
+
+        this.dialogState = {
+          open: true,
+          title: 'User Deleted',
+          message: `User deleted: ${row.email}`,
+          type: 'info'
+        };
+      },
+      error: () => {
+        this.closeDialog();
+        this.dialogState = {
+          open: true,
+          title: 'Error',
+          message: `Failed to delete user: ${row.email}`,
+          type: 'info'
+        };
+      }
+    });
+  }
+
+  // ===== FORM SUBMIT =====
   onFormSubmit(data: any) {
-    if (this.formConfig?.mode === 'create') {
+    if (!this.formConfig) return;
 
-     const userReq: CreateUserRequest = {
-          name: data.name,
-          email: data.email,
-          role: data.userRole,
-          password : data.password
-        };
-      this.userService.createUser(userReq).subscribe(
-        {
-          next : user => {
-            this.closeOverlay();
-            this.dialogTitle = 'User Created';
-            this.dialogMessage = ' New User Creeated  : ' + user.email;
-            this.dialogType = 'info';
-            this.dialogOpen = true;
-             this.ngOnInit();
+    if (this.formConfig.mode === 'create') {
+      const request: CreateUserRequest = {
+        name: data.name,
+        email: data.email,
+        role: data.userRole,
+        password: data.password
+      };
 
+      this.userService.createUser(request).subscribe({
+        next: user => {
+          this.closeOverlay();
+          this.loadUsers();
 
-            
-          },error : err =>{
-            this.errorMessage = err.message || 'failed'
-          }
+          this.dialogState = {
+            open: true,
+            title: 'User Created',
+            message: `New user created: ${user.email}`,
+            type: 'info'
+          };
+        },
+        error: err => {
+          this.formErrorMessage = err?.message || 'Failed to create user';
         }
-      );
+      });
     }
 
-    if (this.formConfig?.mode === 'edit') {
-      const userReq: UpdateUserRequest = {
-          name: data.name,
-          role: data.role,
-          email: data.email
-        };
+    if (this.formConfig.mode === 'edit' && this.selectedRow) {
+      const request: UpdateUserRequest = {
+        name: data.name,
+        email: data.email,
+        role: data.role
+      };
 
-         this.userService.updateUser(userReq).subscribe(
-          {
-            next : user =>{
+      this.userService.updateUser(request).subscribe({
+        next: user => {
+          this.closeOverlay();
+          this.loadUsers();
 
-            this.closeOverlay();  
-
-            this.dialogTitle = 'User Updated';
-            this.dialogMessage = ' Updated User : ' + user.email;
-            this.dialogType = 'info';
-            this.dialogOpen = true;
-             this.ngOnInit();
-
-            },error : err => {
-              this.errorMessage = err.message || "Failed"
-            }
-          }
-         );
+          this.dialogState = {
+            open: true,
+            title: 'User Updated',
+            message: `User updated: ${user.email}`,
+            type: 'info'
+          };
+        },
+        error: err => {
+          this.formErrorMessage = err?.message || 'Failed to update user';
+        }
+      });
     }
-
   }
-
 }
-

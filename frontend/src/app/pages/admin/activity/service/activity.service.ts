@@ -4,13 +4,15 @@ import { HttpClient } from '@angular/common/http';
 import {map, Observable } from 'rxjs';
 import { Activity } from "../models/activity.model";
 import { ApiResponse } from "../../../../shared/models/api/api-response.model";
+import { CreateActivityRequest } from "../models/create-activity-request";
+import { UpdateActivityRequest } from "../models/update-activity-request";
 
 @Injectable({
     providedIn:'root'
 })
 export class ActivityService{
 
-    private readonly baseUrl = 'http://localhost:8080/api/v1/master-pillars';
+    private readonly baseUrl = 'http://localhost:8080/api/v1/activity-template';
 
      constructor(private http: HttpClient) {}
 
@@ -27,20 +29,20 @@ export class ActivityService{
            );
        }
 
-     create(activity: Activity): Observable<Activity> {
+     createActivity(activity: CreateActivityRequest): Observable<Activity> {
         return this.http.post<ApiResponse<Activity>>(this.baseUrl, activity)
               .pipe(map(res => res.data));
 
      }
 
-     update(activity: Activity): Observable<Activity> {
+     updateActivity(activity: UpdateActivityRequest): Observable<Activity> {
          return this.http.put<ApiResponse<Activity>>(
            `${this.baseUrl}/${activity.id}`,
            activity
          ).pipe(map(res => res.data));
        }
      
-       delete(id: number): Observable<void> {
+       deleteActivity(id: number): Observable<void> {
          return this.http.delete<ApiResponse<void>>(
            `${this.baseUrl}/${id}`
          ).pipe(map(() => void 0));

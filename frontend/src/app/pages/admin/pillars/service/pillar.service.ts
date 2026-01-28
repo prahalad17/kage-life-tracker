@@ -3,44 +3,41 @@ import { HttpClient } from '@angular/common/http';
 import { Pillar } from '../models/pillar.model';
 import {map, Observable } from 'rxjs';
 import { ApiResponse } from "../../../../shared/models/api/api-response.model";
+import { CreatePillarRequest } from "../models/create-pillar-request";
+import { UpdatePillarRequest } from "../models/update-pillar-resuest";
 @Injectable({
     providedIn:'root'
 })
 
 export class PillarService{
 
-  private readonly baseUrl = 'http://localhost:8080/api/v1/master-pillars';
-
+  private BASE_URL = 'http://localhost:8080/api/v1/master-pillars';
+ 
   constructor(private http: HttpClient) {}
 
     getAll(): Observable<Pillar[]> {
     return this.http
-      .get<ApiResponse<Pillar[]>>(this.baseUrl)
-      .pipe(
-        map(res => {
-        // console.log('RAW API RESPONSE:', res);
-        // console.log('TYPE OF data:', typeof res.data);
-        // console.log('IS ARRAY:', Array.isArray(res.data));
-        return res.data ?? [];
-      })
-      );
+      .get<Pillar[]>(
+         `${this.BASE_URL}`
+        )
+      
   }
 
-  create(pillar: Pillar): Observable<Pillar> {
-    return this.http.post<ApiResponse<Pillar>>(this.baseUrl, pillar)
+  createPillar(pillar: CreatePillarRequest): Observable<Pillar> {
+    return this.http.post<ApiResponse<Pillar>>(this.BASE_URL, pillar)
       .pipe(map(res => res.data));
   }
 
-  update(pillar: Pillar): Observable<Pillar> {
+  updatePillar(pillar: UpdatePillarRequest): Observable<Pillar> {
     return this.http.put<ApiResponse<Pillar>>(
-      `${this.baseUrl}/${pillar.id}`,
+      `${this.BASE_URL}/${pillar.id}`,
       pillar
     ).pipe(map(res => res.data));
   }
 
-  delete(id: number): Observable<void> {
+  deletePillar(id: number): Observable<void> {
     return this.http.delete<ApiResponse<void>>(
-      `${this.baseUrl}/${id}`
+      `${this.BASE_URL}/${id}`
     ).pipe(map(() => void 0));
   }
 

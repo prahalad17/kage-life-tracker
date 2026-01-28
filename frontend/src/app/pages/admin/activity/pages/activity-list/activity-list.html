@@ -1,26 +1,36 @@
+<app-data-table
+  [rows]="(activity$ | async) ?? []"
+  [config]="tableConfig"
+  (action)="onTableAction($event)"
+  (create)="openCreate()">
+</app-data-table>
 
-<button class="btn btn-success mb-3" (click)="openCreate()">
-  Create Activity
-</button>
+@if (overlayState.open) {
+  <app-overlay
+    [title]="overlayState.title"
+    [closeOnBackdropClick]="overlayState.closeOnBackdrop"
+    (close)="closeOverlay()"
+  >
+    @if (formConfig) {
+      <app-data-form
+        [config]="formConfig"
+        [data]="selectedRow"
+        [message]="formErrorMessage"
+        (submitForm)="onFormSubmit($event)"
+        (cancel)="closeOverlay()">
+      </app-data-form>
+    }
+  </app-overlay>
+}
 
-<app-activity-table
-[activities] = "(activity$ | async ) ?? []"
-(edit)="openEdit($event)"
-(delete)="confirmDelete($event)">
-</app-activity-table>
-
-<app-activity-form
-*ngIf="showForm"
-  [activity]="selectedActivity"
-  (save)="onSaveActivity($event)"
-  (cancel)="onCancel()"> 
-</app-activity-form>
-
-<app-confirm-dialog
-  *ngIf="showConfirm"
-  title="Delete Pillar"
-  [message]="deleteMessage"
-  (confirm)="onConfirmDelete()"></app-confirm-dialog>
-  <!-- (cancel)="onCancelDelete()"> -->
- 
-
+@if (dialogState.open) {
+  <app-confirm-dialog
+    [title]="dialogState.title"
+    [message]="dialogState.message"
+    [dialogType]="dialogState.type"
+    [data]="selectedRow"
+    (ok)="closeDialog()"
+    (cancel)="closeDialog()"
+    (confirm)="onDialogConfirm($event)">
+  </app-confirm-dialog>
+}

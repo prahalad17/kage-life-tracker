@@ -31,11 +31,15 @@ export const USER_SIDEBAR_MENU: SidebarItem[] = [
     route: '/user/dashboard'
   },
   {
+    label: 'Daily Logs',
+    route: '/user/daily-log'
+  },
+  {
     label: 'My Pillars',
     route: '/user/pillars'
   },
   {
-    label: 'Activity',
+    label: 'My Activities',
     route: '/user/activity'
   }
 ];

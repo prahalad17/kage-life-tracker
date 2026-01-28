@@ -1,111 +1,239 @@
-import { Component } from '@angular/core';
-import { ActivityTable } from '../../components/activity-table/activity-table';
-import { ActivityForm } from '../../components/activity-form/activity-form';
+import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Activity } from '../../models/activity.model';
 import { ActivityService } from '../../service/activity.service';
 import { CommonModule } from '@angular/common';
 import { ConfirmDialog } from '../../../../../shared/components/confirm-dialog/confirm-dialog';
-
+import { DataTable } from '../../../../../shared/components/data-table/data-table';
+import { Overlay } from '../../../../../shared/components/overlay/overlay';
+import { DataForm } from '../../../../../shared/components/data-form/data-form';
+import { FormConfig } from '../../../../../shared/models/form/form-config';
+import { TableConfig } from '../../../../../shared/models/table/table-config.model';
+import { buildActivityFormConfig } from '../../models/activity-form-config';
+import { CreateActivityRequest } from '../../models/create-activity-request';
+import { UpdateActivityRequest } from '../../models/update-activity-request';
+type DialogType = 'info' | 'delete' | '';
 
 @Component({
   standalone: true,
   selector: 'app-activity-list',
-  imports: [ActivityTable,
-     ActivityForm,
+  imports: [
     CommonModule,
-  ConfirmDialog],
+        DataTable,
+        Overlay,
+        DataForm,
+        ConfirmDialog],
   templateUrl: './activity-list.html',
   styleUrl: './activity-list.css',
 })
-export class ActivityListComponent {
+export class ActivityListComponent  implements OnInit{
 
-activity$! : Observable<Activity[]>;
+  constructor(private activityService: ActivityService) {}
 
-// ===== FORM MODAL STATE =====
-  showForm = false;
-  selectedActivity: Activity | null = null;
+  // ===== DATA =====
+  activity$! : Observable<Activity[]>;
 
-// ===== CONFIRM MODAL STATE =====
-  showConfirm = false;
-  activityToDelete: Activity | null = null;
+  selectedRow: Activity | null = null;
+  formConfig: FormConfig | null = null;
+  formErrorMessage = '';
 
-constructor(private activityService: ActivityService) {}
+// ===== OVERLAY STATE =====
+  overlayState = {
+    open: false,
+    title: '',
+    closeOnBackdrop: true
+  };
 
-// ===== LIFECYCLE =====
+  // ===== DIALOG STATE =====
+  dialogState = {
+    open: false,
+    title: '',
+    message: '',
+    type: '' as DialogType
+  };
+
+  // ===== TABLE CONFIG =====
+  tableConfig: TableConfig = {
+      tableName: 'Activity',
+      columns: [
+        { key: 'name', header: 'Activity' },
+        { key: 'description', header: 'Description' }
+      ],
+      actions: [
+        { type: 'view', label: 'View' },
+        { type: 'edit', label: 'Edit' },
+        { type: 'delete', label: 'Delete', confirm: true }
+      ],
+      create: {
+        enabled: true,
+        label: 'Add New Activity'
+      }
+    };
+
+  // ===== LIFECYCLE =====
   ngOnInit(): void {
+    this.loadActivity();
+  }
+
+   loadActivity() {
     this.activity$ = this.activityService.getAll();
   }
 
-   // ===== LOAD DATA =====
-  private loadActivity(): void {
-    this.activityService.getAll().subscribe({
-    next: (activity) => {
-      // this.pillars = pillars;
-    },
-    error: (err) => console.error('Failed to load activity', err)
-  });
-  }
 
-
-  // ===== CREATE / EDIT =====
-    openCreate(): void {
-      this.selectedActivity = null;
-      this.showForm = true;
+     // ===== OVERLAY HANDLING =====
+      openForm(
+        mode: 'create' | 'view' | 'edit',
+        title: string,
+        row: Activity | null,
+        closeOnBackdrop: boolean
+      ) {
+        this.formConfig = buildActivityFormConfig(mode);
+        this.selectedRow = row;
+    
+        this.overlayState = {
+          open: true,
+          title,
+          closeOnBackdrop
+        };
+      }
+    
+    
+  
+    // ===== TABLE ACTIONS =====
+      onTableAction(event: { type: string; row: Activity }) {
+        switch (event.type) {
+          case 'view':
+            this.openView(event.row);
+            break;
+    
+          case 'edit':
+            this.openEdit(event.row);
+            break;
+    
+          case 'delete':
+            this.openDelete(event.row);
+            break;
+        }
+      }
+  
+       openCreate() {
+          this.openForm('create', 'Add Activity', null, false);
+        }
+      
+        openView(row: Activity) {
+          this.openForm('view', 'View Activity', row, true);
+        }
+      
+        openEdit(row: Activity) {
+          this.openForm('edit', 'Edit Activity', row, false);
+        }
+  
+        closeOverlay() {
+        this.overlayState.open = false;
+        this.formConfig = null;
+        this.selectedRow = null;
+        this.formErrorMessage = '';
+      }
+  
+       // ===== DIALOG HANDLING =====
+        openDelete(row: Activity) {
+          this.selectedRow = row;
+          this.dialogState = {
+            open: true,
+            title: 'Delete Activity',
+            message: `Are you sure you want to delete activity: ${row.name}?`,
+            type: 'delete'
+          };
+        }
+      
+        closeDialog() {
+          this.dialogState = {
+            open: false,
+            title: '',
+            message: '',
+            type: ''
+          };
+        }
+  
+        onDialogConfirm(row: any) {
+      if (this.dialogState.type !== 'delete') return;
+  
+      this.activityService.deleteActivity(row.id).subscribe({
+        next: () => {
+          this.closeDialog();
+          this.loadActivity();
+  
+          this.dialogState = {
+            open: true,
+            title: 'Activity Deleted',
+            message: `Activity deleted: ${row.email}`,
+            type: 'info'
+          };
+        },
+        error: () => {
+          this.closeDialog();
+          this.dialogState = {
+            open: true,
+            title: 'Error',
+            message: `Failed to delete activity: ${row.email}`,
+            type: 'info'
+          };
+        }
+      });
     }
   
-    openEdit(activity: Activity): void {
-      this.selectedActivity = activity;
-      this.showForm = true;
-    }
-
-
-     onSaveActivity(activity: Activity): void {
-        const request$ = activity.id
-          ? this.activityService.update(activity)
-          : this.activityService.create(activity);
+    // ===== FORM SUBMIT =====
+      onFormSubmit(data: any) {
+        if (!this.formConfig) return;
     
-        request$.subscribe({
-          next: () => {
-            // this.loadPillars();
-            this.showForm = false;
-          },
-          error: (err) => console.error('Save failed', err)
-        });
+        if (this.formConfig.mode === 'create') {
+          const request: CreateActivityRequest     = {
+            name: data.name,
+            description : data.description
+          };
+    
+          this.activityService.createActivity(request).subscribe({
+            next: activity => {
+              this.closeOverlay();
+              this.loadActivity();
+    
+              this.dialogState = {
+                open: true,
+                title: 'Activity Created',
+                message: `New activity created: ${activity.name}`,
+                type: 'info'
+              };
+            },
+            error: err => {
+              this.formErrorMessage = err?.message || 'Failed to create activity';
+            }
+          });
+        }
+    
+        if (this.formConfig.mode === 'edit' && this.selectedRow) {
+          const request: UpdateActivityRequest = {
+            name: data.name,
+            description : data.description,
+            id: data.id
+          };
+    
+          this.activityService.updateActivity(request).subscribe({
+            next: activity => {
+              this.closeOverlay();
+              this.loadActivity();
+    
+              this.dialogState = {
+                open: true,
+                title: 'Activity Updated',
+                message: `Activity updated: ${activity.name}`,
+                type: 'info'
+              };
+            },
+            error: err => {
+              this.formErrorMessage = err?.message || 'Failed to update activity';
+            }
+          });
+        }
       }
-
-    onCancel(): void {
-    this.showForm = false;
-  }
-
-  // ===== DELETE =====
-    confirmDelete(activity: Activity): void {
-      this.activityToDelete = activity;
-      this.showConfirm = true;
-    }
-
-    onConfirmDelete(): void {
-    if (!this.activityToDelete) return;
-
-    this.activityService.delete(this.activityToDelete.id).subscribe({
-      next: () => {
-        this.loadActivity();
-        this.closeConfirm();
-      },
-      error: (err) => console.error('Delete failed', err)
-    });
-  }
-
-  private closeConfirm(): void {
-    this.showConfirm = false;
-    this.activityToDelete = null;
-  }
-
-  // ===== CONFIRM MESSAGE =====
-  get deleteMessage(): string {
-    return this.activityToDelete
-      ? `Are you sure you want to delete "${this.activityToDelete.name}"?`
-      : 'Are you sure?';
-  }
 
 }

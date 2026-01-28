@@ -1,50 +1,68 @@
 <div class="table-responsive">
 
   @if (config.create?.enabled) {
+    <div class="table-header d-flex justify-content-between align-items-center mb-3">
+      <h5 class="mb-0">{{config.tableName}}</h5>
 
-    <div class="table-header" >
-
-      <div class="table-header d-flex justify-content-between align-items-center mb-3">
-          
-        <h5 class="mb-0">Users</h5>
-        <button class="btn btn-primary" (click)="onCreateClick()">
-          {{ config.create?.label || 'Create' }}
-        </button>
+      <button class="btn btn-primary" (click)="onCreateClick()">
+        {{ config.create?.label || 'Create' }}
+      </button>
     </div>
-  </div>
-
   }
-  
 
   <table class="table table-striped table-hover align-middle">
-    <thead  class="table-dark">
+    <thead class="table-dark">
       <tr>
-        <th *ngFor="let column of config.columns">
-          {{ column.header }}
-        </th>
+        @for (column of config.columns; track column.key) {
+          <th>
+            {{ column.header }}
+          </th>
+        }
 
-        <th *ngIf="config.actions?.length">
-          Actions
-        </th>
+        @if (config.actions?.length) {
+          <th>Actions</th>
+        }
       </tr>
     </thead>
 
-    <tbody class="table-light" >
-      <tr *ngFor="let row of rows">
+    <tbody class="table-light">
+      @for (row of rows; track row.id) {
+        <tr>
+          @for (column of config.columns; track column.key) {
+            <td>
+              {{ row[column.key] }}
+            </td>
+          }
 
-        <td *ngFor="let column of config.columns">
-          {{ row[column.key] }}
-        </td>
+          @if (config.actions?.length) {
+            <td>
+              @for (action of config.actions; track action.type) {
 
-        <td *ngIf="config.actions?.length">
-          <button class="btn btn-sm btn-outline-secondary me-1"
-            *ngFor="let action of config.actions"
-            (click)="onActionClick(action.type, row)">
-            {{ action.label }}
-          </button>
-        </td>
+                @if(action.type === 'delete'){
 
-      </tr>
+                  <button
+                  class="btn btn-sm btn-danger me-1"
+                  (click)="onActionClick(action.type, row)">
+                  <i class="bi bi-trash me-1"></i>
+                  {{ action.label }}
+                </button>
+
+                }
+
+                @else {
+                  <button
+                  class="btn btn-sm btn-outline-secondary me-1"
+                  (click)="onActionClick(action.type, row)">
+                  {{ action.label }}
+                </button>
+
+                }
+                
+              }
+            </td>
+          }
+        </tr>
+      }
     </tbody>
   </table>
 

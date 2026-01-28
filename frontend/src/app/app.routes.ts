@@ -56,6 +56,18 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./pages/admin/admin.routes')
           .then(m => m.default)
+      },
+
+      /* ----------------------------
+       *  User routes (USER only)
+       * ---------------------------- */
+      {
+        path: 'user',
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_USER'] },
+        loadChildren: () =>
+          import('./pages/user/user.routes')
+          .then(m => m.default)
       }
     ]
   },

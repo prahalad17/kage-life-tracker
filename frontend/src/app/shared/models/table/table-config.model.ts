@@ -5,6 +5,7 @@ import { CreateConfig } from './create-config';
 export interface TableConfig {
   columns: ColumnConfig[];
   actions?: ActionConfig[];
+  tableName?: string;
   create?: CreateConfig;
   selectable?: boolean;
   pagination?: boolean;
