@@ -1,5 +1,6 @@
 package com.kage.controller;
 
+import com.kage.dto.request.UpdateUserRequest;
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -35,6 +36,18 @@ public class UserController {
                         response));
     }
 
+    @PatchMapping
+    public ResponseEntity<ApiResponse<UserResponse>> updateUser(
+            @Valid @RequestBody UpdateUserRequest request) {
+
+        UserResponse response = service.updateUser(request);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>(true,
+                        "User created successfully",
+                        response));
+    }
+
 
     @GetMapping("/getAll")
     public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUser() {
@@ -57,10 +70,9 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteUser(
-            @PathVariable Long id,
-            @RequestParam(required = false) String remarks) {
+            @PathVariable Long id) {
 
-        service.softDeleteUser(id, remarks);
+        service.softDeleteUser(id);
 
         return ResponseEntity.ok(
                 new ApiResponse<>(true,

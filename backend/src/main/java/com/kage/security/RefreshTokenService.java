@@ -2,6 +2,7 @@ package com.kage.security;
 
 import com.kage.entity.RefreshToken;
 import com.kage.entity.User;
+import com.kage.exception.InvalidRefreshTokenException;
 import com.kage.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -96,7 +97,7 @@ public class RefreshTokenService {
         RefreshToken refreshToken = refreshTokenRepository
                 .findByTokenHash(tokenHash)
                 .orElseThrow(() ->
-                        new IllegalStateException("Invalid refresh token"));
+                        new InvalidRefreshTokenException("Invalid refresh token"));
 
         refreshToken.setRevoked(true);
         refreshTokenRepository.save(refreshToken);

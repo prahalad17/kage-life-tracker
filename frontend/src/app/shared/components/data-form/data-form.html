@@ -87,7 +87,7 @@
   </div>
 
   <!-- ACTION BUTTONS -->
-  <div class="d-flex justify-content-end gap-2 mt-4">
+  <div class="d-flex justify-content-end gap-2 mt-4 mb3">
 
     @for (action of config.actions; track action.label) {
       <button
@@ -98,11 +98,18 @@
         }"
         [type]="action.type"
         [disabled]="action.disabled"
-        (click)="action.action === 'cancel' && onCancel()">
+        (click)="action.action === 'cancel' && onCancel()"
+        (click)="action.action === 'submit' && onSubmit()">
         {{ action.label }}
       </button>
     }
 
   </div>
+
+  @if (message) {
+  <div class="alert alert-danger mb3 " role="alert">
+    {{ message }}
+  </div>
+}
 
 </form>

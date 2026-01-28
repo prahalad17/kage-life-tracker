@@ -1,6 +1,7 @@
 package com.kage.service.impl;
 
 import com.kage.dto.request.RegisterUserRequest;
+import com.kage.dto.request.UpdateUserRequest;
 import com.kage.enums.RecordStatus;
 import com.kage.enums.UserRole;
 import com.kage.enums.UserStatus;
@@ -14,6 +15,7 @@ import com.kage.repository.UserRepository;
 import com.kage.service.UserService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +48,8 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = userMapper.toEntity(request);
+        user.setUserStatus(UserStatus.ACTIVE);
+        user.setUserRole(request.getUserRole());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         User saved = userRepository.save(user);
 
@@ -107,20 +111,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void softDeleteUser(Long id, String remarks) {
+    public void softDeleteUser(Long id) {
 
-        User user = userRepository.findById(id)
+        User user = userRepository.findByIdAndUserStatusAndStatus(id, UserStatus.ACTIVE , RecordStatus.ACTIVE)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("User not found"));
 
-        user.softDelete(remarks);
+        user.setStatus(RecordStatus.INACTIVE);
+        user.setUserStatus(UserStatus.INACTIVE);
         userRepository.save(user);
     }
 
     @Override
     public List<UserResponse> getAllUser() {
 
-        return userMapper.toResponse(userRepository.findAll());
+        List<User> users = userRepository.findByUserStatusAndStatus( UserStatus.ACTIVE , RecordStatus.ACTIVE);
+
+        return userMapper.toResponse(users);
 
         /*List<User> users = userRepository.findAll();
 
@@ -132,5 +139,21 @@ public class UserServiceImpl implements UserService {
             userResponseList.add(userResponse);
         }
         return userResponseList;*/
+    }
+
+    @Override
+    public UserResponse updateUser(UpdateUserRequest request) {
+
+        String email = request.getEmail().trim().toLowerCase();
+
+        User user = userRepository.findByEmailAndUserStatusAndStatus(email, UserStatus.ACTIVE, RecordStatus.ACTIVE)
+                .orElseThrow( () -> new UsernameNotFoundException("No Such User Found ")
+                );
+
+        userMapper.updateEntityFromDto(request, user);
+
+        User saved = userRepository.save(user);
+
+        return userMapper.toResponse(saved);
     }
 }

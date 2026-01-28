@@ -15,7 +15,7 @@ export const authInterceptor: HttpInterceptorFn =
     const accessToken = authState.getAccessToken();
 
     // Skip auth endpoints
-    if (!accessToken || req.url.includes('/auth')) {
+    if (!accessToken || req.url.includes('/api/auth')) {
       return next(req);
     }
 

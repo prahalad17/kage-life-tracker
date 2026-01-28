@@ -6,6 +6,7 @@ import com.kage.dto.response.RefreshTokenResponse;
 import com.kage.dto.response.ApiResponse;
 import com.kage.dto.response.LoginResponse;
 import com.kage.dto.response.RegisterResponse;
+import com.kage.exception.InvalidRefreshTokenException;
 import com.kage.security.JwtService;
 import com.kage.security.RefreshTokenService;
 import com.kage.service.impl.AuthService;
@@ -18,7 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -108,7 +109,7 @@ public class AuthController {
 
     private String extractRefreshTokenFromCookie(HttpServletRequest request) {
         if (request.getCookies() == null) {
-            throw new IllegalStateException("Refresh token missing");
+            throw new InvalidRefreshTokenException("Refresh token missing");
         }
 
         for (Cookie cookie : request.getCookies()) {
@@ -117,7 +118,7 @@ public class AuthController {
             }
         }
  
-        throw new IllegalStateException("Refresh token missing");
+        throw new InvalidRefreshTokenException("Refresh token missing");
     }
 
     private void setRefreshTokenCookie(
@@ -141,8 +142,9 @@ public class AuthController {
 
     private void clearRefreshTokenCookie(HttpServletResponse response) {
         Cookie cookie = new Cookie("refresh_token", null);
-        cookie.setPath("/auth");
+        cookie.setPath("/");
         cookie.setHttpOnly(true);
+        cookie.setSecure(false);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
     }

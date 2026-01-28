@@ -15,7 +15,7 @@ import { RegisterResponse } from '../models/register-response';
 })
 export class AuthService {
 
-  private BASE_URL = 'http://localhost:4200/auth';
+  private BASE_URL = 'http://localhost:4200/api/auth';
 
   constructor(private http: HttpClient) {}
 

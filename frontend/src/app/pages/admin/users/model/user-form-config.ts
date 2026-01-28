@@ -29,12 +29,14 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
       name: 'name',
       label: 'Name',
       type: 'text',
+      placeholder: 'Name',
       required: true
     },
     {
       name: 'email',
       label: 'Email',
       type: 'email',
+      placeholder: 'Email',
       required: true,
       disabled: mode !== 'create'
     },
@@ -42,17 +44,21 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
       name: 'password',
       label: 'Password',
       type: 'password',
+      placeholder: 'Password',
       hidden: mode !== 'create',
       required: mode === 'create'
     },
     {
-      name: 'role',
+      name: 'userRole',
       label: 'Role',
       type: 'select',
+      disabled: mode !== 'create',
+      
       options: [
-        { label: 'Admin', value: 'ADMIN' },
-        { label: 'User', value: 'USER' }
+        { label: 'Admin', value: 'ROLE_ADMIN' },
+        { label: 'User', value: 'ROLE_USER' }
       ]
+      
     },
      {
       name: 'adminCode',
@@ -70,7 +76,7 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
 
 function getUserActions(mode: 'create' | 'edit' | 'view'): FormActionConfig[] {
   if (mode === 'view') {
-    return [
+    return [  
       {
         label: 'Close',
         type: 'button',
@@ -87,7 +93,8 @@ function getUserActions(mode: 'create' | 'edit' | 'view'): FormActionConfig[] {
     },
     {
       label: mode === 'create' ? 'Create' : 'Update',
-      type: 'submit'
+      type: 'submit',
+      action: 'submit'
     }
   ];
 }

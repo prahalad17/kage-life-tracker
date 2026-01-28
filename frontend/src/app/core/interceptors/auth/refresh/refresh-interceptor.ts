@@ -34,8 +34,8 @@ export const authRefreshInterceptor: HttpInterceptorFn =
 
         if (
           error.status === 401 &&
-          !req.url.includes('/auth')&&
-          !req.url.includes('/auth/refresh') 
+          !req.url.includes('/api/auth')&&
+          !req.url.includes('/api/auth/refresh') 
         ) {
           return handle401(req, next, authState, http);
         }
@@ -57,7 +57,7 @@ function handle401(
     refreshSubject.next(null);
 
     return http.post<{ accessToken: string }>(
-      '/auth/refresh',
+      '/api/auth/refresh',
       {},
       { withCredentials: true }
     ).pipe(

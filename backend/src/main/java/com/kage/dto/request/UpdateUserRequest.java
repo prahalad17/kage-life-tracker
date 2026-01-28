@@ -1,9 +1,6 @@
 package com.kage.dto.request;
 
-import com.kage.enums.UserRole;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateUserRequest {
+public class UpdateUserRequest {
 
     @NotBlank(message = "Name is required")
     private String name;
@@ -20,8 +17,4 @@ public class CreateUserRequest {
     @NotBlank(message = "Email is required")
     private String email;
 
-//    @Size(min = 8, message = "Password must be at least 8 characters")
-    private String password;
-
-    private UserRole userRole;
 }

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -7,18 +7,26 @@ import { CommonModule } from '@angular/common';
   templateUrl: './confirm-dialog.html',
   styleUrl: './confirm-dialog.css',
 })
-export class ConfirmDialog {
+export class ConfirmDialog{
 
   @Input()
-  title = 'Confirm';
+  title : string = '';
 
-  @Input()
-  message = 'Are you sure?';
+   @Input() 
+   message: string = '';
+   
+   @Input() 
+   dialogType: string = '';
+
+   @Input() data: any;
 
   @Output()
   confirm = new EventEmitter<void>();
 
   @Output()
   cancel = new EventEmitter<void>();
+
+  @Output()
+  ok = new EventEmitter<void>();
 
 }

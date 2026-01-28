@@ -16,12 +16,12 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(
       withInterceptors([
-       loggingInterceptor,       // (1) debug / logs
+        loggingInterceptor,       // (1) debug / logs
         loaderInterceptor,        // (2) UI loading
         apiResponseInterceptor,   // (3) unwrap API responses
-       authInterceptor,          // (4) attach access token
-      authRefreshInterceptor,   // (5) refresh on 401
-        errorInterceptor          // (6) final error handling
+        authInterceptor,          // (4) attach access token
+        errorInterceptor,          // (5) final error handling
+        authRefreshInterceptor,   // (6) refresh on 401 (( refresh moved down to handle auth errors ))
       ])
     ),
     provideAppInitializer(() => {

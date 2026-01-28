@@ -1,12 +1,12 @@
 package com.kage.security;
 
 import com.kage.entity.User;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -76,6 +76,8 @@ public class JwtService {
     public <T> T extractClaim(String token,
                               Function<Claims, T> claimsResolver) {
 
+        try {
+
         final Claims claims = Jwts.parserBuilder()
                 .setSigningKey(signingKey)
                 .build()
@@ -83,6 +85,11 @@ public class JwtService {
                 .getBody();
 
         return claimsResolver.apply(claims);
+
+        } catch (JwtException ex) {
+            SecurityContextHolder.clearContext();
+            throw new BadCredentialsException("Invalid or expired JWT", ex);
+        }
     }
 
     private boolean isTokenExpired(String token) {

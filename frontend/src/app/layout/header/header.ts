@@ -36,6 +36,7 @@ export class HeaderComponent {
     next: () => {
       this.authStateService.clear();
       this.router.navigate(['/']);
+      console.log(this.userName)
     },
     error: err => {
       console.error('Logout failed', err);

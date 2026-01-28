@@ -43,10 +43,6 @@ public class BaseEntity {
         this.updatedAt = Instant.now();
     }
 
-    public void softDelete(String remarks) {
-        this.status = RecordStatus.INACTIVE;
-        this.remarks = remarks;
-    }
 
     public boolean isActive() {
         return this.status == RecordStatus.ACTIVE;

@@ -22,6 +22,8 @@ export class DataForm implements OnChanges {
 
   @Input() config!: FormConfig;
   @Input() data: any;
+ @Input() message: string = '';
+  
 
   @Output() submitForm = new EventEmitter<any>();
   @Output() cancel = new EventEmitter<void>();
@@ -47,8 +49,11 @@ export class DataForm implements OnChanges {
     if (field.hidden) return;
 
     group[field.name] = this.fb.control(
-      field.defaultValue ?? '',
-      this.buildValidators(field)
+     {
+      value: field.defaultValue ?? '',
+      disabled: field.disabled === true
+      },
+    this.buildValidators(field)
     );
   });
 
