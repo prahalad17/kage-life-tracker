@@ -57,7 +57,9 @@ export class ActivityListComponent  implements OnInit{
       tableName: 'Activity',
       columns: [
         { key: 'name', header: 'Activity' },
-        { key: 'description', header: 'Description' }
+        { key: 'description', header: 'Description' },
+        { key: 'pillar', header: 'Pillar' }
+
       ],
       actions: [
         { type: 'view', label: 'View' },
@@ -185,11 +187,18 @@ export class ActivityListComponent  implements OnInit{
     // ===== FORM SUBMIT =====
       onFormSubmit(data: any) {
         if (!this.formConfig) return;
-    
+
+        const selectedPillar = data.pillar;
+
         if (this.formConfig.mode === 'create') {
-          const request: CreateActivityRequest     = {
+          const request: CreateActivityRequest  = {
             name: data.name,
-            description : data.description
+            description: data.description,
+            activityNature: data.activityNature,
+            pillarName:  selectedPillar.name,
+            pillarTemplateId:selectedPillar.id,
+            defaultTrackingType: data.defaultTrackingType,
+            defaultUnit: data.defaultUnit
           };
     
           this.activityService.createActivity(request).subscribe({

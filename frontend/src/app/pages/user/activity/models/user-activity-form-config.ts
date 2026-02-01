@@ -2,16 +2,16 @@ import { FormActionConfig } from "../../../../shared/models/form/form-action-con
 import { FormConfig } from "../../../../shared/models/form/form-config";
 import { FormFieldConfig } from "../../../../shared/models/form/form-field-config";
 
-export function buildUserFormConfig(
+export function buildUserActivityFormConfig(
   mode: 'create' | 'edit' | 'view'
 ): FormConfig {
   return {
     title:
       mode === 'create'
-        ? 'Create User'
+        ? 'Create Pillar'
         : mode === 'edit'
-        ? 'Edit User'
-        : 'User Details',
+        ? 'Edit Pillar'
+        : 'Pillar Details',
 
     mode,
     readOnly: mode === 'view',
@@ -33,46 +33,12 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
       required: true
     },
     {
-      name: 'email',
-      label: 'Email',
-      type: 'email',
-      placeholder: 'Email',
-      required: true,
-      disabled: mode !== 'create'
-    },
-    {
-      name: 'password',
-      label: 'Password',
-      type: 'password',
-      placeholder: 'Password',
-      hidden: mode !== 'create',
-      required: mode === 'create'
-    },
-    {
-      name: 'userRole',
-      label: 'Role',
-      type: 'select',
-      disabled: mode !== 'create',
-      
-       optionsConfig: {
-        type: 'static',
-        options: [
-          { label: 'Admin', value: 'ROLE_ADMIN' },
-          { label: 'User', value: 'ROLE_USER' }
-        ]
-  }
-      
-    },
-     {
-      name: 'adminCode',
-      label: 'Admin Code',
+      name: 'description',
+      label: 'Description',
       type: 'text',
-      hidden: true,
-      dependsOn: {
-        field: 'role',
-        value: 'ADMIN',
-        action: 'show'
-      }
+      placeholder: 'Description',
+      required: true,
+      // disabled: mode !== 'create'
     }
   ];
 }

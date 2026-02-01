@@ -12,7 +12,9 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class ActivityCreateRequest {
+
     private  Long userId;
+
     private  Long pillarUserId;
     private  Long activityTemplateId;
     private  String name;

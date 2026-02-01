@@ -9,6 +9,21 @@ export type FieldType =
   | 'radio'
   | 'date';
 
+  export type OptionsSource =
+  | {
+      type: 'static';
+      options: {
+        label: string;
+        value: any;
+      }[];
+    }
+  | {
+      type: 'api';
+      endpoint: string;
+      labelKey: string;
+      valueKey: string;
+    };
+
   export interface FieldDependency {
   field: string;          // controlling field
   value?: any;            // value to match
@@ -36,10 +51,7 @@ export type FieldType =
   pattern?: string;
 
   // For select / radio
-  options?: {
-    label: string;
-    value: any;
-  }[];
+ optionsConfig?: OptionsSource;
 
   // UI helpers
   width?: string;      // 100%, 50%, etc

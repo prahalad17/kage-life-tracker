@@ -10,9 +10,11 @@ import lombok.Data;
  */
 @Data
 public class ActivityTemplateResponse {
-    private final Long pillarTemplateId;
+
+    private final String pillar;
+
     private final String name;
-    private final ActivityNature nature;
+    private final ActivityNature activityNature;
     private final TrackingType defaultTrackingType;
     private final String defaultUnit;
     private final String description;

@@ -4,10 +4,13 @@ import com.kage.dto.request.ActivityTemplateCreateRequest;
 import com.kage.dto.request.ActivityTemplateUpdateRequest;
 import com.kage.dto.response.ActivityTemplateResponse;
 import com.kage.entity.ActivityTemplate;
+import com.kage.entity.PillarTemplate;
 import com.kage.exception.BusinessException;
 import com.kage.exception.NotFoundException;
 import com.kage.mapper.ActivityTemplateMapper;
+import com.kage.mapper.PillarTemplateMapper;
 import com.kage.repository.ActivityTemplateRepository;
+import com.kage.repository.PillarTemplateRepository;
 import com.kage.service.ActivityTemplateService;
 import com.kage.util.SanitizerUtil;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,7 @@ import java.util.List;
 @Transactional
 @Slf4j
 public class ActivityTemplateServiceImpl implements ActivityTemplateService {
+    private final PillarTemplateRepository pillarTemplateRepository;
 
     private final ActivityTemplateRepository activityTemplateRepository;
     private final ActivityTemplateMapper activityTemplateMapper;
@@ -45,10 +49,16 @@ public class ActivityTemplateServiceImpl implements ActivityTemplateService {
             throw new BusinessException("Activity Template with this name already exists");
         }
 
+        PillarTemplate pillarTemplate = pillarTemplateRepository
+                .findById(request.getPillarTemplateId())
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Invalid PillarTemplate ID"));
+
         // 3️⃣ Map DTO → Entity
         ActivityTemplate activity = activityTemplateMapper.toEntity(request);
         activity.setName(cleanName);
         activity.setDescription(cleanDescription);
+        activity.setPillarTemplate(pillarTemplate);
 //        pillar.setActive(true);
 
         // 4️⃣ Persist

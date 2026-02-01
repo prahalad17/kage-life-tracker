@@ -10,7 +10,7 @@ import {
 
 import { FormConfig } from '../../models/form/form-config';
 import { FieldDependency, FormFieldConfig } from '../../models/form/form-field-config';
-import { FormActionConfig } from '../../models/form/form-action-config';
+import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-data-form',
   standalone: true,
@@ -30,11 +30,18 @@ export class DataForm implements OnChanges {
 
   form!: FormGroup;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder ,private http: HttpClient) {}
+
+
+ dropdownOptions: Record<
+  string,
+  { label: string; value: any }[] | undefined
+> = {};
 
   ngOnChanges() {
   if (this.config && !this.form) {
     this.buildForm();
+    this.loadDropdownOptions(); 
   }
 
   if (this.form && this.data) {
@@ -64,6 +71,35 @@ export class DataForm implements OnChanges {
   if (this.config.readOnly || this.config.mode === 'view') {
     this.form.disable();
   }
+}
+
+private loadDropdownOptions() {
+  this.config.fields.forEach(field => {
+
+    if (field.type !== 'select' || !field.optionsConfig) {
+      return;
+    }
+
+    // 🟢 STATIC OPTIONS
+    if (field.optionsConfig.type === 'static') {
+      this.dropdownOptions[field.name] =
+        field.optionsConfig.options;
+    }
+
+    // 🔵 API OPTIONS
+    if (field.optionsConfig.type === 'api') {
+      const cfg = field.optionsConfig;
+
+      this.http.get<any[]>(cfg.endpoint).subscribe(res => {
+        this.dropdownOptions[field.name] = res.map(item => ({
+          
+          label: item[cfg.labelKey],
+          value: item
+        }));
+      });
+    }
+
+  });
 }
 
   private buildValidators(field: FormFieldConfig) {
