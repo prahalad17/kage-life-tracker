@@ -21,4 +21,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByIdAndUserStatusAndStatus(Long id, UserStatus userStatus, RecordStatus recordStatus);
 
     List<User> findByUserStatusAndStatus(UserStatus userStatus, RecordStatus recordStatus);
+
+    Optional<User> findByIdAndStatus(Long userId, RecordStatus recordStatus);
 }

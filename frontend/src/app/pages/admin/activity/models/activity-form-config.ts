@@ -26,6 +26,14 @@ export function buildActivityFormConfig(
 function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
   return [
     {
+      name: 'activityId',
+      label: 'Id',
+      type: 'text',
+      placeholder: 'Id',
+      hidden :mode === 'create',
+      disabled: mode !== 'create'
+    },
+    {
       name: 'name',
       label: 'Name',
       type: 'text',
@@ -50,9 +58,10 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
         type :'api',
         endpoint: '/api/v1/master-pillars',
         labelKey: 'name',
-        valueKey: 'code'
+        valueKey: 'id',
+         incomingKey: 'name' 
       },
-      disabled: mode !== 'create'
+      // disabled: mode !== 'create'
     },
     {
       name: 'activityNature',

@@ -26,20 +26,30 @@ export function buildUserPillarFormConfig(
 function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
   return [
     {
-      name: 'name',
-      label: 'Name',
-      type: 'text',
-      placeholder: 'Name',
-      required: true
+      name: 'pillar',
+      label: 'Pillar Name',
+      type: 'select',
+      placeholder: 'Pillar',
+      required: true,
+      optionsConfig :{
+        type :'api',
+        endpoint: '/api/v1/master-pillars',
+        labelKey: 'name',
+        valueKey: 'id',
+        incomingKey:'name' 
+      },
+      // disabled: mode !== 'create'
     },
     {
       name: 'description',
       label: 'Description',
       type: 'text',
       placeholder: 'Description',
-      required: true,
+      required: false,
       // disabled: mode !== 'create'
     }
+    
+    
   ];
 }
 

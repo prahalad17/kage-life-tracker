@@ -5,12 +5,7 @@
   (create)="openCreate()">
 </app-data-table>
 
-<app-data-table
-  [rows]="(userPillars$ | async) ?? []"
-  [config]="tableConfig"
-  (action)="onTableAction($event)"
-  (create)="openCreate()">
-</app-data-table>
+
 
 @if (overlayState.open) {
   <app-overlay

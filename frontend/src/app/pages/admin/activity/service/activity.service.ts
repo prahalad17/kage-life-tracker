@@ -23,16 +23,15 @@ export class ActivityService{
        }
 
      createActivity(activity: CreateActivityRequest): Observable<Activity> {
-        return this.http.post<ApiResponse<Activity>>(this.BASE_URL, activity)
-              .pipe(map(res => res.data));
-
+        return this.http.post<Activity>(this.BASE_URL, activity)
+              
      }
 
      updateActivity(activity: UpdateActivityRequest): Observable<Activity> {
-         return this.http.put<ApiResponse<Activity>>(
-           `${this.BASE_URL}/${activity.id}`,
+         return this.http.put<Activity>(
+           `${this.BASE_URL}`,
            activity
-         ).pipe(map(res => res.data));
+         );
        }
      
        deleteActivity(id: number): Observable<void> {

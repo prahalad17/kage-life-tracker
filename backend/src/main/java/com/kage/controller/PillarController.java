@@ -5,12 +5,14 @@ import com.kage.dto.request.PillarCreateRequest;
 import com.kage.dto.request.PillarUpdateRequest;
 import com.kage.dto.response.ApiResponse;
 import com.kage.dto.response.PillarResponse;
+import com.kage.security.CustomUserDetails;
 import com.kage.service.PillarService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -68,13 +70,13 @@ public class PillarController {
      * Create a new user pillar
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<PillarResponse>> create(
+    public ResponseEntity<ApiResponse<PillarResponse>> create( @AuthenticationPrincipal CustomUserDetails user,
             @RequestBody @Valid PillarCreateRequest request) {
 
-        log.info("Creating user pillar with name={}", request.getName());
+        log.info("Creating user pillar with name={}", request);
 
         PillarResponse data =
-                pillarService.create(request);
+                pillarService.create(request ,user.getUser().getId());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse<>(

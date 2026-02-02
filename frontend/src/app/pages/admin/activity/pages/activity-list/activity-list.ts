@@ -188,15 +188,12 @@ export class ActivityListComponent  implements OnInit{
       onFormSubmit(data: any) {
         if (!this.formConfig) return;
 
-        const selectedPillar = data.pillar;
-
         if (this.formConfig.mode === 'create') {
           const request: CreateActivityRequest  = {
             name: data.name,
             description: data.description,
             activityNature: data.activityNature,
-            pillarName:  selectedPillar.name,
-            pillarTemplateId:selectedPillar.id,
+            pillarTemplateId: data.pillar,
             defaultTrackingType: data.defaultTrackingType,
             defaultUnit: data.defaultUnit
           };
@@ -220,10 +217,16 @@ export class ActivityListComponent  implements OnInit{
         }
     
         if (this.formConfig.mode === 'edit' && this.selectedRow) {
+          console.log(data);
+          
           const request: UpdateActivityRequest = {
+            activityId: data.activityId,
             name: data.name,
-            description : data.description,
-            id: data.id
+            description: data.description,
+            activityNature: data.activityNature,
+            pillarTemplateId: data.pillar,
+            defaultTrackingType: data.defaultTrackingType,
+            defaultUnit: data.defaultUnit
           };
     
           this.activityService.updateActivity(request).subscribe({

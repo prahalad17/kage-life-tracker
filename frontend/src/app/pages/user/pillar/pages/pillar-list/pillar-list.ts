@@ -12,6 +12,8 @@ import { DataTable } from '../../../../../shared/components/data-table/data-tabl
 import { Overlay } from '../../../../../shared/components/overlay/overlay';
 import { DataForm } from '../../../../../shared/components/data-form/data-form';
 import { ConfirmDialog } from '../../../../../shared/components/confirm-dialog/confirm-dialog';
+import { Pillar } from '../../../../admin/pillars/models/pillar.model';
+import { AuthStateService } from '../../../../../auth/services/auth-state.service';
 
 type DialogType = 'info' | 'delete' | '';
 @Component({
@@ -28,10 +30,14 @@ type DialogType = 'info' | 'delete' | '';
 })
 export class PillarList implements OnInit {
 
-  constructor(private userPillarService: UserPillarService) {}
+  constructor(private userPillarService: UserPillarService , private authStateService : AuthStateService) {}
   
     // ===== DATA =====
     userPillars$!: Observable<UserPillar[]>;
+
+    userAvailablePillars$!: Observable<Pillar[]>;
+
+
   
     selectedRow: UserPillar | null = null;
     formConfig: FormConfig | null = null;
@@ -55,7 +61,7 @@ export class PillarList implements OnInit {
   
     // ===== My Pillar TABLE CONFIG =====
     tableConfig: TableConfig = {
-        tableName: 'Pillars',
+        tableName: 'My Pillars',
         columns: [
           { key: 'name', header: 'Pillar' },
           { key: 'description', header: 'Description' }
@@ -71,30 +77,19 @@ export class PillarList implements OnInit {
         }
       };
 
-      // ===== My Pillar TABLE CONFIG =====
-    maintableConfig: TableConfig = {
-        tableName: 'Pillars',
-        columns: [
-          { key: 'name', header: 'Pillar' },
-          { key: 'description', header: 'Description' }
-        ],
-        actions: [
-          { type: 'view', label: 'View' },
-          { type: 'edit', label: 'Edit' },
-          { type: 'delete', label: 'Delete', confirm: true }
-        ],
-        create: {
-          enabled: true,
-          label: 'Add New Pillar'
-        }
-      };
+   
   
     // ===== LIFECYCLE =====
     ngOnInit(): void {
       this.loadPillars();
+       this.loadUserAvailablePillars();
     }
   
      loadPillars() {
+      this.userPillars$ = this.userPillarService.getAll();
+    }
+
+     loadUserAvailablePillars() {
       this.userPillars$ = this.userPillarService.getAll();
     }
   
@@ -206,9 +201,11 @@ export class PillarList implements OnInit {
         if (!this.formConfig) return;
     
         if (this.formConfig.mode === 'create') {
+          console.log(data);
           const request: CreateUserPillarRequest = {
-            name: data.name,
-            description : data.description
+            name : data.name,
+            description : data.description,
+            pillarTemplateId: data.pillar
           };
     
           this.userPillarService.createPillar(request).subscribe({

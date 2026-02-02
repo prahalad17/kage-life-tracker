@@ -22,6 +22,7 @@ export type FieldType =
       endpoint: string;
       labelKey: string;
       valueKey: string;
+      incomingKey: string; 
     };
 
   export interface FieldDependency {

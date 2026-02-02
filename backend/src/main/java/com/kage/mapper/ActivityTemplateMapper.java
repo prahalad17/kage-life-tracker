@@ -21,12 +21,16 @@ public interface ActivityTemplateMapper {
 
     @InheritInverseConfiguration(name = "toEntity")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "pillarTemplate.name", source = "pillar")
+    @Mapping(target = "nature", source = "activityNature")
     ActivityTemplate partialUpdate(ActivityTemplateUpdateRequest activityTemplateDto, @MappingTarget ActivityTemplate activityTemplate);
 
     @InheritInverseConfiguration(name = "toEntity")
-    @Mapping(target = "pillarName", source = "pillarTemplate.name")
+    @Mapping(target = "pillar", source = "pillarTemplate.name")
     @Mapping(target = "activityNature", source = "nature")
+    @Mapping(target = "activityId", source = "id")
     ActivityTemplateResponse toDto(ActivityTemplate activityTemplate);
+
 
     List<ActivityTemplateResponse> toResponseList(List<ActivityTemplate> activityTemplates);
 

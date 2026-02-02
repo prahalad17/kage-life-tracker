@@ -12,17 +12,16 @@ import { CreateUserRequest } from '../model/create-user-request';
 export class UsersService {
   
 
-   private BASE_URL = 'http://localhost:4200/api/users';
+  private BASE_URL = 'http://localhost:4200/api/users';
 
 
   constructor(private http: HttpClient) {}
 
   getUsers(): Observable<User[]> {
-  return this.http.get<User[]>(
-    `${this.BASE_URL}/getAll`
-  );
-
-}
+    return this.http.get<User[]>(
+      `${this.BASE_URL}/getAll`
+    );
+  }
 
 createUser(userDetails : CreateUserRequest) : Observable<UserResponse> {
   return this.http.post<UserResponse>(
@@ -46,4 +45,3 @@ updateUser(userDetails : UpdateUserRequest) : Observable<UserResponse>
   );
 }
 }
-

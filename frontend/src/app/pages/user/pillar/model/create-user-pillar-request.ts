@@ -1,5 +1,6 @@
 export interface CreateUserPillarRequest
  {
+  description?: string;
   name: string;
-  description: string;
+  pillarTemplateId:number;
 }

@@ -4,6 +4,7 @@ import com.kage.dto.request.PillarTemplateCreateRequest;
 import com.kage.dto.request.PillarTemplateUpdateRequest;
 import com.kage.dto.response.PillarTemplateResponse;
 import com.kage.entity.PillarTemplate;
+import com.kage.enums.RecordStatus;
 import com.kage.exception.BusinessException;
 import com.kage.exception.NotFoundException;
 import com.kage.mapper.PillarTemplateMapper;
@@ -71,7 +72,7 @@ public class PillarTemplateServiceImpl implements PillarTemplateService {
         log.debug("Fetching master pillar with id={}", id);
 
         PillarTemplate pillar = pillarTemplateRepository
-                .findByIdAndActiveTrue(id)
+                .findByIdAndStatus(id, RecordStatus.ACTIVE)
                 .orElseThrow(() -> {
                     log.warn("Master pillar not found with id={}", id);
                     return new NotFoundException("Master pillar not found");
@@ -104,7 +105,7 @@ public class PillarTemplateServiceImpl implements PillarTemplateService {
         log.debug("Updating master pillar with id={}", id);
 
         PillarTemplate pillar = pillarTemplateRepository
-                .findByIdAndActiveTrue(id)
+                .findByIdAndStatus(id, RecordStatus.ACTIVE)
                 .orElseThrow(() -> {
                     log.warn("Cannot update. Master pillar not found with id={}", id);
                     return new NotFoundException("Master pillar not found");
@@ -144,7 +145,7 @@ public class PillarTemplateServiceImpl implements PillarTemplateService {
         log.debug("Deactivating master pillar with id={}", id);
 
         PillarTemplate pillar = pillarTemplateRepository
-                .findByIdAndActiveTrue(id)
+                .findByIdAndStatus(id, RecordStatus.ACTIVE)
                 .orElseThrow(() -> {
                     log.warn("Cannot deactivate. Master pillar not found with id={}", id);
                     return new NotFoundException("Master pillar not found");

@@ -5,6 +5,7 @@ import com.kage.dto.request.ActivityTemplateUpdateRequest;
 import com.kage.dto.response.ActivityTemplateResponse;
 import com.kage.entity.ActivityTemplate;
 import com.kage.entity.PillarTemplate;
+import com.kage.enums.RecordStatus;
 import com.kage.exception.BusinessException;
 import com.kage.exception.NotFoundException;
 import com.kage.mapper.ActivityTemplateMapper;
@@ -108,14 +109,14 @@ public class ActivityTemplateServiceImpl implements ActivityTemplateService {
      * Update Activity Template
      */
     @Override
-    public ActivityTemplateResponse update(Long id, ActivityTemplateUpdateRequest request) {
+    public ActivityTemplateResponse update(ActivityTemplateUpdateRequest request) {
 
-        log.debug("Updating Activity Template with id={}", id);
+        log.debug("Updating Activity Template with id={}",request.getPillarTemplateId());
 
         ActivityTemplate activity = activityTemplateRepository
-                .findByIdAndActiveTrue(id)
+                .findByIdAndStatus(request.getActivityId(), RecordStatus.ACTIVE)
                 .orElseThrow(() -> {
-                    log.warn("Cannot update. Activity Template not found with id={}", id);
+                    log.warn("Cannot update. Activity Template not found with id={}", request.getPillarTemplateId());
                     return new NotFoundException("Activity Template not found");
                 });
 
@@ -131,10 +132,17 @@ public class ActivityTemplateServiceImpl implements ActivityTemplateService {
             throw new BusinessException("Another Activity Template already uses this name");
         }
 
+        PillarTemplate pillarTemplate = pillarTemplateRepository
+                .findById(request.getPillarTemplateId())
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Invalid PillarTemplate ID"));
+
         // 3️⃣ Map updates (MapStruct)
         activityTemplateMapper.partialUpdate(request, activity);
         activity.setName(cleanName);
         activity.setDescription(cleanDescription);
+
+        activity.setPillarTemplate(pillarTemplate);
 
         // 4️⃣ Save
         ActivityTemplate updated = activityTemplateRepository.save(activity);

@@ -14,9 +14,11 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Getter
 public class ActivityTemplateUpdateRequest  {
+    private  String pillar;
     private  Long pillarTemplateId;
+    private Long activityId;
     private  String name;
-    private  ActivityNature nature;
+    private  ActivityNature activityNature;
     private  TrackingType defaultTrackingType;
     private  String defaultUnit;
     private  String description;

@@ -1,6 +1,7 @@
 package com.kage.repository;
 
 import com.kage.entity.ActivityTemplate;
+import com.kage.enums.RecordStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -12,4 +13,6 @@ public interface ActivityTemplateRepository extends JpaRepository<ActivityTempla
     Optional<ActivityTemplate> findByIdAndActiveTrue(Long id);
 
     List<ActivityTemplate> findByActiveTrue();
+
+    Optional<ActivityTemplate>  findByIdAndStatus(Long activityId, RecordStatus recordStatus);
 }

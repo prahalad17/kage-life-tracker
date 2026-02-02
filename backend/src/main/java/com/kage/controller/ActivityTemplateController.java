@@ -73,6 +73,8 @@ public class ActivityTemplateController {
 
         log.info("Creating activity template with name={}", request.getName());
 
+
+
         ActivityTemplateResponse data =
                 activityTemplateService.create(request);
 
@@ -87,15 +89,14 @@ public class ActivityTemplateController {
     /**
      * Update an activity template
      */
-    @PutMapping("/{id}")
+    @PutMapping
     public ResponseEntity<ApiResponse<ActivityTemplateResponse>> update(
-            @PathVariable Long id,
             @RequestBody @Valid ActivityTemplateUpdateRequest request) {
 
-        log.info("Updating activity template with id={}", id);
+        log.info("Updating activity template with id={}");
 
         ActivityTemplateResponse data =
-                activityTemplateService.update(id, request);
+                activityTemplateService.update( request);
 
         return ResponseEntity.ok(
                 new ApiResponse<>(

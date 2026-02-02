@@ -1,6 +1,5 @@
 package com.kage.security;
 
-import com.kage.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

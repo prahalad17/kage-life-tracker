@@ -4,10 +4,16 @@ import com.kage.dto.request.PillarCreateRequest;
 import com.kage.dto.request.PillarUpdateRequest;
 import com.kage.dto.response.PillarResponse;
 import com.kage.entity.Pillar;
+import com.kage.entity.PillarTemplate;
+import com.kage.entity.User;
+import com.kage.enums.RecordStatus;
+import com.kage.enums.UserStatus;
 import com.kage.exception.BusinessException;
 import com.kage.exception.NotFoundException;
 import com.kage.mapper.PillarMapper;
 import com.kage.repository.PillarRepository;
+import com.kage.repository.PillarTemplateRepository;
+import com.kage.repository.UserRepository;
 import com.kage.service.PillarService;
 import com.kage.util.SanitizerUtil;
 import lombok.RequiredArgsConstructor;
@@ -26,30 +32,40 @@ public class PillarServiceImpl implements PillarService {
 
     private final PillarRepository pillarRepository;
     private final PillarMapper pillarMapper;
+    private final PillarTemplateRepository pillarTemplateRepository;
+    private final UserRepository userRepository;
 
     /**
      * Create a new user pillar
      */
     @Override
-    public PillarResponse create(PillarCreateRequest request) {
+    public PillarResponse create(PillarCreateRequest request, Long userId) {
 
         // 1️⃣ Sanitize input
-        String cleanName = SanitizerUtil.clean(request.getName());
-        String cleanDescription = SanitizerUtil.clean(request.getDescription());
+//        String cleanName = SanitizerUtil.clean(request.getName());
+//        String cleanDescription = SanitizerUtil.clean(request.getDescription());
+//
+//        log.debug("Sanitized user pillar name={}", cleanName);
 
-        log.debug("Sanitized user pillar name={}", cleanName);
+        PillarTemplate pillarTemplate = pillarTemplateRepository
+                .findByIdAndStatus(request.getPillarTemplateId(), RecordStatus.ACTIVE)
+                .orElseThrow(() -> {
+                    log.warn(" Master pillar not found with id={}", request.getPillarTemplateId());
+                    return new NotFoundException("Master pillar not found");
+                });
 
-        // 2️⃣ Business validation
-        if (pillarRepository.existsByNameIgnoreCase(cleanName)) {
-            log.warn("User pillar already exists with name={}", cleanName);
-            throw new BusinessException("User pillar with this name already exists");
-        }
+
+        User user = userRepository
+                .findByIdAndUserStatusAndStatus(userId, UserStatus.ACTIVE,RecordStatus.ACTIVE)
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
         // 3️⃣ Map DTO → Entity
         Pillar pillar = pillarMapper.toEntity(request);
-        pillar.setName(cleanName);
-        pillar.setDescription(cleanDescription);
-//        pillar.setActive(true);
+        pillar.setName(pillarTemplate.getName());
+        pillar.setDescription(pillarTemplate.getDescription());
+        pillar.setPillarTemplate(pillarTemplate);
+        pillar.setActive(true);
+        pillar.setUser(user);
 
         // 4️⃣ Persist
         Pillar saved = pillarRepository.save(pillar);

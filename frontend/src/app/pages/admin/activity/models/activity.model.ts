@@ -1,7 +1,6 @@
 export interface Activity {
-  description?: string;
-  id: number;
   name: string;
-  pillarId: number;
+  description?: string;
   pillar: string;
+  activityId: number;
 }

@@ -15,7 +15,4 @@ public class LoginResponse {
     private String email;
     private UserRole userRole;
     private String refreshToken;
-
-
-
 }

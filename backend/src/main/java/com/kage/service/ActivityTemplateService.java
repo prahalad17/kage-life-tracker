@@ -16,7 +16,7 @@ public interface ActivityTemplateService {
 
     ActivityTemplateResponse create(@Valid ActivityTemplateCreateRequest request);
 
-    ActivityTemplateResponse update(Long id, @Valid ActivityTemplateUpdateRequest request);
+    ActivityTemplateResponse update( @Valid ActivityTemplateUpdateRequest request);
 
     void deactivate(Long id);
 }

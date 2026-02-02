@@ -5,13 +5,17 @@ import { ApiResponse } from "../../../../shared/models/api/api-response.model";
 import { UserPillar } from "../model/user-pillar.model";
 import { CreateUserPillarRequest } from "../model/create-user-pillar-request";
 import { UpdateUserPillarRequest } from "../model/update-user-pillar-request";
+import { Pillar } from "../../../admin/pillars/models/pillar.model";
 @Injectable({
     providedIn:'root'
 })
 
 export class UserPillarService{
 
-  private BASE_URL = 'http://localhost:8080/api/v1/master-pillars';
+  private BASE_URL = 'http://localhost:8080/api/v1/user-pillars';
+
+  private PILLAR_TEMPLATE_URL = 'http://localhost:8080/api/v1/user-pillars';
+
  
   constructor(private http: HttpClient) {}
 
@@ -22,6 +26,16 @@ export class UserPillarService{
         )
       
   }
+
+   getAllAvailable(user : number): Observable<Pillar[]> {
+    return this.http
+      .get<Pillar[]>(
+         `${this.BASE_URL}/${user}`
+        )
+      
+  }
+
+
 
   createPillar(pillar: CreateUserPillarRequest): Observable<UserPillar> {
     return this.http.post<ApiResponse<UserPillar>>(this.BASE_URL, pillar)

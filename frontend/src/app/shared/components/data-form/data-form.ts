@@ -22,6 +22,7 @@ export class DataForm implements OnChanges {
 
   @Input() config!: FormConfig;
   @Input() data: any;
+  private formData: any;
  @Input() message: string = '';
   
 
@@ -30,25 +31,29 @@ export class DataForm implements OnChanges {
 
   form!: FormGroup;
 
+  private adapted = false;
+
   constructor(private fb: FormBuilder ,private http: HttpClient) {}
 
 
- dropdownOptions: Record<
-  string,
-  { label: string; value: any }[] | undefined
-> = {};
+ dropdownOptions: Record<string,{ label: string; value: any }[] | undefined> = {};
 
   ngOnChanges() {
   if (this.config && !this.form) {
     this.buildForm();
-    this.loadDropdownOptions(); 
+    this.loadDropdownOptions();
   }
 
   if (this.form && this.data) {
-    this.form.patchValue(this.data);
+
+     this.adapted = false;
+    // 🔒 clone ONCE per input change
+    this.formData = structuredClone(this.data);
+
+    this.adaptIncomingData(this.formData);
+    this.form.patchValue(this.formData);
   }
 }
-
   private buildForm() {
   const group: Record<string, any> = {};
 
@@ -94,12 +99,53 @@ private loadDropdownOptions() {
         this.dropdownOptions[field.name] = res.map(item => ({
           
           label: item[cfg.labelKey],
-          value: item
+          value: item[cfg.valueKey]
+          
         }));
+         if (this.formData) {
+          this.adaptIncomingData(this.formData);
+          this.form?.patchValue(this.formData);
+        }
       });
     }
 
   });
+}
+
+private adaptIncomingData(data: any) {
+
+ let didAdapt = false;
+
+  this.config.fields.forEach(field => {
+    if (field.type !== 'select') return;
+    if (!field.optionsConfig) return;
+    if (field.optionsConfig.type !== 'api') return;
+
+    const options = this.dropdownOptions[field.name];
+    if (!options || !options.length) return;
+
+    const incomingValue = data[field.name];
+    if (incomingValue == null) return;
+
+    const { incomingKey, labelKey } = field.optionsConfig;
+
+    let match;
+
+    if (incomingKey === labelKey) {
+      match = options.find(o => o.label === incomingValue);
+    } else {
+      match = options.find(o => o.value === incomingValue);
+    }
+
+    if (match) {
+      data[field.name] = match.value;
+      didAdapt = true;
+    }
+  });
+
+  if (didAdapt) {
+    this.adapted = true;
+  }
 }
 
   private buildValidators(field: FormFieldConfig) {

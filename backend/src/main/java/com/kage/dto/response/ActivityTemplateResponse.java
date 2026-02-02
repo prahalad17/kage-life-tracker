@@ -12,7 +12,7 @@ import lombok.Data;
 public class ActivityTemplateResponse {
 
     private final String pillar;
-
+    private  final Long activityId;
     private final String name;
     private final ActivityNature activityNature;
     private final TrackingType defaultTrackingType;

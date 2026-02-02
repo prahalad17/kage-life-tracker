@@ -15,7 +15,7 @@ public interface PillarService {
 
     PillarResponse getById(Long id);
 
-    PillarResponse create(@Valid PillarCreateRequest request);
+    PillarResponse create(@Valid PillarCreateRequest request, Long user);
 
     PillarResponse update(Long id, @Valid PillarUpdateRequest request);
 
