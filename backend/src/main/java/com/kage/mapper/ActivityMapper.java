@@ -14,14 +14,20 @@ public interface ActivityMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "remarks", ignore = true)
-    @Mapping(source = "activityTemplateId", target = "activityTemplate.id")
+    @Mapping(target = "nature", source = "activityNature")
+    @Mapping(target = "trackingType", source = "defaultTrackingType")
     Activity toEntity(ActivityCreateRequest activityCreateRequest);
 
 
     @InheritInverseConfiguration(name = "toEntity")
+    @Mapping(target = "pillar", source = "pillar.name")
+    @Mapping(target = "activityNature", source = "nature")
+    @Mapping(target = "activityId", source = "id")
     ActivityResponse toDto(Activity activity);
 
     @InheritConfiguration(name = "toEntity")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "pillar.name", source = "pillar")
+    @Mapping(target = "nature", source = "activityNature")
     Activity partialUpdate(ActivityUpdateRequest request, @MappingTarget Activity activity);
 }

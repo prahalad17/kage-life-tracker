@@ -38,15 +38,12 @@ export class UserPillarService{
 
 
   createPillar(pillar: CreateUserPillarRequest): Observable<UserPillar> {
-    return this.http.post<ApiResponse<UserPillar>>(this.BASE_URL, pillar)
-      .pipe(map(res => res.data));
+    return this.http.post<UserPillar>(this.BASE_URL, pillar)
   }
 
   updatePillar(pillar: UpdateUserPillarRequest): Observable<UserPillar> {
-    return this.http.put<ApiResponse<UserPillar>>(
-      `${this.BASE_URL}/${pillar.id}`,
-      pillar
-    ).pipe(map(res => res.data));
+    return this.http.put<UserPillar>(
+      `${this.BASE_URL}`,pillar)
   }
 
   deletePillar(id: number): Observable<void> {

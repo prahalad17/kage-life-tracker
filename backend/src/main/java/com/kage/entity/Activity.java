@@ -23,8 +23,9 @@ public class Activity extends BaseEntity {
     /**
      * Owner of this activity
      */
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id",  nullable = false)
+    private User user;
 
     /**
      * User life area context
@@ -71,4 +72,7 @@ public class Activity extends BaseEntity {
      */
     @Column(nullable = false)
     private boolean active = true;
+
+    @Column(length = 255)
+    private String description;
 }

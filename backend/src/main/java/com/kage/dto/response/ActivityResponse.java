@@ -12,12 +12,11 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class ActivityResponse {
-    private final Long userId;
-    private final Long pillarUserId;
-    private final Long activityTemplateId;
+    private final String pillar;
+    private  final Long activityId;
     private final String name;
-    private final ActivityNature nature;
-    private final TrackingType trackingType;
-    private final String unit;
-    private final boolean active;
+    private final ActivityNature activityNature;
+    private final TrackingType defaultTrackingType;
+    private final String defaultUnit;
+    private final String description;
 }

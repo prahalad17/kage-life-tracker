@@ -63,7 +63,7 @@ export class PillarList implements OnInit {
     tableConfig: TableConfig = {
         tableName: 'My Pillars',
         columns: [
-          { key: 'name', header: 'Pillar' },
+          { key: 'pillar', header: 'Pillar' },
           { key: 'description', header: 'Description' }
         ],
         actions: [
@@ -228,9 +228,10 @@ export class PillarList implements OnInit {
     
         if (this.formConfig.mode === 'edit' && this.selectedRow) {
           const request: UpdateUserPillarRequest = {
-            name: data.name,
             id: data.id,
-            description : data.description
+            name : data.name,
+            description : data.description,
+            pillarTemplateId: data.pillar
           };
     
           this.userPillarService.updatePillar(request).subscribe({

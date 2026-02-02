@@ -14,9 +14,9 @@ public interface ActivityService {
 
     ActivityResponse getById(Long id);
 
-    ActivityResponse create(@Valid ActivityCreateRequest request);
+    ActivityResponse create(@Valid ActivityCreateRequest request , Long userId);
 
-    ActivityResponse update(Long id, @Valid ActivityUpdateRequest request);
+    ActivityResponse update(@Valid ActivityUpdateRequest request ,Long userId);
 
     void deactivate(Long id);
 }

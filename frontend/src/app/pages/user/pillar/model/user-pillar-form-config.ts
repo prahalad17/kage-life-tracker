@@ -26,6 +26,14 @@ export function buildUserPillarFormConfig(
 function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
   return [
     {
+      name: 'id',
+      label: 'Id',
+      type: 'text',
+      placeholder: 'Id',
+      required: false,
+      hidden: mode === 'create'
+    },
+    {
       name: 'pillar',
       label: 'Pillar Name',
       type: 'select',

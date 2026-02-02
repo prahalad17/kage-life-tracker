@@ -13,13 +13,10 @@ import lombok.Getter;
 @Getter
 public class ActivityCreateRequest {
 
-    private  Long userId;
-
-    private  Long pillarUserId;
-    private  Long activityTemplateId;
+    private  Long pillarId;
     private  String name;
-    private  ActivityNature nature;
-    private  TrackingType trackingType;
-    private  String unit;
-    private  boolean active;
+    private  ActivityNature activityNature;
+    private  TrackingType defaultTrackingType;
+    private  String defaultUnit;
+    private  String description;
 }

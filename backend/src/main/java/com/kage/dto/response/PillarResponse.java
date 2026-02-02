@@ -6,11 +6,11 @@ import lombok.Data;
 public class PillarResponse {
 
     private Long id;
-    private String name;
+    private String pillar;
     private String description;
     private boolean active;
 
     // Optional for UI
-    private Long masterPillarId;
+    private Long templatePillarId;
 
 }

@@ -26,6 +26,14 @@ export function buildUserActivityFormConfig(
 function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
   return [
     {
+      name: 'activityId',
+      label: 'Id',
+      type: 'text',
+      placeholder: 'Id',
+      hidden :mode === 'create',
+      disabled: mode !== 'create'
+    },
+    {
       name: 'name',
       label: 'Name',
       type: 'text',
@@ -39,7 +47,52 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
       placeholder: 'Description',
       required: true,
       // disabled: mode !== 'create'
+    },
+    {
+      name: 'pillar',
+      label: 'Pillar',
+      type: 'select',
+      placeholder: 'Pillar',
+      required: true,
+      optionsConfig :{
+        type :'api',
+        endpoint: '/api/v1/user-pillars',
+        labelKey: 'pillar',
+        valueKey: 'id',
+        incomingKey: 'name' 
+      },
+      // disabled: mode !== 'create'
+    },
+    {
+      name: 'activityNature',
+      label: 'Activity Nature',
+      type: 'select',
+      placeholder: 'Activity Nature',
+      required: true,
+      optionsConfig :{
+        type :'static',
+        options:[
+          { label: 'Positive', value: 'POSITIVE' },
+          { label: 'Negative', value: 'NEGATIVE' }
+        ]
+      }
+    },
+    {
+      name: 'defaultTrackingType',
+      label: 'Tracking Type',
+      type: 'select',
+      placeholder: 'Tracking Type',
+      required: true,
+      optionsConfig :{
+        type :'static',
+        options:[
+          { label: 'Task Completion', value: 'BOOLEAN' },
+          { label: 'Task Count', value: 'COUNT' },
+          { label: 'Task Duration', value: 'DURATION' }
+        ]
+      }
     }
+
   ];
 }
 

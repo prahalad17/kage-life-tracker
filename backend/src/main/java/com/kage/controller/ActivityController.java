@@ -5,12 +5,14 @@ import com.kage.dto.request.ActivityCreateRequest;
 import com.kage.dto.request.ActivityUpdateRequest;
 import com.kage.dto.response.ActivityResponse;
 import com.kage.dto.response.ApiResponse;
+import com.kage.security.CustomUserDetails;
 import com.kage.service.ActivityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -69,12 +71,13 @@ public class ActivityController {
      */
     @PostMapping
     public ResponseEntity<ApiResponse<ActivityResponse>> create(
+            @AuthenticationPrincipal CustomUserDetails user,
             @RequestBody @Valid ActivityCreateRequest request) {
 
         log.info("Creating activity with name={}", request.getName());
 
         ActivityResponse data =
-                activityService.create(request);
+                activityService.create(request , user.getUser().getId());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse<>(
@@ -87,15 +90,15 @@ public class ActivityController {
     /**
      * Update an activity
      */
-    @PutMapping("/{id}")
+    @PutMapping
     public ResponseEntity<ApiResponse<ActivityResponse>> update(
-            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails user,
             @RequestBody @Valid ActivityUpdateRequest request) {
 
-        log.info("Updating activity with id={}", id);
+//        log.info("Updating activity with id={}", id);
 
         ActivityResponse data =
-                activityService.update(id, request);
+                activityService.update( request, user.getUser().getId());
 
         return ResponseEntity.ok(
                 new ApiResponse<>(

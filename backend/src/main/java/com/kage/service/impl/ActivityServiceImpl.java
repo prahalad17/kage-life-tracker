@@ -3,11 +3,15 @@ package com.kage.service.impl;
 import com.kage.dto.request.ActivityCreateRequest;
 import com.kage.dto.request.ActivityUpdateRequest;
 import com.kage.dto.response.ActivityResponse;
-import com.kage.entity.Activity;
+import com.kage.entity.*;
+import com.kage.enums.RecordStatus;
+import com.kage.enums.UserStatus;
 import com.kage.exception.BusinessException;
 import com.kage.exception.NotFoundException;
 import com.kage.mapper.ActivityMapper;
 import com.kage.repository.ActivityRepository;
+import com.kage.repository.PillarRepository;
+import com.kage.repository.UserRepository;
 import com.kage.service.ActivityService;
 import com.kage.util.SanitizerUtil;
 import lombok.RequiredArgsConstructor;
@@ -26,35 +30,48 @@ public class ActivityServiceImpl implements ActivityService {
 
     private final ActivityRepository activityRepository;
     private final ActivityMapper activityMapper;
+    private final PillarRepository pillarRepository;
+    private final UserRepository userRepository;
 
     /**
      * Create a new activity
      */
     @Override
-    public ActivityResponse create(ActivityCreateRequest request) {
+    public ActivityResponse create(ActivityCreateRequest request , Long userId) {
 
         // 1️⃣ Sanitize input
         String cleanName = SanitizerUtil.clean(request.getName());
-//        String cleanDescription = SanitizerUtil.clean(request.getDescription());
+        String cleanDescription = SanitizerUtil.clean(request.getDescription());
 
-        log.debug("Sanitized activity name={}", cleanName);
+        log.debug("Sanitized activity template name={}", cleanName);
 
         // 2️⃣ Business validation
         if (activityRepository.existsByNameIgnoreCase(cleanName)) {
-            log.warn("activity already exists with name={}", cleanName);
-            throw new BusinessException("activity with this name already exists");
+            log.warn("Activity Template already exists with name={}", cleanName);
+            throw new BusinessException("Activity Template with this name already exists");
         }
+
+        Pillar pillar = pillarRepository
+                .findById(request.getPillarId())
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Invalid PillarTemplate ID"));
+
+        User user = userRepository
+                .findByIdAndUserStatusAndStatus(userId, UserStatus.ACTIVE, RecordStatus.ACTIVE)
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
         // 3️⃣ Map DTO → Entity
         Activity activity = activityMapper.toEntity(request);
         activity.setName(cleanName);
-//        activity.setDescription(cleanDescription);
+        activity.setDescription(cleanDescription);
+        activity.setPillar(pillar);
+        activity.setUser(user);
 //        pillar.setActive(true);
 
         // 4️⃣ Persist
         Activity saved = activityRepository.save(activity);
 
-        log.info("activity created successfully with id={}", saved.getId());
+        log.info("Activity Template created successfully with id={}", saved.getId());
 
         // 5️⃣ Map Entity → DTO
         return activityMapper.toDto(saved);
@@ -98,14 +115,14 @@ public class ActivityServiceImpl implements ActivityService {
      * Update activity
      */
     @Override
-    public ActivityResponse update(Long id, ActivityUpdateRequest request) {
+    public ActivityResponse update( ActivityUpdateRequest request , Long userId) {
 
-        log.debug("Updating activity with id={}", id);
+        log.debug("Updating activity with id={}", request.getActivityId());
 
         Activity activity = activityRepository
-                .findByIdAndActiveTrue(id)
+                .findByIdAndActiveTrue(request.getActivityId())
                 .orElseThrow(() -> {
-                    log.warn("Cannot update. activity not found with id={}", id);
+                    log.warn("Cannot update. activity not found with id={}", request.getActivityId());
                     return new NotFoundException("activity not found");
                 });
 

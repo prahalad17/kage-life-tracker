@@ -189,8 +189,12 @@ export class ActivityList implements OnInit{
       
           if (this.formConfig.mode === 'create') {
             const request: CreateUserActivityRequest     = {
-              name: data.name,
-              description : data.description
+             name: data.name,
+            description: data.description,
+            activityNature: data.activityNature,
+            pillarId: data.pillar,
+            defaultTrackingType: data.defaultTrackingType,
+            defaultUnit: data.defaultUnit
             };
       
             this.userActivityService.createActivity(request).subscribe({
@@ -213,9 +217,13 @@ export class ActivityList implements OnInit{
       
           if (this.formConfig.mode === 'edit' && this.selectedRow) {
             const request: UpdateUserActivityRequest = {
-              name: data.name,
-              description : data.description,
-              id: data.id
+              activityId: data.activityId,
+            name: data.name,
+            description: data.description,
+            activityNature: data.activityNature,
+            pillarTemplateId: data.pillar,
+            defaultTrackingType: data.defaultTrackingType,
+            defaultUnit: data.defaultUnit
             };
       
             this.userActivityService.updateActivity(request).subscribe({

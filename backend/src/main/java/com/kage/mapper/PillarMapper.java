@@ -20,7 +20,10 @@ public interface PillarMapper {
     @Mapping(target = "remarks", ignore = true)
     Pillar toEntity(PillarCreateRequest request);
 
+    @Mapping(target = "templatePillarId",source = "pillarTemplate.id")
+    @Mapping(target = "pillar",source = "pillarTemplate.name")
     PillarResponse toResponse(Pillar pillar);
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
@@ -28,6 +31,7 @@ public interface PillarMapper {
     @Mapping(target = "remarks", ignore = true)
     void updateEntityFromDto(PillarUpdateRequest dto , @MappingTarget Pillar pillar);
 
+//    @Mapping(target = "templatePillarId",source = "pillarTemplate.id")
     List<PillarResponse> toResponseList(List<Pillar> pillarsListUser);
 
 }

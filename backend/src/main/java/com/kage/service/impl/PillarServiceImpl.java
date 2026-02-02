@@ -114,33 +114,47 @@ public class PillarServiceImpl implements PillarService {
      * Update user pillar
      */
     @Override
-    public PillarResponse update(Long id, PillarUpdateRequest request) {
+    public PillarResponse update( PillarUpdateRequest request, Long userId) {
 
-        log.debug("Updating user pillar with id={}", id);
+//        log.debug("Updating user pillar with id={}", id);
 
         Pillar pillar = pillarRepository
-                .findByIdAndActiveTrue(id)
+                .findByIdAndStatus(request.getId(), RecordStatus.ACTIVE)
                 .orElseThrow(() -> {
-                    log.warn("Cannot update. User pillar not found with id={}", id);
+//                    log.warn("Cannot update. User pillar not found with id={}", id);
                     return new NotFoundException("User pillar not found");
                 });
 
+        PillarTemplate pillarTemplate = pillarTemplateRepository
+                .findByIdAndStatus(request.getPillarTemplateId(), RecordStatus.ACTIVE)
+                .orElseThrow(() -> {
+                    log.warn(" Master pillar not found with id={}", request.getPillarTemplateId());
+                    return new NotFoundException("Master pillar not found");
+                });
+
         // 1️⃣ Sanitize inputs
-        String cleanName = SanitizerUtil.clean(request.getName());
+//        String cleanName = SanitizerUtil.clean(request.getName());
         String cleanDescription = SanitizerUtil.clean(request.getDescription());
 
-        // 2️⃣ Business rule: unique name (only if changed)
-        if (!pillar.getName().equalsIgnoreCase(cleanName)
-                && pillarRepository.existsByNameIgnoreCase(cleanName)) {
+        User user = userRepository
+                .findByIdAndUserStatusAndStatus(userId, UserStatus.ACTIVE,RecordStatus.ACTIVE)
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
-            log.warn("Duplicate user pillar name during update: {}", cleanName);
-            throw new BusinessException("Another user pillar already uses this name");
-        }
+        // 2️⃣ Business rule: unique name (only if changed)
+//        if (!pillar.getName().equalsIgnoreCase(cleanName)
+//                && pillarRepository.existsByNameIgnoreCase(cleanName)) {
+//
+//            log.warn("Duplicate user pillar name during update: {}", cleanName);
+//            throw new BusinessException("Another user pillar already uses this name");
+//        }
 
         // 3️⃣ Map updates (MapStruct)
         pillarMapper.updateEntityFromDto(request, pillar);
-        pillar.setName(cleanName);
-        pillar.setDescription(cleanDescription);
+        pillar.setName(pillarTemplate.getName());
+        pillar.setDescription(pillarTemplate.getDescription());
+        pillar.setPillarTemplate(pillarTemplate);
+        pillar.setActive(true);
+        pillar.setUser(user);
 
         // 4️⃣ Save
         Pillar updated = pillarRepository.save(pillar);

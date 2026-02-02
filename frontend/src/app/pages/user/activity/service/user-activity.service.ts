@@ -12,40 +12,31 @@ import { UpdateUserActivityRequest } from "../models/update-user-activity-reques
 })
 export class UserActivityService{
 
-    private readonly baseUrl = 'http://localhost:8080/api/v1/activity-template';
+      private BASE_URL = 'http://localhost:8080/api/v1/activity';
 
      constructor(private http: HttpClient) {}
 
      getAll(): Observable<UserActivity[]> {
          return this.http
-           .get<ApiResponse<UserActivity[]>>(this.baseUrl)
-           .pipe(
-             map(res => {
-             // console.log('RAW API RESPONSE:', res);
-             // console.log('TYPE OF data:', typeof res.data);
-             // console.log('IS ARRAY:', Array.isArray(res.data));
-             return res.data ?? [];
-           })
-           );
+           .get<UserActivity[]>(this.BASE_URL);
        }
 
      createActivity(activity: CreateUserActivityRequest): Observable<UserActivity> {
-        return this.http.post<ApiResponse<UserActivity>>(this.baseUrl, activity)
-              .pipe(map(res => res.data));
+        return this.http.post<UserActivity>(this.BASE_URL, activity);
 
      }
 
      updateActivity(activity: UpdateUserActivityRequest): Observable<UserActivity> {
-         return this.http.put<ApiResponse<UserActivity>>(
-           `${this.baseUrl}/${activity.id}`,
+         return this.http.put<UserActivity>(
+           `${this.BASE_URL}`,
            activity
-         ).pipe(map(res => res.data));
+         );
        }
      
        deleteActivity(id: number): Observable<void> {
-         return this.http.delete<ApiResponse<void>>(
-           `${this.baseUrl}/${id}`
-         ).pipe(map(() => void 0));
+         return this.http.delete<void>(
+           `${this.BASE_URL}/${id}`
+         );
        }
 
 }

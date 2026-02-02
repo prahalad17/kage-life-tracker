@@ -59,7 +59,7 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
         endpoint: '/api/v1/master-pillars',
         labelKey: 'name',
         valueKey: 'id',
-         incomingKey: 'name' 
+        incomingKey: 'name' 
       },
       // disabled: mode !== 'create'
     },

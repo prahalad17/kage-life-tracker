@@ -12,12 +12,12 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class ActivityUpdateRequest {
-    private  Long userId;
-    private  Long pillarUserId;
-    private  Long activityTemplateId;
+    private  String pillar;
+    private  Long pillarId;
+    private Long activityId;
     private  String name;
-    private  ActivityNature nature;
-    private  TrackingType trackingType;
-    private  String unit;
-    private  boolean active;
+    private  ActivityNature activityNature;
+    private  TrackingType defaultTrackingType;
+    private  String defaultUnit;
+    private  String description;
 }

@@ -1,5 +1,6 @@
 export interface  UserActivity {
-  description?: string;
-  id: number;
   name: string;
+  description?: string;
+  pillar: string;
+  activityId: number;
 }

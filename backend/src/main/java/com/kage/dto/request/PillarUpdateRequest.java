@@ -11,11 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PillarUpdateRequest {
 
-    private Long masterPillarId;
+    private Long id;
 
-    @NotBlank
-    @Size(min = 3, max = 100)
-    private String name;
+    private Long pillarTemplateId;
 
     @Size(max = 255)
     private String description;

@@ -89,15 +89,15 @@ public class PillarController {
     /**
      * Update a user pillar
      */
-    @PutMapping("/{id}")
+    @PutMapping
     public ResponseEntity<ApiResponse<PillarResponse>> update(
-            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails user,
             @RequestBody @Valid PillarUpdateRequest request) {
 
-        log.info("Updating user pillar with id={}", id);
+        log.info("Updating user pillar with id={}", request.getId());
 
         PillarResponse data =
-                pillarService.update(id, request);
+                pillarService.update(request, user.getUser().getId());
 
         return ResponseEntity.ok(
                 new ApiResponse<>(
