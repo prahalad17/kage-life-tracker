@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(
@@ -22,7 +23,7 @@ public class ActivityDailyLog extends BaseEntity {
     private Activity activity;
 
     @Column(name = "log_date", nullable = false)
-    private LocalDate logDate;
+    private LocalDateTime logDate;
 
     /**
      * Actual value logged by user
@@ -36,6 +37,10 @@ public class ActivityDailyLog extends BaseEntity {
      */
     @Column
     private Boolean completed;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id",  nullable = false)
+    private User user;
 
     @Column(length = 255)
     private String notes;

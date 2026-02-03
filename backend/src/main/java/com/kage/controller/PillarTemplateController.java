@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/master-pillars")
+@RequestMapping("/api/v1/pillar-template")
 @RequiredArgsConstructor
 @Slf4j
 public class PillarTemplateController {

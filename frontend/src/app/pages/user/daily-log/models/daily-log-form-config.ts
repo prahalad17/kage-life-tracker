@@ -2,7 +2,7 @@ import { FormActionConfig } from "../../../../shared/models/form/form-action-con
 import { FormConfig } from "../../../../shared/models/form/form-config";
 import { FormFieldConfig } from "../../../../shared/models/form/form-field-config";
 
-export function buildUserActivityFormConfig(
+export function buildDailyLogFormConfig(
   mode: 'create' | 'edit' | 'view'
 ): FormConfig {
   return {
@@ -26,73 +26,56 @@ export function buildUserActivityFormConfig(
 function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
   return [
     {
-      name: 'activityId',
-      label: 'Id',
-      type: 'text',
-      placeholder: 'Id',
-      hidden :mode === 'create',
-      disabled: mode !== 'create'
-    },
-    {
-      name: 'name',
+      name: 'activityName',
       label: 'Name',
       type: 'text',
       placeholder: 'Name',
       required: true
     },
     {
-      name: 'description',
-      label: 'Description',
-      type: 'text',
-      placeholder: 'Description',
-      required: true,
-      // disabled: mode !== 'create'
-    },
-    {
-      name: 'pillar',
-      label: 'Pillar',
+      name: 'activityId',
+      label: 'Activity',
       type: 'select',
-      placeholder: 'Pillar',
+      placeholder: 'Activity',
       required: true,
       optionsConfig :{
         type :'api',
-        endpoint: '/api/v1/user-pillars',
-        labelKey: 'pillar',
-        valueKey: 'id',
+        endpoint: '/api/v1/activity',
+        labelKey: 'name',
+        valueKey: 'activityId',
         incomingKey: 'name' 
       }
       // disabled: mode !== 'create'
     },
     {
-      name: 'activityNature',
-      label: 'Activity Nature',
+      name: 'actualValue',
+      label: 'Value',
+      type: 'text',
+      placeholder: 'Value',
+      required: true
+    },
+    {
+      name: 'completed',
+      label: 'Completed',
+      placeholder: 'Completed',
       type: 'select',
-      placeholder: 'Activity Nature',
       required: true,
       optionsConfig :{
         type :'static',
         options:[
-          { label: 'Positive', value: 'POSITIVE' },
-          { label: 'Negative', value: 'NEGATIVE' }
-        ]
+          { label: 'Yes', value: true },
+          { label: 'No', value: false }
+        ], 
       }
     },
     {
-      name: 'defaultTrackingType',
-      label: 'Tracking Type',
-      type: 'select',
-      placeholder: 'Tracking Type',
+      name: 'notes',
+      label: 'Notes',
+      type: 'text',
+      placeholder: 'Description',
       required: true,
-      optionsConfig :{
-        type :'static',
-        options:[
-          { label: 'Task Completion', value: 'BOOLEAN' },
-          { label: 'Task Count', value: 'COUNT' },
-          { label: 'Task Duration', value: 'DURATION' }
-        ]
-      }
+      // disabled: mode !== 'create'
     }
-
   ];
 }
 

@@ -24,21 +24,20 @@ export class PillarService{
   }
 
   createPillar(pillar: CreatePillarRequest): Observable<Pillar> {
-    return this.http.post<ApiResponse<Pillar>>(this.BASE_URL, pillar)
-      .pipe(map(res => res.data));
+    return this.http.post<Pillar>(this.BASE_URL, pillar)
+      
   }
 
   updatePillar(pillar: UpdatePillarRequest): Observable<Pillar> {
-    return this.http.put<ApiResponse<Pillar>>(
+    return this.http.put<Pillar>(
       `${this.BASE_URL}/${pillar.id}`,
       pillar
-    ).pipe(map(res => res.data));
+    )
   }
 
   deletePillar(id: number): Observable<void> {
-    return this.http.delete<ApiResponse<void>>(
-      `${this.BASE_URL}/${id}`
-    ).pipe(map(() => void 0));
+    return this.http.delete<void>(
+      `${this.BASE_URL}/${id}`)
   }
 
   

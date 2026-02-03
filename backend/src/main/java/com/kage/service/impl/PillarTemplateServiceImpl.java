@@ -49,7 +49,7 @@ public class PillarTemplateServiceImpl implements PillarTemplateService {
         // 3️⃣ Map DTO → Entity
         PillarTemplate pillar = pillarTemplateMapper.toEntity(request);
         pillar.setName(cleanName);
-        pillar.setMasterPillarId(1L);
+//        pillar.setMasterPillarId(1L);
         pillar.setDescription(cleanDescription);
         pillar.setActive(true);
 

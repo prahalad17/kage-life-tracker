@@ -8,7 +8,7 @@ import lombok.*;
 
 @Entity
 @Table(
-        name = "master_pillars",
+        name = "pillar_templates",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"name"})}
 )
@@ -17,10 +17,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PillarTemplate extends BaseEntity {
-
-
-    @Column(nullable = false)
-    private Long masterPillarId;
 
     @Column(length = 100, nullable = false)
     private String name;
