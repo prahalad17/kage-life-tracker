@@ -3,26 +3,39 @@ package com.kage.entity;
 import com.kage.enums.RecordStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @MappedSuperclass
-public class BaseEntity {
+@EntityListeners(AuditingEntityListener.class)
+public abstract class BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
+    @CreatedDate
     private Instant createdAt;
 
     @Column(nullable = false)
+    @LastModifiedDate
     private Instant updatedAt;
+
+    @CreatedBy
+    @Column(nullable = false)
+    private Long createdBy;
+
+    @LastModifiedBy
+    @Column(nullable = false)
+    private Long updatedBy;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -31,22 +44,18 @@ public class BaseEntity {
     @Column(length = 255)
     private String remarks;
 
-    @PrePersist
-    protected void onCreate() {
-        Instant now = Instant.now();
-        this.createdAt = now;
-        this.updatedAt = now;
+
+    /* -------- lifecycle methods -------- */
+
+    public void deactivate() {
+        this.status = RecordStatus.INACTIVE;
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = Instant.now();
+    public void activate() {
+        this.status = RecordStatus.ACTIVE;
     }
-
 
     public boolean isActive() {
         return this.status == RecordStatus.ACTIVE;
     }
-
-
 }

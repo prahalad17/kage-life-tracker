@@ -1,8 +1,6 @@
-package com.kage.dto.request;
+package com.kage.dto.request.activity;
 
 import com.kage.entity.Activity;
-import com.kage.enums.ActivityNature;
-import com.kage.enums.TrackingType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -14,7 +12,7 @@ import lombok.Getter;
 public class ActivityDailyLogCreateRequest {
 
     private  Long activityId;
-    private  Long actualValue;
+    private  Integer actualValue;
     private  Boolean completed;
     private  String notes;
 }

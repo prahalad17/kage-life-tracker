@@ -1,15 +1,12 @@
 package com.kage.controller;
 
 
-import com.kage.dto.request.ActivityCreateRequest;
-import com.kage.dto.request.ActivityDailyLogCreateRequest;
-import com.kage.dto.request.ActivityDailyLogUpdateRequest;
-import com.kage.dto.request.ActivityUpdateRequest;
+import com.kage.dto.request.activity.ActivityDailyLogCreateRequest;
+import com.kage.dto.request.activity.ActivityDailyLogUpdateRequest;
 import com.kage.dto.response.ActivityDailyLogResponse;
 import com.kage.dto.response.ApiResponse;
 import com.kage.security.CustomUserDetails;
 import com.kage.service.ActivityDailyLogService;
-import com.kage.service.ActivityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,12 +29,13 @@ public class ActivityDailyLogController {
      * Get all active activity daily log
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<List<ActivityDailyLogResponse>>> getAll() {
+    public ResponseEntity<ApiResponse<List<ActivityDailyLogResponse>>> getAll(
+            @AuthenticationPrincipal CustomUserDetails user) {
 
         log.info("Fetching all active activity daily log");
 
         List<ActivityDailyLogResponse> data =
-                activityDailyLogService.getAll();
+                activityDailyLogService.getAll(user.getUser().getId());
 
         return ResponseEntity.ok(
                 new ApiResponse<>(
@@ -53,12 +51,13 @@ public class ActivityDailyLogController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<ActivityDailyLogResponse>> getById(
+            @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long id) {
 
         log.info("Fetching activity daily log with id={}", id);
 
         ActivityDailyLogResponse data =
-                activityDailyLogService.getById(id);
+                activityDailyLogService.getById(id,user.getUser().getId());
 
         return ResponseEntity.ok(
                 new ApiResponse<>(
@@ -117,11 +116,12 @@ public class ActivityDailyLogController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(
+            @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long id) {
 
         log.info("Deactivating activity daily log with id={}", id);
 
-        activityDailyLogService.deactivate(id);
+        activityDailyLogService.deactivate(id,user.getUser().getId());
 
         return ResponseEntity.ok(
                 new ApiResponse<>(

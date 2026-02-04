@@ -1,4 +1,4 @@
-package com.kage.dto.request;
+package com.kage.dto.request.pillar;
 
 
 import jakarta.validation.constraints.NotBlank;
@@ -10,7 +10,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PillarTemplateCreateRequest {
+public class PillarTemplateUpdateRequest {
+
+    @NotBlank
+    private Long id;
 
     @NotBlank
     @Size(min = 3, max = 100)

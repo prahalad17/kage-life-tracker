@@ -23,4 +23,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByUserStatusAndStatus(UserStatus userStatus, RecordStatus recordStatus);
 
     Optional<User> findByIdAndStatus(Long userId, RecordStatus recordStatus);
+
+    boolean existsByEmailAndStatus(@NotBlank(message = "Email is required") String email, RecordStatus recordStatus);
 }

@@ -1,21 +1,18 @@
 package com.kage.service.impl;
 
-import com.kage.dto.request.PillarCreateRequest;
-import com.kage.dto.request.PillarUpdateRequest;
+import com.kage.dto.request.pillar.PillarCreateRequest;
+import com.kage.dto.request.pillar.PillarUpdateRequest;
 import com.kage.dto.response.PillarResponse;
+import com.kage.entity.Activity;
 import com.kage.entity.Pillar;
 import com.kage.entity.PillarTemplate;
 import com.kage.entity.User;
 import com.kage.enums.RecordStatus;
-import com.kage.enums.UserStatus;
 import com.kage.exception.BusinessException;
 import com.kage.exception.NotFoundException;
 import com.kage.mapper.PillarMapper;
 import com.kage.repository.PillarRepository;
-import com.kage.repository.PillarTemplateRepository;
-import com.kage.repository.UserRepository;
 import com.kage.service.PillarService;
-import com.kage.util.SanitizerUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,8 +29,8 @@ public class PillarServiceImpl implements PillarService {
 
     private final PillarRepository pillarRepository;
     private final PillarMapper pillarMapper;
-    private final PillarTemplateRepository pillarTemplateRepository;
-    private final UserRepository userRepository;
+    private final UserServiceImpl userService;
+    private final PillarTemplateServiceImpl pillarTemplateService;
 
     /**
      * Create a new user pillar
@@ -41,38 +38,24 @@ public class PillarServiceImpl implements PillarService {
     @Override
     public PillarResponse create(PillarCreateRequest request, Long userId) {
 
-        // 1️⃣ Sanitize input
-//        String cleanName = SanitizerUtil.clean(request.getName());
-//        String cleanDescription = SanitizerUtil.clean(request.getDescription());
-//
-//        log.debug("Sanitized user pillar name={}", cleanName);
+        log.debug("Creating pillar for userId={}", userId);
 
-        PillarTemplate pillarTemplate = pillarTemplateRepository
-                .findByIdAndStatus(request.getPillarTemplateId(), RecordStatus.ACTIVE)
-                .orElseThrow(() -> {
-                    log.warn(" Master pillar not found with id={}", request.getPillarTemplateId());
-                    return new NotFoundException("Master pillar not found");
-                });
+        User user = userService.loadActiveUser(userId);
 
+        PillarTemplate template = pillarTemplateService.loadActiveTemplate(request.getPillarTemplateId());
 
-        User user = userRepository
-                .findByIdAndUserStatusAndStatus(userId, UserStatus.ACTIVE,RecordStatus.ACTIVE)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+        Pillar pillar = Pillar.create(
+                user,
+                template.getName()
+        );
 
-        // 3️⃣ Map DTO → Entity
-        Pillar pillar = pillarMapper.toEntity(request);
-        pillar.setName(pillarTemplate.getName());
-        pillar.setDescription(pillarTemplate.getDescription());
-        pillar.setPillarTemplate(pillarTemplate);
-        pillar.setActive(true);
-        pillar.setUser(user);
-
-        // 4️⃣ Persist
+        pillar.assignTemplate(template);
+        pillar.updateDescription(template.getDescription());
         Pillar saved = pillarRepository.save(pillar);
 
-        log.info("User pillar created successfully with id={}", saved.getId());
 
-        // 5️⃣ Map Entity → DTO
+        log.info("Pillar created with id={}", saved.getId());
+
         return pillarMapper.toResponse(saved);
     }
 
@@ -81,16 +64,11 @@ public class PillarServiceImpl implements PillarService {
      */
     @Override
     @Transactional(readOnly = true)
-    public PillarResponse getById(Long id) {
+    public PillarResponse getById(Long id,Long userId) {
 
         log.debug("Fetching user pillar with id={}", id);
 
-        Pillar pillar = pillarRepository
-                .findByIdAndActiveTrue(id)
-                .orElseThrow(() -> {
-                    log.warn("User pillar not found with id={}", id);
-                    return new NotFoundException("User pillar not found");
-                });
+        Pillar pillar = loadOwnedActivePillar(id,userId);
 
         return pillarMapper.toResponse(pillar);
     }
@@ -100,11 +78,11 @@ public class PillarServiceImpl implements PillarService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<PillarResponse> getAll() {
+    public List<PillarResponse> getAll(Long userId) {
 
         log.debug("Fetching all active user pillars");
 
-        return pillarRepository.findByActiveTrue()
+        return pillarRepository.findByIdAndStatus(userId,RecordStatus.ACTIVE)
                 .stream()
                 .map(pillarMapper::toResponse)
                 .toList();
@@ -118,48 +96,18 @@ public class PillarServiceImpl implements PillarService {
 
 //        log.debug("Updating user pillar with id={}", id);
 
-        Pillar pillar = pillarRepository
-                .findByIdAndStatus(request.getId(), RecordStatus.ACTIVE)
-                .orElseThrow(() -> {
-//                    log.warn("Cannot update. User pillar not found with id={}", id);
-                    return new NotFoundException("User pillar not found");
-                });
+        Pillar pillar = loadOwnedActivePillar(request.getId(),userId);
 
-        PillarTemplate pillarTemplate = pillarTemplateRepository
-                .findByIdAndStatus(request.getPillarTemplateId(), RecordStatus.ACTIVE)
-                .orElseThrow(() -> {
-                    log.warn(" Master pillar not found with id={}", request.getPillarTemplateId());
-                    return new NotFoundException("Master pillar not found");
-                });
+        PillarTemplate template = pillarTemplateService.loadActiveTemplate(request.getPillarTemplateId());
 
-        // 1️⃣ Sanitize inputs
-//        String cleanName = SanitizerUtil.clean(request.getName());
-        String cleanDescription = SanitizerUtil.clean(request.getDescription());
 
-        User user = userRepository
-                .findByIdAndUserStatusAndStatus(userId, UserStatus.ACTIVE,RecordStatus.ACTIVE)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+        pillar.rename(template.getName());
+        pillar.updateDescription(template.getDescription());
+        pillar.assignTemplate(template);
 
-        // 2️⃣ Business rule: unique name (only if changed)
-//        if (!pillar.getName().equalsIgnoreCase(cleanName)
-//                && pillarRepository.existsByNameIgnoreCase(cleanName)) {
-//
-//            log.warn("Duplicate user pillar name during update: {}", cleanName);
-//            throw new BusinessException("Another user pillar already uses this name");
-//        }
-
-        // 3️⃣ Map updates (MapStruct)
-        pillarMapper.updateEntityFromDto(request, pillar);
-        pillar.setName(pillarTemplate.getName());
-        pillar.setDescription(pillarTemplate.getDescription());
-        pillar.setPillarTemplate(pillarTemplate);
-        pillar.setActive(true);
-        pillar.setUser(user);
-
-        // 4️⃣ Save
         Pillar updated = pillarRepository.save(pillar);
 
-        log.info("User pillar updated successfully with id={}", updated.getId());
+        log.info("Pillar updated with id={}", updated.getId());
 
         return pillarMapper.toResponse(updated);
     }
@@ -168,20 +116,46 @@ public class PillarServiceImpl implements PillarService {
      * Soft delete (deactivate)
      */
     @Override
-    public void deactivate(Long id) {
+    public void deactivate(Long id, Long userId) {
 
         log.debug("Deactivating user pillar with id={}", id);
 
-        Pillar pillar = pillarRepository
-                .findByIdAndActiveTrue(id)
-                .orElseThrow(() -> {
-                    log.warn("Cannot deactivate. User pillar not found with id={}", id);
-                    return new NotFoundException("User pillar not found");
-                });
+        Pillar pillar = loadOwnedActivePillar(id,userId);
 
-        pillar.setActive(false);
+        pillar.deactivate();
+
         pillarRepository.save(pillar);
 
         log.info("User pillar deactivated successfully with id={}", id);
     }
+
+
+    @Transactional(readOnly = true)
+    @Override
+    public Pillar loadActivePillar(Long id) {
+        return pillarRepository
+                .findByIdAndStatus(id, RecordStatus.ACTIVE)
+                .orElseThrow(() -> new NotFoundException("Pillar not found"));
+    }
+
+    /* -----------------------------------------------------
+       Internal helpers (aggregate loaders)
+       ----------------------------------------------------- */
+
+    @Transactional(readOnly = true)
+    protected Pillar loadOwnedActivePillar(Long id, Long userId) {
+
+        Pillar pillar = pillarRepository
+                .findByIdAndStatus(id, RecordStatus.ACTIVE)
+                .orElseThrow(() ->
+                        new NotFoundException("Pillar not found"));
+
+        if (!pillar.getUser().getId().equals(userId)) {
+            throw new BusinessException("User does not own this pillar");
+        }
+
+        return pillar;
+    }
+
+
 }

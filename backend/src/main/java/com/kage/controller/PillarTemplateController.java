@@ -1,8 +1,8 @@
 package com.kage.controller;
 
 
-import com.kage.dto.request.PillarTemplateCreateRequest;
-import com.kage.dto.request.PillarTemplateUpdateRequest;
+import com.kage.dto.request.pillar.PillarTemplateCreateRequest;
+import com.kage.dto.request.pillar.PillarTemplateUpdateRequest;
 import com.kage.dto.response.ApiResponse;
 import com.kage.dto.response.PillarTemplateResponse;
 import com.kage.service.PillarTemplateService;
@@ -89,13 +89,11 @@ public class PillarTemplateController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<PillarTemplateResponse>> update(
-            @PathVariable Long id,
             @RequestBody @Valid PillarTemplateUpdateRequest request) {
 
-        log.info("Updating master pillar with id={}", id);
 
         PillarTemplateResponse data =
-                pillarTemplateService.update(id, request);
+                pillarTemplateService.update( request);
 
         return ResponseEntity.ok(
                 new ApiResponse<>(

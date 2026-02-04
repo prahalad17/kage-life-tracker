@@ -1,8 +1,8 @@
 package com.kage.controller;
 
 
-import com.kage.dto.request.PillarCreateRequest;
-import com.kage.dto.request.PillarUpdateRequest;
+import com.kage.dto.request.pillar.PillarCreateRequest;
+import com.kage.dto.request.pillar.PillarUpdateRequest;
 import com.kage.dto.response.ApiResponse;
 import com.kage.dto.response.PillarResponse;
 import com.kage.security.CustomUserDetails;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/user-pillars")
+@RequestMapping("/api/v1/pillar")
 @RequiredArgsConstructor
 @Slf4j
 public class PillarController {
@@ -29,12 +29,13 @@ public class PillarController {
      * Get all active user pillars
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<List<PillarResponse>>> getAll() {
+    public ResponseEntity<ApiResponse<List<PillarResponse>>> getAll(
+            @AuthenticationPrincipal CustomUserDetails user) {
 
         log.info("Fetching all active user pillars");
 
         List<PillarResponse> data =
-                pillarService.getAll();
+                pillarService.getAll(user.getUser().getId());
 
         return ResponseEntity.ok(
                 new ApiResponse<>(
@@ -50,12 +51,13 @@ public class PillarController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<PillarResponse>> getById(
+            @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long id) {
 
         log.info("Fetching user pillar with id={}", id);
 
         PillarResponse data =
-                pillarService.getById(id);
+                pillarService.getById(id,user.getUser().getId());
 
         return ResponseEntity.ok(
                 new ApiResponse<>(
@@ -70,7 +72,8 @@ public class PillarController {
      * Create a new user pillar
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<PillarResponse>> create( @AuthenticationPrincipal CustomUserDetails user,
+    public ResponseEntity<ApiResponse<PillarResponse>> create(
+            @AuthenticationPrincipal CustomUserDetails user,
             @RequestBody @Valid PillarCreateRequest request) {
 
         log.info("Creating user pillar with name={}", request);
@@ -113,11 +116,12 @@ public class PillarController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(
+            @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long id) {
 
         log.info("Deactivating user pillar with id={}", id);
 
-        pillarService.deactivate(id);
+        pillarService.deactivate(id,user.getUser().getId());
 
         return ResponseEntity.ok(
                 new ApiResponse<>(

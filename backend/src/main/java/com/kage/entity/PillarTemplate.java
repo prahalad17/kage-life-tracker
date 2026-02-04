@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.*;
+import static com.kage.util.DomainGuardsUtil.*;
 
 @Entity
 @Table(
@@ -13,9 +14,7 @@ import lombok.*;
                 @UniqueConstraint(columnNames = {"name"})}
 )
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PillarTemplate extends BaseEntity {
 
     @Column(length = 100, nullable = false)
@@ -24,6 +23,21 @@ public class PillarTemplate extends BaseEntity {
     @Column(length = 255)
     private String description;
 
-    @Column()
-    private Boolean active;
+    protected PillarTemplate(String name, String description) {
+        this.name = requireNonEmpty(name, "name is required");
+        this.description = description;
+    }
+
+    public static PillarTemplate create(String name, String description) {
+        return new PillarTemplate(name, description);
+    }
+
+    public void rename(String name) {
+
+        this.name = requireNonEmpty(name, "name is required");
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
 }

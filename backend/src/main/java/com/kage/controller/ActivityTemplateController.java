@@ -1,8 +1,8 @@
 package com.kage.controller;
 
 
-import com.kage.dto.request.ActivityTemplateCreateRequest;
-import com.kage.dto.request.ActivityTemplateUpdateRequest;
+import com.kage.dto.request.activity.ActivityTemplateCreateRequest;
+import com.kage.dto.request.activity.ActivityTemplateUpdateRequest;
 import com.kage.dto.response.ActivityTemplateResponse;
 import com.kage.dto.response.ApiResponse;
 import com.kage.service.ActivityTemplateService;

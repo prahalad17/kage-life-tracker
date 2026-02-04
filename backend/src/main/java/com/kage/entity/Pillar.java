@@ -2,30 +2,26 @@ package com.kage.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import static com.kage.util.DomainGuardsUtil.*;
 
 @Entity
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Table(
-        name = "user_pillars",
+        name = "pillar",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"name"})}
+                @UniqueConstraint(columnNames = {"user_id", "name"})
+        }
 )
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Pillar extends BaseEntity {
 
-
         @ManyToOne(fetch = FetchType.LAZY, optional = false)
-        @JoinColumn(name = "user_id",  nullable = false)
+        @JoinColumn(name = "user_id", nullable = false)
         private User user;
 
         @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "master_pillar_id")
+        @JoinColumn(name = "pillar_template_id")
         private PillarTemplate pillarTemplate;
-
-        @Column()
-        private Long userPillarId;
 
         @Column(length = 100, nullable = false)
         private String name;
@@ -33,7 +29,25 @@ public class Pillar extends BaseEntity {
         @Column(length = 255)
         private String description;
 
-        @Column()
-        private Boolean active;
+        protected Pillar(User user, String name) {
+                this.user = requireNonNull(user, "user is required");
+                this.name = requireNonEmpty(name, "name is required");
+        }
+        public static Pillar create(User user, String name) {
+                return new Pillar(user, name);
+        }
+
+        public void assignTemplate(PillarTemplate template) {
+                this.pillarTemplate = template;
+        }
+
+        public void rename(String name) {
+                this.name = requireNonEmpty(name, "name is required");
+        }
+
+        public void updateDescription(String description) {
+                this.description = description;
+        }
+
 
 }

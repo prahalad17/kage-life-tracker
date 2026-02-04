@@ -6,6 +6,7 @@ import com.kage.exception.InvalidRefreshTokenException;
 import com.kage.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -17,7 +18,8 @@ import java.util.Base64;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor()
+@RequiredArgsConstructor
+@Transactional
 public class RefreshTokenService {
 
     private static final int TOKEN_BYTE_LENGTH = 64; // 512 bits
@@ -27,11 +29,12 @@ public class RefreshTokenService {
 
 
     public RefreshToken validateRefreshToken(String rawToken) {
+
         String tokenHash = hashToken(rawToken);
 
         RefreshToken refreshToken =  refreshTokenRepository.findByTokenHash(tokenHash).orElseThrow(() -> new IllegalStateException("Invalid refresh token"));
 
-        if(refreshToken.getExpiresAt().isBefore(Instant.now())){
+        if(!refreshToken.isValid()){
             throw new IllegalStateException("Refresh token expired");
         }
 
@@ -43,30 +46,53 @@ public class RefreshTokenService {
     public GeneratedRefreshToken rotateRefreshToken(RefreshToken oldToken) {
 
         // revoke old token
-        oldToken.setRevoked(true);
+        oldToken.revoke();
         refreshTokenRepository.save(oldToken);
 
         // issue new token
-        return createRefreshToken(oldToken.getUser());
+        return issueNewToken(oldToken.getUser());
     }
 
-    public GeneratedRefreshToken createRefreshToken(User user) {
+    public GeneratedRefreshToken issueNewToken(User user) {
 
         String rawToken = generateSecureToken();
         String hashedToken = hashToken(rawToken);
-        RefreshToken refreshToken = RefreshToken.builder()
-                .user(user)
-                .tokenHash(hashedToken)
-                .expiresAt(Instant.now().plus(REFRESH_TOKEN_DAYS, ChronoUnit.DAYS))
-                .revoked(false)
-                .build();
+
+        RefreshToken refreshToken = RefreshToken.issue(
+                user,
+                hashedToken,
+                Instant.now().plus(REFRESH_TOKEN_DAYS, ChronoUnit.DAYS)
+        );
 
         refreshTokenRepository.save(refreshToken);
 
-        // RAW token is returned ONCE (never stored)
-        return new GeneratedRefreshToken(rawToken, refreshToken.getExpiresAt());
+        return new GeneratedRefreshToken(
+                rawToken,
+                refreshToken.getExpiresAt()
+        );
+    }
 
 
+
+    // ================= REVOKE  TOKENS =================
+
+    public void revokeRefreshToken(String rawToken) {
+
+        String tokenHash = hashToken(rawToken);
+
+        RefreshToken token = refreshTokenRepository.findByTokenHash(tokenHash)
+                .orElseThrow(() ->
+                        new InvalidRefreshTokenException("Invalid refresh token"));
+
+        token.revoke(); // no save()
+    }
+
+    public void revokeAllUserTokens(Long userId) {
+
+        List<RefreshToken> tokens =
+                refreshTokenRepository.findAllByUserId(userId);
+
+        tokens.forEach(RefreshToken::revoke);
     }
 
     // ================= UTIL =================
@@ -90,31 +116,5 @@ public class RefreshTokenService {
         }
     }
 
-    public void revokeRefreshToken(String rawToken) {
-
-        String tokenHash = hashToken(rawToken);
-
-        RefreshToken refreshToken = refreshTokenRepository
-                .findByTokenHash(tokenHash)
-                .orElseThrow(() ->
-                        new InvalidRefreshTokenException("Invalid refresh token"));
-
-        refreshToken.setRevoked(true);
-        refreshTokenRepository.save(refreshToken);
-    }
-
-    // ================= REVOKE ALL TOKENS (OPTIONAL) =================
-
-    public void revokeAllUserTokens(Long userId) {
-
-        List<RefreshToken> tokens =
-                refreshTokenRepository.findAllByUserId(userId);
-
-        for (RefreshToken token : tokens) {
-            token.setRevoked(true);
-        }
-
-        refreshTokenRepository.saveAll(tokens);
-    }
 
 }

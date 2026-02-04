@@ -1,8 +1,8 @@
 package com.kage.controller;
 
 
-import com.kage.dto.request.ActivityCreateRequest;
-import com.kage.dto.request.ActivityUpdateRequest;
+import com.kage.dto.request.activity.ActivityCreateRequest;
+import com.kage.dto.request.activity.ActivityUpdateRequest;
 import com.kage.dto.response.ActivityResponse;
 import com.kage.dto.response.ApiResponse;
 import com.kage.security.CustomUserDetails;
@@ -29,12 +29,13 @@ public class ActivityController {
      * Get all active activity
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<List<ActivityResponse>>> getAll() {
+    public ResponseEntity<ApiResponse<List<ActivityResponse>>> getAll(
+            @AuthenticationPrincipal CustomUserDetails user) {
 
         log.info("Fetching all active activity");
 
         List<ActivityResponse> data =
-                activityService.getAll();
+                activityService.getAll(user.getUser().getId());
 
         return ResponseEntity.ok(
                 new ApiResponse<>(
@@ -50,12 +51,13 @@ public class ActivityController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<ActivityResponse>> getById(
+            @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long id) {
 
         log.info("Fetching activity with id={}", id);
 
         ActivityResponse data =
-                activityService.getById(id);
+                activityService.getById(id,user.getUser().getId());
 
         return ResponseEntity.ok(
                 new ApiResponse<>(
@@ -114,11 +116,12 @@ public class ActivityController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(
+            @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long id) {
 
         log.info("Deactivating activity with id={}", id);
 
-        activityService.deactivate(id);
+        activityService.deactivate(id,user.getUser().getId());
 
         return ResponseEntity.ok(
                 new ApiResponse<>(

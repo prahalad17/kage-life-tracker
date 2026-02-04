@@ -1,19 +1,17 @@
 package com.kage.service.impl;
 
-import com.kage.dto.request.ActivityCreateRequest;
-import com.kage.dto.request.ActivityUpdateRequest;
+import com.kage.dto.request.activity.ActivityCreateRequest;
+import com.kage.dto.request.activity.ActivityUpdateRequest;
 import com.kage.dto.response.ActivityResponse;
 import com.kage.entity.*;
 import com.kage.enums.RecordStatus;
-import com.kage.enums.UserStatus;
 import com.kage.exception.BusinessException;
 import com.kage.exception.NotFoundException;
 import com.kage.mapper.ActivityMapper;
 import com.kage.repository.ActivityRepository;
-import com.kage.repository.PillarRepository;
-import com.kage.repository.UserRepository;
 import com.kage.service.ActivityService;
-import com.kage.util.SanitizerUtil;
+import com.kage.service.PillarService;
+import com.kage.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,52 +27,59 @@ import java.util.List;
 public class ActivityServiceImpl implements ActivityService {
 
     private final ActivityRepository activityRepository;
+    private final UserService userService;
+    private final PillarService pillarService;
     private final ActivityMapper activityMapper;
-    private final PillarRepository pillarRepository;
-    private final UserRepository userRepository;
 
     /**
-     * Create a new activity
+     * Create a new activity + schedule (atomic)
      */
     @Override
-    public ActivityResponse create(ActivityCreateRequest request , Long userId) {
+    public ActivityResponse create(ActivityCreateRequest request, Long userId) {
 
-        // 1️⃣ Sanitize input
-        String cleanName = SanitizerUtil.clean(request.getName());
-        String cleanDescription = SanitizerUtil.clean(request.getDescription());
+        log.debug("Creating activity for userId={}", userId);
 
-        log.debug("Sanitized activity template name={}", cleanName);
+        User user = userService.loadActiveUser(userId);
+        Pillar pillar = pillarService.loadActivePillar(request.getPillarId());
 
-        // 2️⃣ Business validation
-        if (activityRepository.existsByNameIgnoreCase(cleanName)) {
-            log.warn("Activity Template already exists with name={}", cleanName);
-            throw new BusinessException("Activity Template with this name already exists");
+        // Uniqueness: user + pillar + name + ACTIVE
+        if (activityRepository.existsByUserAndPillarAndNameIgnoreCaseAndStatus(
+                user,
+                pillar,
+                request.getName(),
+                RecordStatus.ACTIVE)) {
+
+            throw new BusinessException(
+                    "Activity with this name already exists in this pillar"
+            );
         }
 
-        Pillar pillar = pillarRepository
-                .findById(request.getPillarId())
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Invalid PillarTemplate ID"));
+        // Create aggregate root
+        Activity activity = Activity.create(
+                user,
+                pillar,
+                request.getName(),
+                request.getNature(),
+                request.getTrackingType(),
+                request.getUnit(),
+                request.getDescription()
+        );
 
-        User user = userRepository
-                .findByIdAndUserStatusAndStatus(userId, UserStatus.ACTIVE, RecordStatus.ACTIVE)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+        // Create and attach dependent entity
+        ActivitySchedule schedule = ActivitySchedule.create(
+                activity,
+                request.getScheduleType(),
+                request.getDays()
+        );
 
-        // 3️⃣ Map DTO → Entity
-        Activity activity = activityMapper.toEntity(request);
-        activity.setName(cleanName);
-        activity.setDescription(cleanDescription);
-        activity.setPillar(pillar);
-        activity.setUser(user);
-//        pillar.setActive(true);
+        activity.attachSchedule(schedule);
 
-        // 4️⃣ Persist
-        Activity saved = activityRepository.save(activity);
+        // One save – cascades schedule
+        activityRepository.save(activity);
 
-        log.info("Activity Template created successfully with id={}", saved.getId());
+        log.info("Activity created with id={}", activity.getId());
 
-        // 5️⃣ Map Entity → DTO
-        return activityMapper.toDto(saved);
+        return activityMapper.toDto(activity);
     }
 
     /**
@@ -82,93 +87,100 @@ public class ActivityServiceImpl implements ActivityService {
      */
     @Override
     @Transactional(readOnly = true)
-    public ActivityResponse getById(Long id) {
+    public ActivityResponse getById(Long id, Long userId) {
 
-        log.debug("Fetching activity with id={}", id);
-
-        Activity activity = activityRepository
-                .findByIdAndActiveTrue(id)
-                .orElseThrow(() -> {
-                    log.warn("activity not found with id={}", id);
-                    return new NotFoundException("activity not found");
-                });
-
+        Activity activity = loadOwnedActiveActivity(id, userId);
         return activityMapper.toDto(activity);
     }
 
     /**
-     * Get all active activity
+     * Get all active activities for user
      */
-    @Override
     @Transactional(readOnly = true)
-    public List<ActivityResponse> getAll() {
+    @Override
+    public List<ActivityResponse> getAll(Long userId) {
 
-        log.debug("Fetching all active activity");
-
-        return activityRepository.findByActiveTrue()
+        return activityRepository
+                .findByUserIdAndStatus(userId, RecordStatus.ACTIVE)
                 .stream()
                 .map(activityMapper::toDto)
                 .toList();
     }
 
     /**
-     * Update activity
+     * Update activity + schedule
      */
     @Override
-    public ActivityResponse update( ActivityUpdateRequest request , Long userId) {
+    public ActivityResponse update(ActivityUpdateRequest request, Long userId) {
 
-        log.debug("Updating activity with id={}", request.getActivityId());
+        log.debug("Updating activity id={}", request.getActivityId());
 
-        Activity activity = activityRepository
-                .findByIdAndActiveTrue(request.getActivityId())
-                .orElseThrow(() -> {
-                    log.warn("Cannot update. activity not found with id={}", request.getActivityId());
-                    return new NotFoundException("activity not found");
-                });
+        Activity activity =
+                loadOwnedActiveActivity(request.getActivityId(), userId);
 
-        // 1️⃣ Sanitize inputs
-        String cleanName = SanitizerUtil.clean(request.getName());
-//        String cleanDescription = SanitizerUtil.clean(request.getDescription());
+        // Rename (uniqueness only if changed)
+        if (!activity.getName().equalsIgnoreCase(request.getName())
+                && activityRepository.existsByUserAndPillarAndNameIgnoreCaseAndStatus(
+                activity.getUser(),
+                activity.getPillar(),
+                request.getName(),
+                RecordStatus.ACTIVE)) {
 
-        // 2️⃣ Business rule: unique name (only if changed)
-        if (!activity.getName().equalsIgnoreCase(cleanName)
-                && activityRepository.existsByNameIgnoreCase(cleanName)) {
-
-            log.warn("Duplicate activity name during update: {}", cleanName);
-            throw new BusinessException("Another activity already uses this name");
+            throw new BusinessException(
+                    "Another activity with this name already exists in this pillar"
+            );
         }
 
-        // 3️⃣ Map updates (MapStruct)
-        activityMapper.partialUpdate(request, activity);
-        activity.setName(cleanName);
-//        activity.setDescription(cleanDescription);
+        activity.rename(request.getName());
+        activity.updateDescription(request.getDescription());
+        activity.changeTracking(
+                request.getTrackingType(),
+                request.getUnit()
+        );
 
-        // 4️⃣ Save
-        Activity updated = activityRepository.save(activity);
+        activity.updateSchedule(
+                request.getScheduleType(),
+                request.getDays()
+        );
 
-        log.info("activity updated successfully with id={}", updated.getId());
+        log.info("Activity updated with id={}", activity.getId());
 
-        return activityMapper.toDto(updated);
+        // No save() — dirty checking
+        return activityMapper.toDto(activity);
     }
 
     /**
-     * Soft delete (deactivate)
+     * Soft delete activity (aggregate root)
      */
     @Override
-    public void deactivate(Long id) {
+    public void deactivate(Long activityId, Long userId) {
 
-        log.debug("Deactivating activity with id={}", id);
+        log.debug("Deactivating activity id={}", activityId);
+
+        Activity activity = loadOwnedActiveActivity(activityId, userId);
+        activity.deactivate();
+
+        log.info("Activity deactivated with id={}", activityId);
+    }
+
+    /* -----------------------------------------------------
+       Internal helpers (aggregate loaders)
+       ----------------------------------------------------- */
+
+    @Transactional(readOnly = true)
+    protected Activity loadOwnedActiveActivity(Long id, Long userId) {
 
         Activity activity = activityRepository
-                .findByIdAndActiveTrue(id)
-                .orElseThrow(() -> {
-                    log.warn("Cannot deactivate. activity not found with id={}", id);
-                    return new NotFoundException("activity not found");
-                });
+                .findByIdAndStatus(id, RecordStatus.ACTIVE)
+                .orElseThrow(() ->
+                        new NotFoundException("Activity not found"));
 
-        activity.setActive(false);
-        activityRepository.save(activity);
+        if (!activity.getUser().getId().equals(userId)) {
+            throw new BusinessException("User does not own this activity");
+        }
 
-        log.info("activity deactivated successfully with id={}", id);
+        return activity;
     }
+
 }
+

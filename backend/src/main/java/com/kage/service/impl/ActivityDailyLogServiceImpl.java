@@ -1,28 +1,21 @@
 package com.kage.service.impl;
 
-import com.kage.dto.request.ActivityDailyLogCreateRequest;
-import com.kage.dto.request.ActivityDailyLogUpdateRequest;
+import com.kage.dto.request.activity.ActivityDailyLogCreateRequest;
+import com.kage.dto.request.activity.ActivityDailyLogUpdateRequest;
 import com.kage.dto.response.ActivityDailyLogResponse;
 import com.kage.entity.*;
 import com.kage.enums.RecordStatus;
-import com.kage.enums.UserStatus;
-import com.kage.exception.BusinessException;
 import com.kage.exception.NotFoundException;
 import com.kage.mapper.ActivityDailyLogMapper;
-import com.kage.mapper.ActivityMapper;
+import com.kage.repository.ActivityDailyLogRepository;
 import com.kage.repository.ActivityRepository;
-import com.kage.repository.PillarRepository;
-import com.kage.repository.UserRepository;
 import com.kage.service.ActivityDailyLogService;
-import com.kage.util.SanitizerUtil;
-import jakarta.validation.Valid;
+import com.kage.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -32,144 +25,131 @@ import java.util.List;
 @Slf4j
 public class ActivityDailyLogServiceImpl implements ActivityDailyLogService {
 
-    private final ActivityDailyLogRepository  activityDailyLogRepository;
-    private final ActivityDailyLogMapper activityDailyLogMapper;
+    private final ActivityDailyLogRepository logRepository;
     private final ActivityRepository activityRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
+    private final ActivityDailyLogMapper mapper;
 
     /**
-     * Create a new activity
+     * Create a new activity execution log (log now)
      */
     @Override
-    public ActivityDailyLogResponse create(@Valid ActivityDailyLogCreateRequest request , Long userId) {
+    public ActivityDailyLogResponse create(
+            ActivityDailyLogCreateRequest request,
+            Long userId
+    ) {
 
-//        // 1️⃣ Sanitize input
-//        String cleanName = SanitizerUtil.clean(request.getName());
-//        String cleanDescription = SanitizerUtil.clean(request.getDescription());
+        log.debug("Creating activity log for userId={}, activityId={}",
+                userId, request.getActivityId());
 
-//        log.debug("Sanitized activity template name={}", cleanName);
+        User user = userService.loadActiveUser(userId);
 
-        // 2️⃣ Business validation
-//        if (activityDailyLogRepository.existsByNameIgnoreCase(cleanName)) {
-//            log.warn("Activity Template already exists with name={}", cleanName);
-//            throw new BusinessException("Activity Template with this name already exists");
-//        }
-
-        Activity activity = activityRepository.findById(request.getActivityId())
+        Activity activity = activityRepository
+                .findByIdAndStatus(request.getActivityId(), RecordStatus.ACTIVE)
                 .orElseThrow(() ->
-                        new IllegalArgumentException("Invalid Activity ID"));
+                        new NotFoundException("Activity not found"));
 
-        User user = userRepository
-                .findByIdAndUserStatusAndStatus(userId, UserStatus.ACTIVE, RecordStatus.ACTIVE)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+        // Ownership validation (extra safety at service boundary)
+        if (!activity.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("User does not own this activity");
+        }
 
-        ActivityDailyLog activityDailyLog = activityDailyLogMapper.toEntity(request);
-        activityDailyLog.setUser(user);
-        activityDailyLog.setLogDate(LocalDateTime.now());
-        activityDailyLog.setActivity(activity);
+        ActivityDailyLog log = ActivityDailyLog.logNow(
+                activity,
+                user,
+                request.getActualValue(),
+                request.getCompleted(),
+                request.getNotes()
+        );
 
+        logRepository.save(log);
 
-        // 4️⃣ Persist
-        ActivityDailyLog saved = activityDailyLogRepository.save(activityDailyLog);
+//        log.info("ActivityDailyLog created with id={}", log.getId());
 
-//        log.info("Activity Template created successfully with id={}", saved.getId());
-
-        // 5️⃣ Map Entity → DTO
-        return activityDailyLogMapper.toDto(saved);
+        return mapper.toDto(log);
     }
 
     /**
-     * Get activity by id
+     * Get activity log by id (ownership enforced)
      */
-    @Override
     @Transactional(readOnly = true)
-    public ActivityDailyLogResponse getById(Long id) {
+    @Override
+    public ActivityDailyLogResponse getById(Long logId, Long userId) {
 
-        log.debug("Fetching activity with id={}", id);
-
-        ActivityDailyLog activity = activityDailyLogRepository
-                .findByIdAndStatus(id, RecordStatus.ACTIVE)
-                .orElseThrow(() -> {
-                    log.warn("activity not found with id={}", id);
-                    return new NotFoundException("activity not found");
-                });
-
-        return activityDailyLogMapper.toDto(activity);
+        ActivityDailyLog log = loadOwnedLog(logId, userId);
+        return mapper.toDto(log);
     }
 
     /**
-     * Get all active activity
+     * Get all active logs for the current user
      */
-    @Override
     @Transactional(readOnly = true)
-    public List<ActivityDailyLogResponse> getAll() {
+    @Override
+    public List<ActivityDailyLogResponse> getAll(Long userId) {
 
-        log.debug("Fetching all active activity");
-
-        return activityDailyLogRepository.findByStatus(RecordStatus.ACTIVE)
+        return logRepository
+                .findByUserIdAndStatus(userId, RecordStatus.ACTIVE)
                 .stream()
-                .map(activityDailyLogMapper::toDto)
+                .map(mapper::toDto)
                 .toList();
     }
 
     /**
-     * Update activity
+     * Update an existing activity log
      */
     @Override
-    public ActivityDailyLogResponse update(@Valid  ActivityDailyLogUpdateRequest request , Long userId) {
+    public ActivityDailyLogResponse update(
+            ActivityDailyLogUpdateRequest request,
+            Long userId
+    ) {
 
-        log.debug("Updating activity with id={}", request.getActivityId());
+//        log.debug("Updating activity log id={}", request.getLogId());
 
-        ActivityDailyLog activityDailyLog = activityDailyLogRepository
-                .findByIdAndStatus(request.getActivityId(), RecordStatus.ACTIVE)
-                .orElseThrow(() -> {
-                    log.warn("Cannot update. activity log not found with id={}", request.getActivityId());
-                    return new NotFoundException("activity log not found");
-                });
+        ActivityDailyLog log =
+                loadOwnedLog(request.getLogId(), userId);
 
-        // 1️⃣ Sanitize inputs
-//        String cleanName = SanitizerUtil.clean(request.getName());
-//        String cleanDescription = SanitizerUtil.clean(request.getDescription());
+        log.updateTracking(
+                request.getActualValue(),
+                request.getCompleted(),
+                request.getNotes()
+        );
 
-        // 2️⃣ Business rule: unique name (only if changed)
-//        if (!activity.getName().equalsIgnoreCase(cleanName)
-//                && activityDailyLogRepository.existsByNameIgnoreCase(cleanName)) {
-//
-//            log.warn("Duplicate activity name during update: {}", cleanName);
-//            throw new BusinessException("Another activity already uses this name");
-//        }
+//        log.info("ActivityDailyLog updated with id={}", log.getId());
 
-        // 3️⃣ Map updates (MapStruct)
-        activityDailyLogMapper.partialUpdate(request, activityDailyLog);
-//        activity.setName(cleanName);
-//        activity.setDescription(cleanDescription);
-
-        // 4️⃣ Save
-        ActivityDailyLog updated = activityDailyLogRepository.save(activityDailyLog);
-
-        log.info("activity updated successfully with id={}", updated.getId());
-
-        return activityDailyLogMapper.toDto(updated);
+        // no save() — dirty checking
+        return mapper.toDto(log);
     }
 
     /**
-     * Soft delete (deactivate)
+     * Soft delete an activity log
      */
     @Override
-    public void deactivate(Long id) {
+    public void deactivate(Long logId, Long userId) {
 
-        log.debug("Deactivating activity with id={}", id);
+        log.debug("Deactivating activity log id={}", logId);
 
-        ActivityDailyLog activityDailyLog = activityDailyLogRepository
-                .findByIdAndStatus(id, RecordStatus.ACTIVE)
-                .orElseThrow(() -> {
-                    log.warn("Cannot deactivate. activity not found with id={}", id);
-                    return new NotFoundException("activity not found");
-                });
+        ActivityDailyLog log = loadOwnedLog(logId, userId);
+        log.deactivate();
 
-        activityDailyLog.setStatus(RecordStatus.INACTIVE);
-        activityDailyLogRepository.save(activityDailyLog);
+//        log.info("ActivityDailyLog deactivated with id={}", logId);
+    }
 
-        log.info("activity log deactivated successfully with id={}", id);
+    /* ----------------------------------------------------
+       Internal helpers
+       ---------------------------------------------------- */
+
+    @Transactional(readOnly = true)
+    protected ActivityDailyLog loadOwnedLog(Long logId, Long userId) {
+
+        ActivityDailyLog log = logRepository
+                .findByIdAndStatus(logId, RecordStatus.ACTIVE)
+                .orElseThrow(() ->
+                        new NotFoundException("Activity log not found"));
+
+        if (!log.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("User does not own this activity log");
+        }
+
+        return log;
     }
 }

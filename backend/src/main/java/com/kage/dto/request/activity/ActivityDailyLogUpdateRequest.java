@@ -1,4 +1,4 @@
-package com.kage.dto.request;
+package com.kage.dto.request.activity;
 
 import com.kage.entity.Activity;
 import lombok.AllArgsConstructor;
@@ -11,8 +11,9 @@ import lombok.Getter;
 @Getter
 public class ActivityDailyLogUpdateRequest {
 
+    private  Long logId;
     private  Long activityId;
-    private  Long actualValue;
+    private  Integer actualValue;
     private  Boolean completed;
     private  String notes;
 }

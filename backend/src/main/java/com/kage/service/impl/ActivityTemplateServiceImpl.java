@@ -1,7 +1,7 @@
 package com.kage.service.impl;
 
-import com.kage.dto.request.ActivityTemplateCreateRequest;
-import com.kage.dto.request.ActivityTemplateUpdateRequest;
+import com.kage.dto.request.activity.ActivityTemplateCreateRequest;
+import com.kage.dto.request.activity.ActivityTemplateUpdateRequest;
 import com.kage.dto.response.ActivityTemplateResponse;
 import com.kage.entity.ActivityTemplate;
 import com.kage.entity.PillarTemplate;
@@ -9,10 +9,10 @@ import com.kage.enums.RecordStatus;
 import com.kage.exception.BusinessException;
 import com.kage.exception.NotFoundException;
 import com.kage.mapper.ActivityTemplateMapper;
-import com.kage.mapper.PillarTemplateMapper;
 import com.kage.repository.ActivityTemplateRepository;
 import com.kage.repository.PillarTemplateRepository;
 import com.kage.service.ActivityTemplateService;
+import com.kage.service.PillarTemplateService;
 import com.kage.util.SanitizerUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,149 +27,108 @@ import java.util.List;
 @Transactional
 @Slf4j
 public class ActivityTemplateServiceImpl implements ActivityTemplateService {
-    private final PillarTemplateRepository pillarTemplateRepository;
 
-    private final ActivityTemplateRepository activityTemplateRepository;
-    private final ActivityTemplateMapper activityTemplateMapper;
+
+    private final ActivityTemplateRepository repository;
+    private final ActivityTemplateMapper mapper;
+    private final PillarTemplateService pillarTemplateService;
 
     /**
      * Create a new activity template
      */
     @Override
     public ActivityTemplateResponse create(ActivityTemplateCreateRequest request) {
+        PillarTemplate pillarTemplate =
+                pillarTemplateService.loadActiveTemplate(
+                        request.getPillarTemplateId()
+                );
 
-        // 1️⃣ Sanitize input
-        String cleanName = SanitizerUtil.clean(request.getName());
-        String cleanDescription = SanitizerUtil.clean(request.getDescription());
-
-        log.debug("Sanitized activity template name={}", cleanName);
-
-        // 2️⃣ Business validation
-        if (activityTemplateRepository.existsByNameIgnoreCase(cleanName)) {
-            log.warn("Activity Template already exists with name={}", cleanName);
-            throw new BusinessException("Activity Template with this name already exists");
+        if (repository.existsByPillarTemplateAndNameIgnoreCaseAndStatus(
+                pillarTemplate,
+                request.getName(),
+                RecordStatus.ACTIVE)) {
+            throw new BusinessException(
+                    "Activity template with this name already exists for this pillar"
+            );
         }
 
-        PillarTemplate pillarTemplate = pillarTemplateRepository
-                .findById(request.getPillarTemplateId())
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Invalid PillarTemplate ID"));
+        ActivityTemplate template = ActivityTemplate.create(
+                pillarTemplate,
+                request.getName(),
+                request.getNature(),
+                request.getDefaultTrackingType(),
+                request.getDefaultUnit(),
+                request.getDescription()
+        );
 
-        // 3️⃣ Map DTO → Entity
-        ActivityTemplate activity = activityTemplateMapper.toEntity(request);
-        activity.setName(cleanName);
-        activity.setDescription(cleanDescription);
-        activity.setPillarTemplate(pillarTemplate);
-//        pillar.setActive(true);
+        repository.save(template);
 
-        // 4️⃣ Persist
-        ActivityTemplate saved = activityTemplateRepository.save(activity);
-
-        log.info("Activity Template created successfully with id={}", saved.getId());
-
-        // 5️⃣ Map Entity → DTO
-        return activityTemplateMapper.toDto(saved);
+        log.info("ActivityTemplate created with id={}", template.getId());
+        return mapper.toDto(template);
     }
 
-    /**
-     * Get Activity Template by id
-     */
     @Override
     @Transactional(readOnly = true)
     public ActivityTemplateResponse getById(Long id) {
 
-        log.debug("Fetching Activity Template with id={}", id);
-
-        ActivityTemplate activity = activityTemplateRepository
-                .findByIdAndActiveTrue(id)
-                .orElseThrow(() -> {
-                    log.warn("Activity Template not found with id={}", id);
-                    return new NotFoundException("Activity Template not found");
-                });
-
-        return activityTemplateMapper.toDto(activity);
+        ActivityTemplate template = loadActiveTemplate(id);
+        return mapper.toDto(template);
     }
 
-    /**
-     * Get all active Activity Templates
-     */
     @Override
     @Transactional(readOnly = true)
     public List<ActivityTemplateResponse> getAll() {
 
-        log.debug("Fetching all active Activity Templates");
-
-        return activityTemplateRepository.findByActiveTrue()
+        return repository.findByStatus(RecordStatus.ACTIVE)
                 .stream()
-                .map(activityTemplateMapper::toDto)
+                .map(mapper::toDto)
                 .toList();
     }
 
-    /**
-     * Update Activity Template
-     */
     @Override
     public ActivityTemplateResponse update(ActivityTemplateUpdateRequest request) {
 
-        log.debug("Updating Activity Template with id={}",request.getPillarTemplateId());
+        ActivityTemplate template =
+                loadActiveTemplate(request.getActivityId());
 
-        ActivityTemplate activity = activityTemplateRepository
-                .findByIdAndStatus(request.getActivityId(), RecordStatus.ACTIVE)
-                .orElseThrow(() -> {
-                    log.warn("Cannot update. Activity Template not found with id={}", request.getPillarTemplateId());
-                    return new NotFoundException("Activity Template not found");
-                });
+        PillarTemplate pillarTemplate =
+                pillarTemplateService.loadActiveTemplate(
+                        request.getPillarTemplateId()
+                );
 
-        // 1️⃣ Sanitize inputs
-        String cleanName = SanitizerUtil.clean(request.getName());
-        String cleanDescription = SanitizerUtil.clean(request.getDescription());
-
-        // 2️⃣ Business rule: unique name (only if changed)
-        if (!activity.getName().equalsIgnoreCase(cleanName)
-                && activityTemplateRepository.existsByNameIgnoreCase(cleanName)) {
-
-            log.warn("Duplicate Activity Template name during update: {}", cleanName);
-            throw new BusinessException("Another Activity Template already uses this name");
+        if (!template.getName().equalsIgnoreCase(request.getName())
+                && repository.existsByPillarTemplateAndNameIgnoreCaseAndStatus(
+                pillarTemplate,
+                request.getName(),
+                RecordStatus.ACTIVE)) {
+            throw new BusinessException(
+                    "Another activity template already uses this name for this pillar"
+            );
         }
 
-        PillarTemplate pillarTemplate = pillarTemplateRepository
-                .findById(request.getPillarTemplateId())
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Invalid PillarTemplate ID"));
+        template.rename(request.getName());
+        template.updateDescription(request.getDescription());
+        template.changeTemplate(pillarTemplate);
 
-        // 3️⃣ Map updates (MapStruct)
-        activityTemplateMapper.partialUpdate(request, activity);
-        activity.setName(cleanName);
-        activity.setDescription(cleanDescription);
-
-        activity.setPillarTemplate(pillarTemplate);
-
-        // 4️⃣ Save
-        ActivityTemplate updated = activityTemplateRepository.save(activity);
-
-        log.info("Activity Template updated successfully with id={}", updated.getId());
-
-        return activityTemplateMapper.toDto(updated);
+        return mapper.toDto(template);
     }
 
-    /**
-     * Soft delete (deactivate)
-     */
     @Override
     public void deactivate(Long id) {
 
-        log.debug("Deactivating Activity Template with id={}", id);
+        ActivityTemplate template = loadActiveTemplate(id);
+        template.deactivate();
 
-        ActivityTemplate activity = activityTemplateRepository
-                .findByIdAndActiveTrue(id)
-                .orElseThrow(() -> {
-                    log.warn("Cannot deactivate. Activity Template not found with id={}", id);
-                    return new NotFoundException("Activity Template not found");
-                });
+        log.info("ActivityTemplate deactivated with id={}", id);
+    }
 
-        activity.setActive(false);
-        activityTemplateRepository.save(activity);
+    /* ---------- shared loader ---------- */
 
-        log.info("Activity Template deactivated successfully with id={}", id);
+    @Transactional(readOnly = true)
+    public ActivityTemplate loadActiveTemplate(Long id) {
+        return repository
+                .findByIdAndStatus(id, RecordStatus.ACTIVE)
+                .orElseThrow(() ->
+                        new NotFoundException("Activity template not found"));
     }
 }

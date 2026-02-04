@@ -3,14 +3,12 @@ package com.kage.service.impl;
 import com.kage.dto.request.RegisterUserRequest;
 import com.kage.dto.request.UpdateUserRequest;
 import com.kage.enums.RecordStatus;
-import com.kage.enums.UserRole;
 import com.kage.enums.UserStatus;
 import com.kage.dto.request.CreateUserRequest;
 import com.kage.dto.response.UserResponse;
 import com.kage.entity.User;
 import com.kage.exception.BadRequestException;
-import com.kage.exception.ResourceNotFoundException;
-import com.kage.mapper.MasterUserMapper;
+import com.kage.mapper.UserMapper;
 import com.kage.repository.UserRepository;
 import com.kage.service.UserService;
 
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -29,71 +26,68 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final MasterUserMapper userMapper;
+    private final UserMapper userMapper;
     private final PasswordEncoder  passwordEncoder;
-
-   /* public UserServiceImpl(
-            UserRepository repository,
-            MasterUserMapper mapper, PasswordEncoder passwordEncoder) {
-        this.userRepository = repository;
-        this.userMapper = mapper;
-        this.passwordEncoder = passwordEncoder;
-    }*/
 
     @Override
     public UserResponse createUser(CreateUserRequest request) {
 
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmailAndStatus(request.getEmail(), RecordStatus.ACTIVE)) {
             throw new BadRequestException("Email already exists");
         }
 
-        User user = userMapper.toEntity(request);
-        user.setUserStatus(UserStatus.ACTIVE);
-        user.setUserRole(request.getUserRole());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        User saved = userRepository.save(user);
-
-        return userMapper.toResponse(saved);
+        User user = User.registerNew(
+                request.getEmail(),
+                request.getName(),
+                passwordEncoder.encode(request.getPassword())
+        );
+        user.activate();
+        userRepository.save(user);
+        return userMapper.toResponse(user);
     }
 
-    @Transactional
     @Override
     public User registerUser(RegisterUserRequest request) {
 
-        Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
+        return userRepository.findByEmail(request.getEmail())
+                .map(existing -> handleReRegistration(existing, request))
+                .orElseGet(() -> createFreshRegistration(request));
+    }
 
-        if (userOpt.isPresent()) {
+    private User handleReRegistration(User user, RegisterUserRequest request) {
 
-            User user = userOpt.get();
+        switch (user.getUserStatus()) {
 
-            switch (user.getUserStatus()) {
-
-                case ACTIVE:
+            case ACTIVE ->
                     throw new BadRequestException("Email already registered");
 
-                case PENDING_VERIFICATION:
-                    user.setPassword(passwordEncoder.encode(request.getPassword()));
-                    userRepository.save(user);
-                    return user;
+            case PENDING_VERIFICATION -> {
+                user.changePassword(
+                        passwordEncoder.encode(request.getPassword())
+                );
+                return user; // dirty checking
+            }
 
-                case BLOCKED:
+            case BLOCKED ->
                     throw new BadRequestException("Registration not allowed");
 
-                default:
+            default ->
                     throw new IllegalStateException(
-                            "Unsupported user status: " + user.getStatus()
+                            "Unsupported user status: " + user.getUserStatus()
                     );
-            }
         }
+    }
 
-        // Fresh registration
-        User user = userMapper.toEntity(request);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setUserStatus(UserStatus.PENDING_VERIFICATION);
-        user.setStatus(RecordStatus.ACTIVE);
-        user.setUserRole(UserRole.ROLE_USER);
+    private User createFreshRegistration(RegisterUserRequest request) {
 
-        return userRepository.save(user);
+        User user = User.registerNew(
+                request.getEmail(),
+                request.getName(),
+                passwordEncoder.encode(request.getPassword())
+        );
+
+        userRepository.save(user);
+        return user;
     }
 
 
@@ -102,58 +96,50 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserResponse getUserById(Long id) {
 
-        User user = userRepository.findById(id)
-                .filter(u -> u.getStatus() == RecordStatus.ACTIVE)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("User not found"));
-
+        User user = loadActiveUser(id);
         return userMapper.toResponse(user);
     }
 
     @Override
     public void softDeleteUser(Long id) {
-
-        User user = userRepository.findByIdAndUserStatusAndStatus(id, UserStatus.ACTIVE , RecordStatus.ACTIVE)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("User not found"));
-
-        user.setStatus(RecordStatus.INACTIVE);
-        user.setUserStatus(UserStatus.INACTIVE);
-        userRepository.save(user);
+        User user = loadActiveUser(id);
+        user.deactivateAccount();
     }
 
     @Override
     public List<UserResponse> getAllUser() {
 
-        List<User> users = userRepository.findByUserStatusAndStatus( UserStatus.ACTIVE , RecordStatus.ACTIVE);
-
-        return userMapper.toResponse(users);
-
-        /*List<User> users = userRepository.findAll();
-
-        List<UserResponse> userResponseList = new ArrayList<>();
-        for (User user : users) {
-            UserResponse userResponse = new UserResponse();
-            userResponse.setEmail(user.getEmail());
-            userResponse.setId(user.getId());
-            userResponseList.add(userResponse);
-        }
-        return userResponseList;*/
+        return userRepository.findByUserStatusAndStatus(
+                        UserStatus.ACTIVE, RecordStatus.ACTIVE)
+                .stream()
+                .map(userMapper::toResponse)
+                .toList();
     }
 
     @Override
     public UserResponse updateUser(UpdateUserRequest request) {
 
-        String email = request.getEmail().trim().toLowerCase();
-
-        User user = userRepository.findByEmailAndUserStatusAndStatus(email, UserStatus.ACTIVE, RecordStatus.ACTIVE)
-                .orElseThrow( () -> new UsernameNotFoundException("No Such User Found ")
-                );
-
+        User user = userRepository
+                .findByEmailAndUserStatusAndStatus(
+                        request.getEmail(),
+                        UserStatus.ACTIVE,
+                        RecordStatus.ACTIVE
+                )
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not found"));
         userMapper.updateEntityFromDto(request, user);
+        return userMapper.toResponse(user);
+    }
 
-        User saved = userRepository.save(user);
-
-        return userMapper.toResponse(saved);
+    @Transactional(readOnly = true)
+    @Override
+    public User loadActiveUser(Long userId) {
+        return userRepository
+                .findByIdAndUserStatusAndStatus(
+                        userId,
+                        UserStatus.ACTIVE,
+                        RecordStatus.ACTIVE
+                )
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }

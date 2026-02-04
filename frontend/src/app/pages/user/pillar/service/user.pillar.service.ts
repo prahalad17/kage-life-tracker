@@ -12,11 +12,8 @@ import { Pillar } from "../../../admin/pillars/models/pillar.model";
 
 export class UserPillarService{
 
-  private BASE_URL = 'http://localhost:8080/api/v1/user-pillars';
+  private BASE_URL = 'http://localhost:8080/api/v1/pillars';
 
-  private PILLAR_TEMPLATE_URL = 'http://localhost:8080/api/v1/user-pillars';
-
- 
   constructor(private http: HttpClient) {}
 
     getAll(): Observable<UserPillar[]> {

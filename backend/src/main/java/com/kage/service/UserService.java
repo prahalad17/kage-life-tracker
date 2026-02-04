@@ -18,10 +18,12 @@ public interface UserService {
 
     UserResponse getUserById(Long id);
 
-        void softDeleteUser(Long id);
+    void softDeleteUser(Long id);
 
-        List<UserResponse> getAllUser();
+    List<UserResponse> getAllUser();
 
     UserResponse updateUser(@Valid UpdateUserRequest request);
+
+    User loadActiveUser(Long userId);
 }
 
