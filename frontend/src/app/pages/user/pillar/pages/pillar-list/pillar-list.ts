@@ -63,7 +63,7 @@ export class PillarList implements OnInit {
     tableConfig: TableConfig = {
         tableName: 'My Pillars',
         columns: [
-          { key: 'pillar', header: 'Pillar' },
+          { key: 'pillarName', header: 'Pillar' },
           { key: 'description', header: 'Description' }
         ],
         actions: [
@@ -155,7 +155,7 @@ export class PillarList implements OnInit {
           this.dialogState = {
             open: true,
             title: 'Delete Pillar',
-            message: `Are you sure you want to delete pillar: ${row.name}?`,
+            message: `Are you sure you want to delete pillar: ${row.pillarName}?`,
             type: 'delete'
           };
         }
@@ -180,7 +180,7 @@ export class PillarList implements OnInit {
           this.dialogState = {
             open: true,
             title: 'Pillar Deleted',
-            message: `Pillar deleted: ${row.email}`,
+            message: `Pillar deleted: ${row.pillar}`,
             type: 'info'
           };
         },
@@ -189,7 +189,7 @@ export class PillarList implements OnInit {
           this.dialogState = {
             open: true,
             title: 'Error',
-            message: `Failed to delete pillar: ${row.email}`,
+            message: `Failed to delete pillar: ${row.pillar}`,
             type: 'info'
           };
         }
@@ -201,7 +201,6 @@ export class PillarList implements OnInit {
         if (!this.formConfig) return;
     
         if (this.formConfig.mode === 'create') {
-          console.log(data);
           const request: CreateUserPillarRequest = {
             name : data.name,
             description : data.description,
@@ -216,7 +215,7 @@ export class PillarList implements OnInit {
               this.dialogState = {
                 open: true,
                 title: 'Pillar Created',
-                message: `New pillar created: ${pillar.name}`,
+                message: `New pillar created: ${pillar.pillarName}`,
                 type: 'info'
               };
             },
@@ -227,11 +226,14 @@ export class PillarList implements OnInit {
         }
     
         if (this.formConfig.mode === 'edit' && this.selectedRow) {
+
+          console.log(data);
+          
           const request: UpdateUserPillarRequest = {
             id: data.id,
             name : data.name,
             description : data.description,
-            pillarTemplateId: data.pillar
+            pillarTemplateId: data.pillarName
           };
     
           this.userPillarService.updatePillar(request).subscribe({
@@ -242,7 +244,7 @@ export class PillarList implements OnInit {
               this.dialogState = {
                 open: true,
                 title: 'Pillar Updated',
-                message: `Pillar updated: ${pillar.name}`,
+                message: `Pillar updated: ${pillar.pillarName}`,
                 type: 'info'
               };
             },

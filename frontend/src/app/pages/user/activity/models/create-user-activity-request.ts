@@ -1,10 +1,10 @@
 export interface CreateUserActivityRequest
  {
-  name: string;
-  description: string;
+  activityName: string;
   pillarId: number;
-  activityNature : string;
-  defaultTrackingType: string;
-  defaultUnit: string;
-  
+  nature: string;
+  trackingType: string;
+  unit: string;
+  description: string;
+  scheduleType: string;
 }

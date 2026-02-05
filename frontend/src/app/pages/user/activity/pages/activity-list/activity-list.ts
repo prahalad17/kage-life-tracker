@@ -55,9 +55,10 @@ export class ActivityList implements OnInit{
   
     // ===== TABLE CONFIG =====
     tableConfig: TableConfig = {
-        tableName: 'User Activity',
+        tableName: 'My Activites',
         columns: [
-          { key: 'name', header: 'User Activity' },
+          { key: 'activityName', header: 'Activity' },
+           { key: 'pillarName', header: 'Pillar' },
           { key: 'description', header: 'Description' }
         ],
         actions: [
@@ -142,7 +143,7 @@ export class ActivityList implements OnInit{
             this.dialogState = {
               open: true,
               title: 'Delete User Activity',
-              message: `Are you sure you want to delete activity: ${row.name}?`,
+              message: `Are you sure you want to delete activity: ${row.activityName}?`,
               type: 'delete'
             };
           }
@@ -159,7 +160,7 @@ export class ActivityList implements OnInit{
           onDialogConfirm(row: any) {
         if (this.dialogState.type !== 'delete') return;
     
-        this.userActivityService.deleteActivity(row.id).subscribe({
+        this.userActivityService.deleteActivity(row.activityId).subscribe({
           next: () => {
             this.closeDialog();
             this.loadActivity();
@@ -167,7 +168,7 @@ export class ActivityList implements OnInit{
             this.dialogState = {
               open: true,
               title: 'User Activity Deleted',
-              message: `User Activity deleted: ${row.email}`,
+              message: `User Activity deleted: ${row.activityName}`,
               type: 'info'
             };
           },
@@ -176,7 +177,7 @@ export class ActivityList implements OnInit{
             this.dialogState = {
               open: true,
               title: 'Error',
-              message: `Failed to delete activity: ${row.email}`,
+              message: `Failed to delete activity: ${row.activityName}`,
               type: 'info'
             };
           }
@@ -189,12 +190,13 @@ export class ActivityList implements OnInit{
       
           if (this.formConfig.mode === 'create') {
             const request: CreateUserActivityRequest     = {
-             name: data.name,
+            activityName: data.activityName,
             description: data.description,
-            activityNature: data.activityNature,
-            pillarId: data.pillar,
-            defaultTrackingType: data.defaultTrackingType,
-            defaultUnit: data.defaultUnit
+            nature: data.nature,
+            pillarId: data.pillarName,
+            trackingType: data.trackingType,
+            unit: data.unit,
+            scheduleType : data.scheduleType
             };
       
             this.userActivityService.createActivity(request).subscribe({
@@ -205,7 +207,7 @@ export class ActivityList implements OnInit{
                 this.dialogState = {
                   open: true,
                   title: 'User Activity Created',
-                  message: `New activity created: ${activity.name}`,
+                  message: `New activity created: ${activity.activityName}`,
                   type: 'info'
                 };
               },
@@ -217,13 +219,14 @@ export class ActivityList implements OnInit{
       
           if (this.formConfig.mode === 'edit' && this.selectedRow) {
             const request: UpdateUserActivityRequest = {
-              activityId: data.activityId,
-            name: data.name,
+            activityId: data.activityId,
+            activityName: data.activityName,
             description: data.description,
-            activityNature: data.activityNature,
-            pillarTemplateId: data.pillar,
-            defaultTrackingType: data.defaultTrackingType,
-            defaultUnit: data.defaultUnit
+            nature: data.nature,
+            pillarId: data.pillarName,
+            trackingType: data.trackingType,
+            unit: data.unit,
+            scheduleType : data.scheduleType
             };
       
             this.userActivityService.updateActivity(request).subscribe({
@@ -234,7 +237,7 @@ export class ActivityList implements OnInit{
                 this.dialogState = {
                   open: true,
                   title: 'User Activity Updated',
-                  message: `User Activity updated: ${activity.name}`,
+                  message: `User Activity updated: ${activity.activityName}`,
                   type: 'info'
                 };
               },

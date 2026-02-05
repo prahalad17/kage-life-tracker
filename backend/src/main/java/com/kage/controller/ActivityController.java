@@ -76,7 +76,7 @@ public class ActivityController {
             @AuthenticationPrincipal CustomUserDetails user,
             @RequestBody @Valid ActivityCreateRequest request) {
 
-        log.info("Creating activity with name={}", request.getName());
+        log.info("Creating activity with name={}", request.getActivityName());
 
         ActivityResponse data =
                 activityService.create(request , user.getUser().getId());

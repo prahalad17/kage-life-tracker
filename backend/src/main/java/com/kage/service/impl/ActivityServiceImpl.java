@@ -46,7 +46,7 @@ public class ActivityServiceImpl implements ActivityService {
         if (activityRepository.existsByUserAndPillarAndNameIgnoreCaseAndStatus(
                 user,
                 pillar,
-                request.getName(),
+                request.getActivityName(),
                 RecordStatus.ACTIVE)) {
 
             throw new BusinessException(
@@ -58,7 +58,7 @@ public class ActivityServiceImpl implements ActivityService {
         Activity activity = Activity.create(
                 user,
                 pillar,
-                request.getName(),
+                request.getActivityName(),
                 request.getNature(),
                 request.getTrackingType(),
                 request.getUnit(),
@@ -119,11 +119,11 @@ public class ActivityServiceImpl implements ActivityService {
                 loadOwnedActiveActivity(request.getActivityId(), userId);
 
         // Rename (uniqueness only if changed)
-        if (!activity.getName().equalsIgnoreCase(request.getName())
+        if (!activity.getName().equalsIgnoreCase(request.getActivityName())
                 && activityRepository.existsByUserAndPillarAndNameIgnoreCaseAndStatus(
                 activity.getUser(),
                 activity.getPillar(),
-                request.getName(),
+                request.getActivityName(),
                 RecordStatus.ACTIVE)) {
 
             throw new BusinessException(
@@ -131,8 +131,10 @@ public class ActivityServiceImpl implements ActivityService {
             );
         }
 
-        activity.rename(request.getName());
+        activity.rename(request.getActivityName());
         activity.updateDescription(request.getDescription());
+        activity.updateNature(request.getNature());
+
         activity.changeTracking(
                 request.getTrackingType(),
                 request.getUnit()
@@ -158,6 +160,7 @@ public class ActivityServiceImpl implements ActivityService {
         log.debug("Deactivating activity id={}", activityId);
 
         Activity activity = loadOwnedActiveActivity(activityId, userId);
+        activity.deactivateSchedule();
         activity.deactivate();
 
         log.info("Activity deactivated with id={}", activityId);

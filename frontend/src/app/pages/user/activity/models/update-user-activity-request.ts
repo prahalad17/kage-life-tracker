@@ -1,10 +1,11 @@
 export interface UpdateUserActivityRequest  
   {
   activityId: number;
-  name: string;
+  activityName: string;
+  pillarId: number;
+  nature: string;
+  trackingType: string;
+  unit: string;
   description: string;
-  pillarTemplateId: number;
-  activityNature : string;
-  defaultTrackingType: string;
-  defaultUnit: string;
+  scheduleType: string;
 }

@@ -20,8 +20,8 @@ public interface PillarMapper {
 //    @Mapping(target = "remarks", ignore = true)
 //    Pillar toEntity(PillarCreateRequest request);
 
-    @Mapping(target = "templatePillarId",source = "pillarTemplate.id")
-    @Mapping(target = "pillar",source = "pillarTemplate.name")
+    @Mapping(target = "pillarTemplateId",source = "pillarTemplate.id")
+    @Mapping(target = "pillarName",source = "pillarTemplate.name")
     PillarResponse toResponse(Pillar pillar);
 
 //    @Mapping(target = "id", ignore = true)

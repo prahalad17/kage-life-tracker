@@ -82,7 +82,7 @@ public class PillarServiceImpl implements PillarService {
 
         log.debug("Fetching all active user pillars");
 
-        return pillarRepository.findByIdAndStatus(userId,RecordStatus.ACTIVE)
+        return pillarRepository.findByUserIdAndStatus(userId,RecordStatus.ACTIVE)
                 .stream()
                 .map(pillarMapper::toResponse)
                 .toList();
@@ -146,7 +146,7 @@ public class PillarServiceImpl implements PillarService {
     protected Pillar loadOwnedActivePillar(Long id, Long userId) {
 
         Pillar pillar = pillarRepository
-                .findByIdAndStatus(id, RecordStatus.ACTIVE)
+                .findByIdAndUserIdAndStatus(id,userId, RecordStatus.ACTIVE)
                 .orElseThrow(() ->
                         new NotFoundException("Pillar not found"));
 

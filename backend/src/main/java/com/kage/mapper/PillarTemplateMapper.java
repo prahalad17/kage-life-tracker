@@ -27,6 +27,7 @@ public interface PillarTemplateMapper {
 //    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 //    PillarTemplate updateEntityFromDto(PillarTemplateUpdateRequest dto , @MappingTarget PillarTemplate pillarTemplate);
 
+    @Mapping(target = "pillarName", source = "name")
     PillarTemplateResponse toResponse(PillarTemplate pillarTemplate);
 
     List<PillarTemplateResponse> toResponseList(List<PillarTemplate> pillarTemplates);

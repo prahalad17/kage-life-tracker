@@ -16,10 +16,10 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 public class ActivityUpdateRequest {
-    private  String pillar;
+
     private  Long pillarId;
     private Long activityId;
-    private  String name;
+    private  String activityName;
     private  ActivityNature nature;
     private  TrackingType trackingType;
     private  String unit;

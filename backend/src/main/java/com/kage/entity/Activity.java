@@ -123,6 +123,9 @@ public class Activity extends BaseEntity {
     public void updateSchedule(ScheduleType type, Set<DayOfWeek> days) {
         this.schedule.changeSchedule(type, days);
     }
+    public void deactivateSchedule() {
+        this.schedule.deactivate();
+    }
 
     /* -------- Controlled mutation -------- */
 
@@ -141,5 +144,9 @@ public class Activity extends BaseEntity {
 
     public void updateDescription(String description) {
         this.description = normalize(description);
+    }
+
+    public void updateNature(ActivityNature nature) {
+        this.nature =nature;
     }
 }

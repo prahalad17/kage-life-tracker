@@ -12,7 +12,7 @@ import { Pillar } from "../../../admin/pillars/models/pillar.model";
 
 export class UserPillarService{
 
-  private BASE_URL = 'http://localhost:8080/api/v1/pillars';
+  private BASE_URL = 'http://localhost:8080/api/v1/pillar';
 
   constructor(private http: HttpClient) {}
 

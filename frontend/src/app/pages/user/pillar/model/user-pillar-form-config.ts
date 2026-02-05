@@ -31,20 +31,21 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
       type: 'text',
       placeholder: 'Id',
       required: false,
-      hidden: mode === 'create'
+      hidden: mode === 'create',
+      disabled: mode !== 'create'
     },
     {
-      name: 'pillar',
+      name: 'pillarName', 
       label: 'Pillar Name',
       type: 'select',
       placeholder: 'Pillar',
       required: true,
       optionsConfig :{
         type :'api',
-        endpoint: '/api/v1/master-pillars',
-        labelKey: 'name',
+        endpoint: '/api/v1/pillar-template',
+        labelKey: 'pillarName',
         valueKey: 'id',
-        incomingKey:'name' 
+        incomingKey:'pillarName' 
       },
       // disabled: mode !== 'create'
     },

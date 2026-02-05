@@ -20,9 +20,10 @@ public interface ActivityMapper {
 
 
     @InheritInverseConfiguration(name = "toEntity")
-    @Mapping(target = "pillar", source = "pillar.name")
-    @Mapping(target = "activityNature", source = "nature")
+    @Mapping(target = "pillarName", source = "pillar.name")
     @Mapping(target = "activityId", source = "id")
+    @Mapping(target = "activityName", source = "name")
+    @Mapping(target = "scheduleType", source = "schedule.type")
     ActivityResponse toDto(Activity activity);
 
 //    @InheritConfiguration(name = "toEntity")

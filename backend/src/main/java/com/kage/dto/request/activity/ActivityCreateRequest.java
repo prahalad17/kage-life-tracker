@@ -18,7 +18,7 @@ import java.util.Set;
 public class ActivityCreateRequest {
 
     private  Long pillarId;
-    private  String name;
+    private  String activityName;
     private  ActivityNature nature;
     private  TrackingType trackingType;
     private  String unit;

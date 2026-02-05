@@ -6,7 +6,7 @@ import lombok.Data;
 public class PillarTemplateResponse {
 
     private Long id;
-    private String name;
+    private String pillarName;
     private String description;
     private boolean active;
 }
