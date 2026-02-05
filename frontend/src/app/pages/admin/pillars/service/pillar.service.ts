@@ -11,7 +11,7 @@ import { UpdatePillarRequest } from "../models/update-pillar-resuest";
 
 export class PillarService{
 
-  private BASE_URL = 'http://localhost:8080/api/v1/master-pillars';
+  private BASE_URL = 'http://localhost:8080/api/v1/pillar-template';
  
   constructor(private http: HttpClient) {}
 
@@ -30,7 +30,7 @@ export class PillarService{
 
   updatePillar(pillar: UpdatePillarRequest): Observable<Pillar> {
     return this.http.put<Pillar>(
-      `${this.BASE_URL}/${pillar.id}`,
+      `${this.BASE_URL}`,
       pillar
     )
   }

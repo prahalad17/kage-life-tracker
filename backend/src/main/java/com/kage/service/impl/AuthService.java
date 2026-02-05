@@ -111,7 +111,6 @@ public class AuthService {
     }
 
 
-    @Transactional
     public void verifyEmail(String token) {
 
         VerificationToken verificationToken =

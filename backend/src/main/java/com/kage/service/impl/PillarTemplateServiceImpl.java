@@ -84,7 +84,7 @@ public class PillarTemplateServiceImpl implements PillarTemplateService {
         PillarTemplate template = loadActiveTemplate(request.getId());
 
         if (!template.getName().equalsIgnoreCase(request.getName())
-                && pillarTemplateRepository.existsByNameIgnoreCaseAndStatus(template.getName(), RecordStatus.ACTIVE)) {
+                && pillarTemplateRepository.existsByNameIgnoreCaseAndStatus(request.getName(), RecordStatus.ACTIVE)) {
             throw new BusinessException("Another pillar template already uses this name");
         }
 

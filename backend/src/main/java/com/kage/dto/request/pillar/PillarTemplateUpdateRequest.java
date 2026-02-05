@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PillarTemplateUpdateRequest {
 
-    @NotBlank
     private Long id;
 
     @NotBlank

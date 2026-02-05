@@ -50,6 +50,9 @@ public class User extends BaseEntity {
     public void activate() {
         this.userStatus = UserStatus.ACTIVE;
     }
+    public void rename(String newName) {
+        this.name = requireNonEmpty(newName, "oldName is required");
+    }
 
     public void block() {
         this.userStatus = UserStatus.BLOCKED;

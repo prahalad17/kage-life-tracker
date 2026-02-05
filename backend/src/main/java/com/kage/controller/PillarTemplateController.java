@@ -87,13 +87,13 @@ public class PillarTemplateController {
     /**
      * Update a master pillar
      */
-    @PutMapping("/{id}")
+    @PutMapping()
     public ResponseEntity<ApiResponse<PillarTemplateResponse>> update(
             @RequestBody @Valid PillarTemplateUpdateRequest request) {
 
 
         PillarTemplateResponse data =
-                pillarTemplateService.update( request);
+                pillarTemplateService.update(request);
 
         return ResponseEntity.ok(
                 new ApiResponse<>(

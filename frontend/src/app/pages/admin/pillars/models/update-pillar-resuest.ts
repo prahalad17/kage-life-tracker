@@ -1,6 +1,6 @@
 export interface UpdatePillarRequest
  {
-  id:string;
+  id:number;
   name: string;
   description: string;
 }

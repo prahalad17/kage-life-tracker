@@ -215,6 +215,8 @@ export class PillarsListComponent implements OnInit {
       }
   
       if (this.formConfig.mode === 'edit' && this.selectedRow) {
+        console.log(data);
+        
         const request: UpdatePillarRequest = {
           name: data.name,
           id: data.id,

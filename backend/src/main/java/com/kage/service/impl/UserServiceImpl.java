@@ -82,8 +82,9 @@ public class UserServiceImpl implements UserService {
 
         User user = User.registerNew(
                 request.getEmail(),
-                request.getName(),
-                passwordEncoder.encode(request.getPassword())
+                passwordEncoder.encode(request.getPassword()),
+                request.getName()
+
         );
 
         userRepository.save(user);
@@ -127,7 +128,9 @@ public class UserServiceImpl implements UserService {
                 )
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found"));
-        userMapper.updateEntityFromDto(request, user);
+
+        user.rename(request.getName());
+//        userMapper.updateEntityFromDto(request, user);
         return userMapper.toResponse(user);
     }
 
