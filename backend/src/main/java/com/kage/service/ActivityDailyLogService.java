@@ -7,6 +7,7 @@ import com.kage.dto.response.ActivityDailyLogResponse;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 public interface ActivityDailyLogService {
@@ -21,6 +22,12 @@ public interface ActivityDailyLogService {
 
     @Transactional(readOnly = true)
     List<ActivityDailyLogResponse> getAll(Long userId);
+
+    @Transactional(readOnly = true)
+    List<ActivityDailyLogResponse> getToDo(Long userId , LocalDate date);
+
+    @Transactional(readOnly = true)
+    List<ActivityDailyLogResponse> getCompleted(Long userId , LocalDate date);
 
     ActivityDailyLogResponse update(
             ActivityDailyLogUpdateRequest request,

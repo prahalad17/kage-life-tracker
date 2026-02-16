@@ -6,6 +6,7 @@ import com.kage.dto.response.ActivityDailyLogResponse;
 import com.kage.entity.Activity;
 import com.kage.entity.ActivityDailyLog;
 import com.kage.entity.User;
+import com.kage.enums.LogStatus;
 import com.kage.enums.RecordStatus;
 import com.kage.exception.NotFoundException;
 import com.kage.mapper.ActivityDailyLogMapper;
@@ -18,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 
@@ -91,6 +94,26 @@ public class ActivityDailyLogServiceImpl implements ActivityDailyLogService {
 
         return logRepository
                 .findByUserIdAndStatus(userId, RecordStatus.ACTIVE)
+                .stream()
+                .map(mapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public List<ActivityDailyLogResponse> getToDo(Long userId, LocalDate date) {
+
+        return logRepository
+                .findByUserIdAndLogDateAndCompletedAndStatus(userId, date, false, RecordStatus.ACTIVE)
+                .stream()
+                .map(mapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public List<ActivityDailyLogResponse> getCompleted(Long userId, LocalDate date) {
+
+        return logRepository
+                .findByUserIdAndLogDateAndCompletedAndStatus(userId, date, true, RecordStatus.ACTIVE)
                 .stream()
                 .map(mapper::toDto)
                 .toList();
