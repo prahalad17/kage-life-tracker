@@ -34,7 +34,7 @@ public class ActivitySchedule extends BaseEntity {
      */
     @ElementCollection(targetClass = DayOfWeek.class, fetch = FetchType.LAZY)
     @CollectionTable(
-            name = "activity_schedule_days",
+            name     = "activity_schedule_days",
             joinColumns = @JoinColumn(name = "schedule_id")
     )
     @Enumerated(EnumType.STRING)

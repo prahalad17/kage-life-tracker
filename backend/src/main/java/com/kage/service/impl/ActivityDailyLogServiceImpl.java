@@ -3,7 +3,9 @@ package com.kage.service.impl;
 import com.kage.dto.request.activity.ActivityDailyLogCreateRequest;
 import com.kage.dto.request.activity.ActivityDailyLogUpdateRequest;
 import com.kage.dto.response.ActivityDailyLogResponse;
-import com.kage.entity.*;
+import com.kage.entity.Activity;
+import com.kage.entity.ActivityDailyLog;
+import com.kage.entity.User;
 import com.kage.enums.RecordStatus;
 import com.kage.exception.NotFoundException;
 import com.kage.mapper.ActivityDailyLogMapper;
@@ -116,7 +118,6 @@ public class ActivityDailyLogServiceImpl implements ActivityDailyLogService {
 
 //        log.info("ActivityDailyLog updated with id={}", log.getId());
 
-        // no save() — dirty checking
         return mapper.toDto(log);
     }
 

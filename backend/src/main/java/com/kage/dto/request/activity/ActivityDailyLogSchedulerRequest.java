@@ -4,16 +4,14 @@ import com.kage.entity.Activity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.time.LocalDate;
+
 /**
  * DTO for {@link Activity}
  */
 @AllArgsConstructor
 @Getter
-public class ActivityDailyLogUpdateRequest {
+public class ActivityDailyLogSchedulerRequest {
 
-    private Long logId;
-//    private Long activityId;
-    private Integer actualValue;
-    private Boolean completed;
-    private String notes;
+    private LocalDate date;
 }

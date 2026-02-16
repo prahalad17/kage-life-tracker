@@ -24,7 +24,5 @@ public class ActivityResponse {
     private final TrackingType trackingType;
     private final String unit;
     private final String description;
-
     private final ScheduleType scheduleType;
-
 }

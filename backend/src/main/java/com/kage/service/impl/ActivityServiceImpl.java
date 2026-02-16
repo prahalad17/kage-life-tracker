@@ -175,8 +175,7 @@ public class ActivityServiceImpl implements ActivityService {
 
         Activity activity = activityRepository
                 .findByIdAndStatus(id, RecordStatus.ACTIVE)
-                .orElseThrow(() ->
-                        new NotFoundException("Activity not found"));
+                .orElseThrow(() -> new NotFoundException("Activity not found"));
 
         if (!activity.getUser().getId().equals(userId)) {
             throw new BusinessException("User does not own this activity");

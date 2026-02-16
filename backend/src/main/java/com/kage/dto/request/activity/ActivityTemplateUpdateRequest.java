@@ -10,13 +10,13 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public class ActivityTemplateUpdateRequest  {
-    private  String pillar;
-    private  Long pillarTemplateId;
+public class ActivityTemplateUpdateRequest {
+    private String pillar;
+    private Long pillarTemplateId;
     private Long activityId;
-    private  String name;
-    private  ActivityNature activityNature;
-    private  TrackingType defaultTrackingType;
-    private  String defaultUnit;
-    private  String description;
+    private String name;
+    private ActivityNature activityNature;
+    private TrackingType defaultTrackingType;
+    private String defaultUnit;
+    private String description;
 }

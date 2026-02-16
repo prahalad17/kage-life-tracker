@@ -4,13 +4,12 @@ package com.kage.service;
 import com.kage.dto.request.activity.ActivityDailyLogCreateRequest;
 import com.kage.dto.request.activity.ActivityDailyLogUpdateRequest;
 import com.kage.dto.response.ActivityDailyLogResponse;
-import jakarta.validation.Valid;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface ActivityDailyLogService {
-
 
     ActivityDailyLogResponse create(
             ActivityDailyLogCreateRequest request,
@@ -29,5 +28,6 @@ public interface ActivityDailyLogService {
     );
 
     void deactivate(Long logId, Long userId);
+
 }
 

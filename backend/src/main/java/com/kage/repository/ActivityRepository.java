@@ -18,4 +18,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     Optional<Activity> findByIdAndStatus(Long id, RecordStatus recordStatus);
 
     List<Activity> findByUserIdAndStatus(Long userId, RecordStatus recordStatus);
+
+    List<Activity> findAllByStatus(RecordStatus recordStatus);
 }

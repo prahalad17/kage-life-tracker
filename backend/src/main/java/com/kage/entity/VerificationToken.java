@@ -1,13 +1,16 @@
 package com.kage.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
-import static com.kage.util.DomainGuardsUtil.*;
+import static com.kage.util.DomainGuardsUtil.requireNonEmpty;
+import static com.kage.util.DomainGuardsUtil.requireNonNull;
 
 @Entity
 @Table(

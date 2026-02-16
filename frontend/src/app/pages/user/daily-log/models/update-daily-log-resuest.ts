@@ -1,6 +1,6 @@
 export interface UpdateDailyLogReq
  {
-  activityDailyLogId: number;
+  logId: number;
   activityId: number;
   actualValue: number;
   completed: boolean;

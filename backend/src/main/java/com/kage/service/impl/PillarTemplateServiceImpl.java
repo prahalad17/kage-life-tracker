@@ -38,7 +38,7 @@ public class PillarTemplateServiceImpl implements PillarTemplateService {
             throw new BusinessException("Pillar template with this name already exists");
         }
 
-         PillarTemplate template =
+        PillarTemplate template =
                 PillarTemplate.create(
                         request.getName(),
                         request.getDescription()

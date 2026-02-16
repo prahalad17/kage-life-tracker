@@ -167,7 +167,7 @@ export class DailyLogList implements OnInit {
         onDialogConfirm(row: any) {
       if (this.dialogState.type !== 'delete') return;
   
-      this.dailyLogService.deletePillar(row.id).subscribe({
+      this.dailyLogService.deleteLog(row.id).subscribe({
         next: () => {
           this.closeDialog();
           this.loadDailyLogs();
@@ -203,7 +203,7 @@ export class DailyLogList implements OnInit {
             notes:data.notes
           };
     
-          this.dailyLogService.createPillar(request).subscribe({
+          this.dailyLogService.createLog(request).subscribe({
             next: dailyLog => {
               this.closeOverlay();
               this.loadDailyLogs();
@@ -223,14 +223,14 @@ export class DailyLogList implements OnInit {
     
         if (this.formConfig.mode === 'edit' && this.selectedRow) {
           const request: UpdateDailyLogReq = {
-            activityDailyLogId: data.activityDailyLogId,
+            logId: data.activityDailyLogId,
             activityId: data.activityId,
             actualValue: data.actualValue,
             completed: data.completed,
             notes:data.notes
           };
     
-          this.dailyLogService.updatePillar(request).subscribe({
+          this.dailyLogService.updateLog(request).subscribe({
             next: log  => {
               this.closeOverlay();
               this.loadDailyLogs();

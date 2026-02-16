@@ -3,7 +3,6 @@ package com.kage.service.impl;
 import com.kage.dto.request.pillar.PillarCreateRequest;
 import com.kage.dto.request.pillar.PillarUpdateRequest;
 import com.kage.dto.response.PillarResponse;
-import com.kage.entity.Activity;
 import com.kage.entity.Pillar;
 import com.kage.entity.PillarTemplate;
 import com.kage.entity.User;
@@ -64,11 +63,11 @@ public class PillarServiceImpl implements PillarService {
      */
     @Override
     @Transactional(readOnly = true)
-    public PillarResponse getById(Long id,Long userId) {
+    public PillarResponse getById(Long id, Long userId) {
 
         log.debug("Fetching user pillar with id={}", id);
 
-        Pillar pillar = loadOwnedActivePillar(id,userId);
+        Pillar pillar = loadOwnedActivePillar(id, userId);
 
         return pillarMapper.toResponse(pillar);
     }
@@ -82,7 +81,7 @@ public class PillarServiceImpl implements PillarService {
 
         log.debug("Fetching all active user pillars");
 
-        return pillarRepository.findByUserIdAndStatus(userId,RecordStatus.ACTIVE)
+        return pillarRepository.findByUserIdAndStatus(userId, RecordStatus.ACTIVE)
                 .stream()
                 .map(pillarMapper::toResponse)
                 .toList();
@@ -92,11 +91,11 @@ public class PillarServiceImpl implements PillarService {
      * Update user pillar
      */
     @Override
-    public PillarResponse update( PillarUpdateRequest request, Long userId) {
+    public PillarResponse update(PillarUpdateRequest request, Long userId) {
 
 //        log.debug("Updating user pillar with id={}", id);
 
-        Pillar pillar = loadOwnedActivePillar(request.getId(),userId);
+        Pillar pillar = loadOwnedActivePillar(request.getId(), userId);
 
         PillarTemplate template = pillarTemplateService.loadActiveTemplate(request.getPillarTemplateId());
 
@@ -120,7 +119,7 @@ public class PillarServiceImpl implements PillarService {
 
         log.debug("Deactivating user pillar with id={}", id);
 
-        Pillar pillar = loadOwnedActivePillar(id,userId);
+        Pillar pillar = loadOwnedActivePillar(id, userId);
 
         pillar.deactivate();
 
@@ -146,7 +145,7 @@ public class PillarServiceImpl implements PillarService {
     protected Pillar loadOwnedActivePillar(Long id, Long userId) {
 
         Pillar pillar = pillarRepository
-                .findByIdAndUserIdAndStatus(id,userId, RecordStatus.ACTIVE)
+                .findByIdAndUserIdAndStatus(id, userId, RecordStatus.ACTIVE)
                 .orElseThrow(() ->
                         new NotFoundException("Pillar not found"));
 

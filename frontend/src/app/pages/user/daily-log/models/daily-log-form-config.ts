@@ -25,12 +25,13 @@ export function buildDailyLogFormConfig(
 }
 function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
   return [
-    {
-      name: 'activityName',
-      label: 'Name',
+  {
+      name: 'activityDailyLogId',
+      label: 'Id',
       type: 'text',
-      placeholder: 'Name',
-      required: true
+      placeholder: 'Id',
+      hidden :mode === 'create',
+      disabled: mode !== 'create'
     },
     {
       name: 'activityId',
@@ -41,18 +42,18 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
       optionsConfig :{
         type :'api',
         endpoint: '/api/v1/activity',
-        labelKey: 'name',
+        labelKey: 'activityName',
         valueKey: 'activityId',
-        incomingKey: 'name' 
-      }
-      // disabled: mode !== 'create'
+        incomingKey: 'activityName' 
+      },
+      disabled: mode !== 'create'
     },
     {
       name: 'actualValue',
       label: 'Value',
       type: 'text',
       placeholder: 'Value',
-      required: true
+      // required: true
     },
     {
       name: 'completed',
@@ -73,7 +74,7 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
       label: 'Notes',
       type: 'text',
       placeholder: 'Description',
-      required: true,
+      // required: true,
       // disabled: mode !== 'create'
     }
   ];

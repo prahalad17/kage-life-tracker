@@ -23,17 +23,17 @@ export class DailyLogService{
       
   }
 
-  createPillar(dailyLog: CreateDailyLogReq): Observable<DailyLog> {
+  createLog(dailyLog: CreateDailyLogReq): Observable<DailyLog> {
     return this.http.post<DailyLog>(this.BASE_URL, dailyLog)
   }
 
-  updatePillar(dailyLog: UpdateDailyLogReq): Observable<DailyLog> {
+  updateLog(dailyLog: UpdateDailyLogReq): Observable<DailyLog> {
     return this.http.put<DailyLog>(
       `${this.BASE_URL}`,
       dailyLog);
   }
 
-  deletePillar(id: number): Observable<void> {
+  deleteLog(id: number): Observable<void> {
     return this.http.delete<void>(
       `${this.BASE_URL}/${id}`
     )

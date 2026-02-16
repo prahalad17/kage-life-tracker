@@ -1,5 +1,7 @@
 package com.kage.entity;
 
+import com.kage.enums.LogSource;
+import com.kage.enums.LogStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -7,6 +9,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
+
 import static com.kage.util.DomainGuardsUtil.*;
 @Entity
 @Table(name = "activity_logs")
@@ -35,6 +39,21 @@ public class ActivityDailyLog extends BaseEntity {
     private Instant loggedAt;
 
     /**
+     * Log Source tracking (system , user)
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private LogSource logSource;
+
+    /**
+     * Log Status tracking
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private LogStatus logStatus;
+
+
+    /**
      * Numeric tracking (reps, minutes, etc.)
      */
     @Column
@@ -46,7 +65,7 @@ public class ActivityDailyLog extends BaseEntity {
     @Column
     private Boolean completed;
 
-    @Column()
+    @Column
     private String notes;
 
     /* -------- Constructor -------- */
@@ -57,7 +76,9 @@ public class ActivityDailyLog extends BaseEntity {
             LocalDate logDate,
             Integer actualValue,
             Boolean completed,
-            String notes
+            String notes,
+            LogStatus logStatus,
+            LogSource logSource
     ) {
         this.activity = requireNonNull(activity, "activity is required");
         this.user = requireNonNull(user, "user is required");
@@ -70,6 +91,8 @@ public class ActivityDailyLog extends BaseEntity {
         this.actualValue = actualValue;
         this.completed = completed;
         this.notes = normalize(notes);
+        this.logStatus = logStatus;
+        this.logSource = logSource;
     }
 
     /* -------- Factory -------- */
@@ -88,7 +111,26 @@ public class ActivityDailyLog extends BaseEntity {
                 logDate,
                 actualValue,
                 completed,
-                notes
+                notes,
+                LogStatus.PENDING,
+                LogSource.USER_ENTRY
+        );
+    }
+
+    public static ActivityDailyLog createBaseline(
+            Activity activity,
+            User user,
+            LocalDate logDate
+    ) {
+        return new ActivityDailyLog(
+                activity,
+                user,
+                logDate,
+                null,
+                false,
+                null,
+                LogStatus.PENDING,
+                LogSource.SYSTEM_BASELINE
         );
     }
 
@@ -108,7 +150,9 @@ public class ActivityDailyLog extends BaseEntity {
                 LocalDate.now(),
                 actualValue,
                 completed,
-                notes
+                notes,
+                LogStatus.DONE,
+                LogSource.USER_ENTRY
         );
     }
 
