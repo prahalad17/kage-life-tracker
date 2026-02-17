@@ -169,7 +169,7 @@ export class PillarList implements OnInit {
           };
         }
   
-        onDialogConfirm(row: any) {
+    onDialogConfirm(row: any) {
       if (this.dialogState.type !== 'delete') return;
   
       this.userPillarService.deletePillar(row.id).subscribe({
@@ -202,9 +202,9 @@ export class PillarList implements OnInit {
     
         if (this.formConfig.mode === 'create') {
           const request: CreateUserPillarRequest = {
-            name : data.name,
+            name : data.pillarName,
             description : data.description,
-            pillarTemplateId: data.pillar
+            pillarTemplateId: data.pillarName
           };
     
           this.userPillarService.createPillar(request).subscribe({

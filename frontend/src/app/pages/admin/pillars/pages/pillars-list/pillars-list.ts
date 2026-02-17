@@ -60,7 +60,7 @@ export class PillarsListComponent implements OnInit {
   tableConfig: TableConfig = {
       tableName: 'Pillars',
       columns: [
-        { key: 'name', header: 'Pillar' },
+        { key: 'pillarName', header: 'Pillar' },
         { key: 'description', header: 'Description' }
       ],
       actions: [
@@ -145,7 +145,7 @@ export class PillarsListComponent implements OnInit {
         this.dialogState = {
           open: true,
           title: 'Delete Pillar',
-          message: `Are you sure you want to delete pillar: ${row.name}?`,
+          message: `Are you sure you want to delete pillar: ${row.pillarName}?`,
           type: 'delete'
         };
       }
@@ -204,7 +204,7 @@ export class PillarsListComponent implements OnInit {
             this.dialogState = {
               open: true,
               title: 'Pillar Created',
-              message: `New pillar created: ${pillar.name}`,
+              message: `New pillar created: ${pillar.pillarName}`,
               type: 'info'
             };
           },
@@ -231,7 +231,7 @@ export class PillarsListComponent implements OnInit {
             this.dialogState = {
               open: true,
               title: 'Pillar Updated',
-              message: `Pillar updated: ${pillar.name}`,
+              message: `Pillar updated: ${pillar.pillarName}`,
               type: 'info'
             };
           },

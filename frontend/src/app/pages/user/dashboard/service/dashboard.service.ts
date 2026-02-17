@@ -5,6 +5,7 @@ import { ApiResponse } from "../../../../shared/models/api/api-response.model";
 import { DailyLog } from "../../daily-log/models/daily-log.model";
 import { UpdateDailyLogReq } from "../../daily-log/models/update-daily-log-resuest";
 import { CreateDailyLogReq } from "../../daily-log/models/create-daily-log-request";
+import { ActivityDailyLogSchedulerRequest } from "../models/activityScheduker";
 @Injectable({
     providedIn:'root'
 })
@@ -46,6 +47,16 @@ export class DashboardService{
   deleteLog(id: number): Observable<void> {
     return this.http.delete<void>(
       `${this.BASE_URL}/${id}`
+    )
+  }
+
+ schedule(date: string): Observable<any> {
+
+  const body: ActivityDailyLogSchedulerRequest = {
+    date: date
+  };
+    return this.http.post<any>(
+      `/api/v1/scheduler/generate`,body
     )
   }
 

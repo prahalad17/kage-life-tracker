@@ -62,9 +62,8 @@ export class DailyLogList implements OnInit {
         tableName: 'Daily Log',
         columns: [
           { key: 'activityName', header: 'Activity Name' },
-          { key: 'notes', header: 'Notes' },
           { key: 'completed', header: 'Completed' },
-          { key: 'actualValue', header: 'Count' }
+          { key: 'logDate', header: 'Date' }
         ],
         actions: [
           { type: 'view', label: 'View' },

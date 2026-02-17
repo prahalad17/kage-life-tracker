@@ -120,6 +120,30 @@ export class DashboardOverview {
             break;
         }
       }
+
+
+      scheduleTodayTasks(){
+
+         const today = new Date().toISOString().split('T')[0];
+
+         this.dashboardService.schedule(today).subscribe({
+            next: log  => {
+              this.loadToDo();
+              this.loadCompleted();
+    
+              // this.dialogState = {
+              //   open: true,
+              //   title: 'Daily Log Updated',
+              //   message: `Daily Log updated: ${log.activityName}`,
+              //   type: 'info'
+              // };
+            },
+            error: err => {
+              this.formErrorMessage = err?.message || 'Failed to update log ';
+            }
+          });
+
+      }
   
 
 }
