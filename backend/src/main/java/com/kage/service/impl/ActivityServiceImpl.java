@@ -145,6 +145,8 @@ public class ActivityServiceImpl implements ActivityService {
                 request.getDays()
         );
 
+
+
         log.info("Activity updated with id={}", activity.getId());
 
         // No save() — dirty checking

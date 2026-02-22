@@ -114,7 +114,7 @@ public class PillarController {
     /**
      * Deactivate (soft delete) a user pillar
      */
-    @DeleteMapping("/{id}")
+//    @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long id) {

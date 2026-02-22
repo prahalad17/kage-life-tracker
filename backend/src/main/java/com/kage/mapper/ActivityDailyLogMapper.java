@@ -1,7 +1,5 @@
 package com.kage.mapper;
 
-import com.kage.dto.request.activity.ActivityDailyLogCreateRequest;
-import com.kage.dto.request.activity.ActivityDailyLogUpdateRequest;
 import com.kage.dto.response.ActivityDailyLogResponse;
 import com.kage.entity.ActivityDailyLog;
 import org.mapstruct.*;
@@ -18,9 +16,9 @@ public interface ActivityDailyLogMapper {
 
 
     @InheritInverseConfiguration(name = "toEntity")
-    @Mapping(target = "activityId" ,source = "activity.id")
-    @Mapping(target = "activityName" ,source = "activity.name")
-    @Mapping(target = "activityDailyLogId" , source = "id")
+    @Mapping(target = "activityId", source = "activity.id")
+    @Mapping(target = "activityName", source = "activity.name")
+    @Mapping(target = "activityDailyLogId", source = "id")
     ActivityDailyLogResponse toDto(ActivityDailyLog activityDailyLog);
 
 //    @InheritConfiguration(name = "toEntity")

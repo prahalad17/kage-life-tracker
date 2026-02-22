@@ -6,7 +6,6 @@ import com.kage.dto.response.ActivityDailyLogResponse;
 import com.kage.entity.Activity;
 import com.kage.entity.ActivityDailyLog;
 import com.kage.entity.User;
-import com.kage.enums.LogStatus;
 import com.kage.enums.RecordStatus;
 import com.kage.exception.NotFoundException;
 import com.kage.mapper.ActivityDailyLogMapper;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 
