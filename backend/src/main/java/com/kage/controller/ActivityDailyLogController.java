@@ -1,15 +1,21 @@
 package com.kage.controller;
 
 
+import com.kage.common.dto.request.SearchRequestDto;
 import com.kage.dto.request.activity.ActivityDailyLogCreateRequest;
 import com.kage.dto.request.activity.ActivityDailyLogUpdateRequest;
 import com.kage.dto.response.ActivityDailyLogResponse;
 import com.kage.dto.response.ApiResponse;
+import com.kage.dto.response.PageResponse;
 import com.kage.security.CustomUserDetails;
 import com.kage.service.ActivityDailyLogService;
+import com.kage.util.PageableBuilderUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,20 +34,21 @@ public class ActivityDailyLogController {
     /**
      * Get all active activity daily log
      */
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<ActivityDailyLogResponse>>> getAll(
-            @AuthenticationPrincipal CustomUserDetails user) {
+    @PostMapping
+    public ResponseEntity<ApiResponse<PageResponse<ActivityDailyLogResponse>>> getAll(
+            @AuthenticationPrincipal CustomUserDetails user,
+            @RequestBody SearchRequestDto request) {
 
         log.info("Fetching all active activity daily log");
 
-        List<ActivityDailyLogResponse> data =
-                activityDailyLogService.getAll(user.getUser().getId());
+        Page<ActivityDailyLogResponse> page =
+                activityDailyLogService.search(user.getUser().getId(), request);
 
         return ResponseEntity.ok(
                 new ApiResponse<>(
                         true,
                         "Fetched activity daily log successfully",
-                        data
+                        new PageResponse<>(page)
                 )
         );
     }
@@ -57,7 +64,7 @@ public class ActivityDailyLogController {
         log.info("Fetching activity daily log with id={}", id);
 
         ActivityDailyLogResponse data =
-                activityDailyLogService.getById(id,user.getUser().getId());
+                activityDailyLogService.getById(id, user.getUser().getId());
 
         return ResponseEntity.ok(
                 new ApiResponse<>(
@@ -79,7 +86,7 @@ public class ActivityDailyLogController {
 //        log.info("Creating activity daily log with name={}", request.getName());
 
         ActivityDailyLogResponse data =
-                activityDailyLogService.create(request , user.getUser().getId());
+                activityDailyLogService.create(request, user.getUser().getId());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse<>(
@@ -100,13 +107,13 @@ public class ActivityDailyLogController {
 //        log.info("Updating activity daily log with id={}", id);
 
         ActivityDailyLogResponse data =
-                activityDailyLogService.update( request, user.getUser().getId());
+                activityDailyLogService.update(request, user.getUser().getId());
 
         return ResponseEntity.ok(
                 new ApiResponse<>(
                         true,
                         "activity daily log updated successfully",
-                            data
+                        data
                 )
         );
     }
@@ -121,7 +128,7 @@ public class ActivityDailyLogController {
 
         log.info("Deactivating activity daily log with id={}", id);
 
-        activityDailyLogService.deactivate(id,user.getUser().getId());
+        activityDailyLogService.deactivate(id, user.getUser().getId());
 
         return ResponseEntity.ok(
                 new ApiResponse<>(

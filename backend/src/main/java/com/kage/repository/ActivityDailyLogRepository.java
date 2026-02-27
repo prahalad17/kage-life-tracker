@@ -5,6 +5,7 @@ import com.kage.enums.LogSource;
 import com.kage.enums.LogStatus;
 import com.kage.enums.RecordStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-public interface ActivityDailyLogRepository extends JpaRepository<ActivityDailyLog, Long> {
+public interface ActivityDailyLogRepository extends JpaRepository<ActivityDailyLog, Long> , JpaSpecificationExecutor<ActivityDailyLog> {
 
     Optional<ActivityDailyLog> findByIdAndStatus(Long id, RecordStatus status);
 

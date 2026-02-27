@@ -1,9 +1,12 @@
 package com.kage.service;
 
 
+import com.kage.common.dto.request.SearchRequestDto;
 import com.kage.dto.request.activity.ActivityDailyLogCreateRequest;
 import com.kage.dto.request.activity.ActivityDailyLogUpdateRequest;
 import com.kage.dto.response.ActivityDailyLogResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -36,5 +39,6 @@ public interface ActivityDailyLogService {
 
     void deactivate(Long logId, Long userId);
 
+    Page<ActivityDailyLogResponse> search(Long id, SearchRequestDto request);
 }
 

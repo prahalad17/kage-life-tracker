@@ -1,5 +1,6 @@
 package com.kage.service.impl;
 
+import com.kage.common.dto.request.SearchRequestDto;
 import com.kage.dto.request.activity.ActivityDailyLogCreateRequest;
 import com.kage.dto.request.activity.ActivityDailyLogUpdateRequest;
 import com.kage.dto.response.ActivityDailyLogResponse;
@@ -13,8 +14,13 @@ import com.kage.repository.ActivityDailyLogRepository;
 import com.kage.repository.ActivityRepository;
 import com.kage.service.ActivityDailyLogService;
 import com.kage.service.UserService;
+import com.kage.util.PageableBuilderUtil;
+import com.kage.util.SpecificationBuilderUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,6 +104,17 @@ public class ActivityDailyLogServiceImpl implements ActivityDailyLogService {
     }
 
     @Override
+    public Page<ActivityDailyLogResponse> search(Long id, SearchRequestDto request) {
+
+        Pageable pageable = PageableBuilderUtil.build(request);
+
+        Specification<ActivityDailyLog> specification =
+                SpecificationBuilderUtil.build(request);
+
+
+    }
+
+    @Override
     public List<ActivityDailyLogResponse> getToDo(Long userId, LocalDate date) {
 
         return logRepository
@@ -155,6 +172,8 @@ public class ActivityDailyLogServiceImpl implements ActivityDailyLogService {
 
 //        log.info("ActivityDailyLog deactivated with id={}", logId);
     }
+
+
 
     /* ----------------------------------------------------
        Internal helpers
