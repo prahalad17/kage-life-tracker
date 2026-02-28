@@ -6,22 +6,17 @@ import com.kage.dto.request.activity.ActivityDailyLogCreateRequest;
 import com.kage.dto.request.activity.ActivityDailyLogUpdateRequest;
 import com.kage.dto.response.ActivityDailyLogResponse;
 import com.kage.dto.response.ApiResponse;
-import com.kage.dto.response.PageResponse;
+import com.kage.common.dto.response.PageResponse;
 import com.kage.security.CustomUserDetails;
 import com.kage.service.ActivityDailyLogService;
-import com.kage.util.PageableBuilderUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/activity/daily-log")
@@ -34,7 +29,7 @@ public class ActivityDailyLogController {
     /**
      * Get all active activity daily log
      */
-    @PostMapping
+    @PostMapping("/search")
     public ResponseEntity<ApiResponse<PageResponse<ActivityDailyLogResponse>>> getAll(
             @AuthenticationPrincipal CustomUserDetails user,
             @RequestBody SearchRequestDto request) {

@@ -5,13 +5,15 @@ import { CommonModule } from '@angular/common';
 import { DataTable } from '../../../../../shared/components/data-table/data-table';
 import { Overlay } from '../../../../../shared/components/overlay/overlay';
 import { DailyLog } from '../../models/daily-log.model';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, finalize, Observable, shareReplay, switchMap } from 'rxjs';
 import { DailyLogService } from '../../service/daily-log.service';
 import { FormConfig } from '../../../../../shared/models/form/form-config';
 import { TableConfig } from '../../../../../shared/models/table/table-config.model';
 import { buildDailyLogFormConfig } from '../../models/daily-log-form-config';
 import { CreateDailyLogReq } from '../../models/create-daily-log-request';
 import { UpdateDailyLogReq } from '../../models/update-daily-log-resuest';
+import { SearchRequestDto } from '../../../../../shared/models/api/search-request.model';
+import { PageResponse } from '../../../../../shared/models/api/page-response.model';
 
 type DialogType = 'info' | 'delete' | '';
 
@@ -35,11 +37,26 @@ export class DailyLogList implements OnInit {
     constructor(private dailyLogService: DailyLogService) {}
   
     // ===== DATA =====
-    dailyLogs$!: Observable<DailyLog[]>;
+   dailyLogs$!: Observable<PageResponse<DailyLog>>;
+  loading = false;
   
     selectedRow: DailyLog | null = null;
     formConfig: FormConfig | null = null;
     formErrorMessage = '';
+
+    // ===== PAGINATION =====
+
+    totalElements=0
+    pageIndex=0
+    pageSize=0
+
+    private searchRequestSubject = new BehaviorSubject<SearchRequestDto>({
+  page: 0,
+  size: 10,
+  sort: [],
+  filters: []
+});
+
   
     
     // ===== OVERLAY STATE =====
@@ -73,6 +90,9 @@ export class DailyLogList implements OnInit {
         create: {
           enabled: true,
           label: 'Add New Daily Log'
+        },
+        pagination:{
+          enabled:true
         }
       };
   
@@ -80,10 +100,37 @@ export class DailyLogList implements OnInit {
     ngOnInit(): void {
       this.loadDailyLogs();
     }
+
+  onPageChange(event: { pageIndex: number; pageSize: number }) {
+
+    console.log('Parent received:', event);
+    
+
+  const current = this.searchRequestSubject.value;
+
+  this.searchRequestSubject.next({
+    ...current,
+    page: event.pageIndex,
+    size: event.pageSize
+  });
+
+}
   
      loadDailyLogs() {
-      this.dailyLogs$ = this.dailyLogService.getAll();
-    }
+
+       this.dailyLogs$ = this.searchRequestSubject.pipe(
+    switchMap(request => {
+      this.loading = true;
+
+      return this.dailyLogService.search(request).pipe(
+        finalize(() => this.loading = false)
+      );
+    }),
+    shareReplay(1)
+  );
+
+
+     }
   
     
        // ===== OVERLAY HANDLING =====

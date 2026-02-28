@@ -1,4 +1,4 @@
-package com.kage.dto.response;
+package com.kage.common.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

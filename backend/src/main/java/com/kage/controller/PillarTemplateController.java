@@ -4,7 +4,6 @@ package com.kage.controller;
 import com.kage.dto.request.pillar.PillarTemplateCreateRequest;
 import com.kage.dto.request.pillar.PillarTemplateUpdateRequest;
 import com.kage.dto.response.ApiResponse;
-import com.kage.dto.response.PageResponse;
 import com.kage.dto.response.PillarTemplateResponse;
 import com.kage.service.PillarTemplateService;
 import jakarta.validation.Valid;
@@ -28,11 +27,11 @@ public class PillarTemplateController {
      * Get all active master pillars
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<PillarTemplateResponse>>> getAll() {
+    public ResponseEntity<ApiResponse<List<PillarTemplateResponse>>> getAll() {
 
         log.info("Fetching all active master pillars");
 
-        PageResponse<PillarTemplateResponse> data =
+        List<PillarTemplateResponse> data =
                 pillarTemplateService.getAll();
 
         return ResponseEntity.ok(

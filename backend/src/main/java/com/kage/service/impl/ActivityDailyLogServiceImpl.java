@@ -16,6 +16,7 @@ import com.kage.service.ActivityDailyLogService;
 import com.kage.service.UserService;
 import com.kage.util.PageableBuilderUtil;
 import com.kage.util.SpecificationBuilderUtil;
+import com.kage.util.UserSpecificationBuilderUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -104,14 +105,21 @@ public class ActivityDailyLogServiceImpl implements ActivityDailyLogService {
     }
 
     @Override
-    public Page<ActivityDailyLogResponse> search(Long id, SearchRequestDto request) {
+    public Page<ActivityDailyLogResponse> search(Long userId, SearchRequestDto request) {
 
         Pageable pageable = PageableBuilderUtil.build(request);
 
-        Specification<ActivityDailyLog> specification =
+        Specification<ActivityDailyLog> dynamicSpec  =
                 SpecificationBuilderUtil.build(request);
 
+        Specification<ActivityDailyLog> mandatorySpec =
+                UserSpecificationBuilderUtil.build(userId);
 
+        Specification<ActivityDailyLog> finalSpec =
+                mandatorySpec.and(dynamicSpec);
+
+        return logRepository.findAll(finalSpec, pageable)
+                .map(mapper::toDto);
     }
 
     @Override
@@ -182,15 +190,10 @@ public class ActivityDailyLogServiceImpl implements ActivityDailyLogService {
     @Transactional(readOnly = true)
     protected ActivityDailyLog loadOwnedLog(Long logId, Long userId) {
 
-        ActivityDailyLog log = logRepository
-                .findByIdAndStatus(logId, RecordStatus.ACTIVE)
+        return  logRepository
+                .findByIdAndUserIdAndStatus(logId, userId, RecordStatus.ACTIVE)
                 .orElseThrow(() ->
                         new NotFoundException("Activity log not found"));
 
-        if (!log.getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("User does not own this activity log");
-        }
-
-        return log;
     }
 }

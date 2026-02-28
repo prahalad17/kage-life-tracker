@@ -65,5 +65,48 @@
       }
     </tbody>
   </table>
+  @if (config.pagination?.enabled) {
+
+  <div class="d-flex justify-content-between align-items-center mt-3">
+
+    <!-- Left Side: Showing Info -->
+    <div class="text-muted small">
+      Showing {{ startItem }}–{{ endItem }} of {{ totalElements }}
+    </div>
+
+    <!-- Right Side: Controls -->
+    <div class="d-flex align-items-center gap-2">
+
+      <!-- Page Size Dropdown -->
+      <select
+        class="form-select form-select-sm w-auto"
+        [value]="pageSize"
+        (change)="onPageSizeChange($any($event.target).value)">
+        
+        @for (size of config.pagination?.pageSizeOptions ?? [10,20,50]; track size) {
+          <option [value]="size">{{ size }}</option>
+        }
+
+      </select>
+
+      <!-- Previous Button -->
+      <button
+        class="btn btn-sm btn-outline-secondary"
+        (click)="onPrevious()"
+        [disabled]="pageIndex === 0 || loading">
+        Previous
+      </button>
+
+      <!-- Next Button -->
+      <button
+        class="btn btn-sm btn-outline-secondary"
+        (click)="onNext()"
+        [disabled]="pageIndex >= totalPages - 1 || loading">
+        Next
+      </button>
+
+    </div>
+  </div>
+}
 
 </div>

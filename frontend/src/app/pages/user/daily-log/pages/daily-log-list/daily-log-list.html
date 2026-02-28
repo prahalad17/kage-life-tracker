@@ -1,9 +1,20 @@
-<app-data-table
-  [rows]="(dailyLogs$ | async) ?? []"
+<ng-container *ngIf="dailyLogs$ | async as page">
+
+  <app-data-table
+  [rows]="page.content"
   [config]="tableConfig"
   (action)="onTableAction($event)"
-  (create)="openCreate()">
+  (create)="openCreate()"
+
+  [totalElements]="page.totalElements"
+  [pageIndex]="page.page"
+  [pageSize]="page.size"
+  [loading]="loading"
+  (pageChange)="onPageChange($event)">
 </app-data-table>
+
+</ng-container>
+
 
 @if (overlayState.open) {
   <app-overlay

@@ -2,13 +2,11 @@ package com.kage.repository;
 
 import com.kage.entity.ActivityDailyLog;
 import com.kage.enums.LogSource;
-import com.kage.enums.LogStatus;
 import com.kage.enums.RecordStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,4 +20,6 @@ public interface ActivityDailyLogRepository extends JpaRepository<ActivityDailyL
     boolean existsByActivityIdAndUserIdAndLogDateAndLogSource(Long id, Long id1, LocalDate date, LogSource logSource);
 
     List<ActivityDailyLog> findByUserIdAndLogDateAndCompletedAndStatus(Long userId, LocalDate date, boolean b, RecordStatus recordStatus);
+
+    Optional<ActivityDailyLog>  findByIdAndUserIdAndStatus(Long logId, Long userId, RecordStatus recordStatus);
 }

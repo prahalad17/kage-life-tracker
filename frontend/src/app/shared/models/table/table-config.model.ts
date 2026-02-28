@@ -8,5 +8,9 @@ export interface TableConfig {
   tableName?: string;
   create?: CreateConfig;
   selectable?: boolean;
-  pagination?: boolean;
+  pagination?: {
+    enabled: boolean;
+    pageSizeOptions?: number[];
+    defaultPageSize?: number;
+  };
 }
