@@ -16,7 +16,7 @@ import { HttpClient } from '@angular/common/http';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './data-form.html',
-  styleUrl: './data-form.css',
+  styleUrl: './data-form.scss',
 })
 export class DataForm implements OnChanges {
 

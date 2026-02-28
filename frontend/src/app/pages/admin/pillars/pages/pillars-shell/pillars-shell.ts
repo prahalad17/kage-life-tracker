@@ -5,7 +5,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
   selector: 'app-pillars-shell',
   imports: [RouterOutlet,RouterLink, RouterLinkActive],
   templateUrl: './pillars-shell.html',
-  styleUrl: './pillars-shell.css',
+  styleUrl: './pillars-shell.scss',
 })
 export class PillarsShellComponent {
 

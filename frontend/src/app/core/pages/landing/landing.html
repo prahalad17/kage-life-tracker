@@ -1,41 +1,82 @@
-<h1 class="fw-bold mb-3">Welcome to MyApp</h1>
+<div class="landing">
 
-<p class="lead">
-  A centralized platform for administrators and users to manage
-  data, activities, and operations efficiently.
-</p>
+  <!-- HERO SECTION -->
+  <section class="hero container">
+    <div class="hero-content">
 
-<div class="row mt-4">
-  <div class="col-md-4">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h5 class="card-title">Admin Control</h5>
-        <p class="card-text">
-          Manage users, roles, and system configuration with ease.
+      <h1>
+        Build Better Habits.
+        <span class="highlight">Transform Your Life.</span>
+      </h1>
+
+      <p class="text-secondary">
+        Stay consistent. Build momentum.  
+  Grow one habit at a time — with clarity and calm.
+      </p>
+
+      <div class="hero-actions">
+        <a routerLink="/auth/register" class="btn btn-primary">
+          Start Your Journey
+        </a>
+
+        <a routerLink="/auth/login" class="btn btn-outline">
+          Already a Member
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FEATURES SECTION -->
+  <section class="features container">
+
+    <div class="section-header">
+      <h2>Everything You Need to Stay Consistent</h2>
+      <p class="text-secondary">
+        Simple tools designed for powerful personal growth.
+      </p>
+    </div>
+
+    <div class="feature-grid">
+
+      <div class="card">
+        <h3>Daily Habit Tracking</h3>
+        <p class="text-secondary">
+          Track routines, build streaks, and maintain momentum effortlessly.
         </p>
       </div>
-    </div>
-  </div>
 
-  <div class="col-md-4">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h5 class="card-title">User Dashboard</h5>
-        <p class="card-text">
-          Track your activity and manage your profile securely.
+      <div class="card">
+        <h3>Progress Insights</h3>
+        <p class="text-secondary">
+          Visualize improvements and understand your growth patterns.
         </p>
       </div>
-    </div>
-  </div>
 
-  <div class="col-md-4">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h5 class="card-title">Secure Access</h5>
-        <p class="card-text">
-          JWT-based authentication with role-based authorization.
+      <div class="card">
+        <h3>Secure & Private</h3>
+        <p class="text-secondary">
+          Your data is protected with modern authentication standards.
         </p>
       </div>
+
     </div>
+
+  </section>
+
+  <section class="final-cta">
+  <div class="container">
+    <h2>Ready to build the life you want?</h2>
+    <p class="text-secondary">
+      Start small. Stay consistent. Watch your growth compound.
+    </p>
+    <a routerLink="/auth/register" class="btn btn-primary">
+      Start Your Journey Today
+    </a>
   </div>
+
+  
+</section>
+
+
 </div>

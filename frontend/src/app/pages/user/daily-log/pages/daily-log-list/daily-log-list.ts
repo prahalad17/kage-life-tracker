@@ -27,7 +27,7 @@ type DialogType = 'info' | 'delete' | '';
     ConfirmDialog
   ],
   templateUrl: './daily-log-list.html',
-  styleUrl: './daily-log-list.css',
+  styleUrl: './daily-log-list.scss',
 })
 
 export class DailyLogList implements OnInit {
@@ -53,7 +53,12 @@ export class DailyLogList implements OnInit {
     private searchRequestSubject = new BehaviorSubject<SearchRequestDto>({
   page: 0,
   size: 10,
-  sort: [],
+  sort: [
+    {
+      field: "logDate",
+      direction: "DESC"
+    }
+  ],
   filters: []
 });
 

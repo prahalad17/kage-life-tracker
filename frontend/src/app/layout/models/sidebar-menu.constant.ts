@@ -1,26 +1,49 @@
 export interface SidebarItem {
   label: string;
-  icon?: string;
-  route: string;
+  route?: string;              // optional (if parent-only section)
+  icon?: string;               // optional icon
+  children?: SidebarItem[];    // recursive support
 }
 
 /* ADMIN MENU */
 export const ADMIN_SIDEBAR_MENU: SidebarItem[] = [
   {
     label: 'Dashboard',
-    route: '/admin/dashboard'
+    route: '/admin/dashboard',
+    icon: '🏠'
   },
   {
     label: 'Users',
-    route: '/admin/users'
+    icon: '👥',
+    children: [
+      {
+        label: 'All Users',
+        route: '/admin/users'
+      },
+      {
+        label: 'Add User',
+        route: '/admin/users/create'
+      }
+    ]
   },
   {
     label: 'Pillars',
-    route: '/admin/pillars'
+    icon: '🧱',
+    children: [
+      {
+        label: 'All Pillars',
+        route: '/admin/pillars'
+      },
+      {
+        label: 'Create Pillar',
+        route: '/admin/pillars/create'
+      }
+    ]
   },
   {
     label: 'Activity',
-    route: '/admin/activity'
+    route: '/admin/activity',
+    icon: '📊'
   }
 ];
 
@@ -28,18 +51,50 @@ export const ADMIN_SIDEBAR_MENU: SidebarItem[] = [
 export const USER_SIDEBAR_MENU: SidebarItem[] = [
   {
     label: 'Dashboard',
-    route: '/user/dashboard'
+    route: '/user/dashboard',
+    icon: '🏠',
+     children: [
+      {
+        label: 'Overview',
+        route: '/user/dashboard/overview'
+      }
+    ]
   },
   {
     label: 'Daily Logs',
-    route: '/user/daily-log'
+     route: '/user/daily-log',
+    icon: '📝',
+    children: [
+      {
+        label: 'Overview',
+        route: '/user/daily-log/overview'
+      },
+      {
+        label: 'History',
+        route: '/user/daily-log/list'
+      }
+    ]
   },
   {
     label: 'My Pillars',
-    route: '/user/pillars'
+    route: '/user/pillars',
+    icon: '🧱',
+    children: [
+      {
+        label: 'Overview',
+        route: '/user/pillars/overview'
+      }
+    ]
   },
   {
     label: 'My Activities',
-    route: '/user/activity'
+    route: '/user/activity',
+    icon: '⚡',
+    children: [
+      {
+        label: 'Overview',
+        route: '/user/activity/overview'
+      }
+    ]
   }
 ];

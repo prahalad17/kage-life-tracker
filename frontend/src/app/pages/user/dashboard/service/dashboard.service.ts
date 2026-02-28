@@ -5,7 +5,7 @@ import { ApiResponse } from "../../../../shared/models/api/api-response.model";
 import { DailyLog } from "../../daily-log/models/daily-log.model";
 import { UpdateDailyLogReq } from "../../daily-log/models/update-daily-log-resuest";
 import { CreateDailyLogReq } from "../../daily-log/models/create-daily-log-request";
-import { ActivityDailyLogSchedulerRequest } from "../models/activityScheduker";
+import { ActivityDailyLogSchedulerRequest } from "../models/activityScheduler";
 @Injectable({
     providedIn:'root'
 })

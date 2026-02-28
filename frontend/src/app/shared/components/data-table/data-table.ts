@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-data-table',
   imports: [CommonModule],
   templateUrl: './data-table.html',
-  styleUrl: './data-table.css',
+  styleUrl: './data-table.scss',
 })
 export class DataTable {
 

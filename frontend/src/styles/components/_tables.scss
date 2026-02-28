@@ -1,0 +1,30 @@
+@use '../abstracts/typography' as *;
+@use '../abstracts/spacing' as *;
+
+.table-modern {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.table-modern th {
+  font-size: $font-size-xs;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  padding: $space-sm $space-md;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.table-modern td {
+  padding: $space-md;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table-modern tr:hover {
+  background: var(--color-primary-soft);
+}

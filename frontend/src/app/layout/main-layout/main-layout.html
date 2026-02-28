@@ -1,13 +1,29 @@
-<header>
-<app-header></app-header>
-</header>
+<div class="app-layout">
 
+  <!-- SIDEBAR -->
+  <aside
+    class="app-sidebar"
+    [class.collapsed]="isSidebarCollapsed"
+  >
+    <app-sidebar
+      [collapsed]="isSidebarCollapsed"
+      (toggleSidebar)="toggleSidebar()"
+    ></app-sidebar>
+  </aside>
 
-<div class="dashboard-container">
-  
-  <app-sidebar></app-sidebar>
+  <!-- MAIN AREA -->
+  <div class="app-main">
 
-  <div class="dashboard-content">
-    <router-outlet></router-outlet>
+    <!-- TOPBAR -->
+    <header class="app-topbar">
+      <app-header></app-header>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="app-content">
+      <router-outlet></router-outlet>
+    </main>
+
   </div>
+
 </div>

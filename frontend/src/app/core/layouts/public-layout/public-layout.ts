@@ -5,7 +5,7 @@ import { RouterLink, RouterOutlet } from '@angular/router';
   selector: 'app-public-layout',
   imports: [RouterOutlet,RouterLink],
   templateUrl: './public-layout.html',
-  styleUrl: './public-layout.css',
+  styleUrl: './public-layout.scss',
 })
 export class PublicLayout {
 

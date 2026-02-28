@@ -1,14 +1,15 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './auth/login/login';
+import { LoginComponent } from './auth/pages/login/login';
 import { authGuard } from './core/guards/auth/auth-guard';
 import { PublicLayout } from './core/layouts/public-layout/public-layout';
 import { Landing } from './core/pages/landing/landing';
 
-import { Register } from './auth/register/register';
-import { CheckEmail } from './auth/check-email/check-email';
+import { Register } from './auth/pages/register/register';
+import { CheckEmail } from './auth/pages/check-email/check-email';
 import { MainLayout } from './layout/main-layout/main-layout';
 import { roleGuard } from './core/guards/role/role-guard';
 import { guestGuard } from './core/guards/guest/guest-guard';
+import { AuthShell } from './auth/pages/auth-shell/auth-shell';
 export const routes: Routes = [
 
 
@@ -26,6 +27,7 @@ export const routes: Routes = [
       },
       {
         path: 'auth',
+        component: AuthShell,
         children: [
           { path: 'login', component: LoginComponent },
           { path: 'register', component: Register },

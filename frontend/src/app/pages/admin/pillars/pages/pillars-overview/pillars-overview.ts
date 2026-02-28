@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-pillars-overview',
   imports: [],
   templateUrl: './pillars-overview.html',
-  styleUrl: './pillars-overview.css',
+  styleUrl: './pillars-overview.scss',
 })
 export class PillarsOverview {
 

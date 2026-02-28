@@ -27,7 +27,7 @@ type DialogType = 'info' | 'delete' | '';
     ConfirmDialog
   ],
   templateUrl: './pillars-list.html',
-  styleUrl: './pillars-list.css',
+  styleUrl: './pillars-list.scss',
 })
 export class PillarsListComponent implements OnInit {
 

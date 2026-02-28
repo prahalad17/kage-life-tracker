@@ -24,7 +24,7 @@ type DialogType = 'info' | 'delete' | '';
         DataForm,
         ConfirmDialog],
   templateUrl: './activity-list.html',
-  styleUrl: './activity-list.css',
+  styleUrl: './activity-list.scss',
 })
 export class ActivityListComponent  implements OnInit{
 

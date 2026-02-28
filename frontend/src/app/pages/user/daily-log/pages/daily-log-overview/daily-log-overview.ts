@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-daily-log-overview',
   imports: [],
   templateUrl: './daily-log-overview.html',
-  styleUrl: './daily-log-overview.css',
+  styleUrl: './daily-log-overview.scss',
 })
 export class DailyLogOverview {
 

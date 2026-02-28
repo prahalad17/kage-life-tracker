@@ -5,7 +5,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
   selector: 'app-dashboard-shell',
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './dashboard-shell.html',
-  styleUrl: './dashboard-shell.css',
+  styleUrl: './dashboard-shell.scss',
 })
 export class DashboardShell {
 

@@ -1,17 +1,85 @@
-<nav class="sidebar bg-dark text-light d-flex flex-column">
-  <div class="p-3 text-center border-bottom">
-    <h4 class="m-0 text-info fw-bold">KAGE</h4>
+<div class="sidebar">
+
+  <!-- HEADER -->
+  <div class="sidebar-header">
+
+    <div class="brand">
+      <span class="brand-logo">⚡</span>
+
+      @if (!collapsed) {
+        <span class="brand-name">
+          LifeTrack
+        </span>
+      }
+    </div>
+
+    <button
+      class="collapse-btn"
+      (click)="toggleSidebar.emit()"
+      aria-label="Toggle sidebar"
+    >
+      <span
+        class="collapse-icon"
+        [class.rotated]="collapsed"
+      >
+        ‹
+      </span>
+    </button>
+
   </div>
 
-  <ul class="nav nav-pills flex-column p-2 gap-1">
-    <li class="nav-item" *ngFor="let item of menu">
-      <a
-        class="nav-link text-light"
-        [routerLink]="item.route"
-        routerLinkActive="active"
-      >
-        {{ item.label }}
-      </a>
-    </li>
+  <!-- MENU -->
+  <ul class="sidebar-menu">
+
+    @for (item of menu; track item.label) {
+
+      <li>
+
+        <a
+          class="sidebar-link"
+          [routerLink]="item.route || null"
+          [class.active]=" isActive(item.route) ||isParentActive(item)"
+        >
+
+          <span class="icon">
+            {{ item.icon }}
+          </span>
+
+          @if (!collapsed) {
+            <span class="label">
+              {{ item.label }}
+            </span>
+          }
+
+        </a>
+
+        @if (
+          !collapsed &&
+          item.children?.length &&
+          expandedItem === item.label
+        ) {
+
+          <ul class="submenu">
+
+            @for (child of item.children; track child.label) {
+              <li>
+                <a
+                  [routerLink]="child.route"
+                  [class.sub-active]="isActive(child.route)"
+                >
+                  {{ child.label }}
+                </a>
+              </li>
+            }
+
+          </ul>
+
+        }
+
+      </li>
+
+    }
+
   </ul>
-</nav>
+
+</div>

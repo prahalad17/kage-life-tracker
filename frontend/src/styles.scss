@@ -1,0 +1,18 @@
+/* ===== ABSTRACTS (Design System) ===== */
+@use 'styles/abstracts/variables';
+@use 'styles/abstracts/typography';
+@use 'styles/abstracts/spacing';
+
+/* ===== BASE ===== */
+@use 'styles/base/reset';
+@use 'styles/base/globals';
+
+/* ===== COMPONENTS ===== */
+@use 'styles/components/buttons';
+@use 'styles/components/forms';
+@use 'styles/components/cards';
+@use 'styles/components/tables';
+
+/* ===== THEME ===== */
+@use 'styles/theme/light';
+@use 'styles/theme/dark';

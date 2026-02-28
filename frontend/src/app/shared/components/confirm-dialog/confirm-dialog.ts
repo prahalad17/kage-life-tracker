@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-confirm-dialog',
   imports: [CommonModule],
   templateUrl: './confirm-dialog.html',
-  styleUrl: './confirm-dialog.css',
+  styleUrl: './confirm-dialog.scss',
 })
 export class ConfirmDialog{
 

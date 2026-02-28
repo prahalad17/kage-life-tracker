@@ -1,0 +1,135 @@
+// ===== DESIGN TOKENS =====
+$card-bg: #ffffff;
+$border-light: #e5e7eb;
+$text-primary: #1f2937;
+$text-muted: #6b7280;
+$primary-color: #6366f1;
+$danger-color: #ef4444;
+$input-focus: #6366f1;
+$row-hover: #f9fafb;
+
+// ===== FORM CARD =====
+.saas-form-card {
+  background: $card-bg;
+  padding: 2rem;
+  border-radius: 16px;
+  border: 1px solid $border-light;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+// ===== GRID =====
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+
+  .grid-2 {
+    grid-column: span 1;
+  }
+}
+
+// ===== FIELD =====
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+// ===== LABEL =====
+label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: $text-muted;
+  margin-bottom: 0.4rem;
+}
+
+.required {
+  color: $danger-color;
+  margin-left: 2px;
+}
+
+// ===== INPUTS =====
+input,
+textarea,
+select {
+  background: #ffffff;
+  border: 1px solid $border-light;
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #d1d5db;
+  }
+
+  &:focus {
+    border-color: $input-focus;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    outline: none;
+  }
+}
+
+textarea {
+  resize: vertical;
+}
+
+// ===== ERROR TEXT =====
+.error-text {
+  font-size: 0.8rem;
+  color: $danger-color;
+  margin-top: 0.4rem;
+}
+
+// ===== ACTION BUTTONS =====
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+// Primary Button
+button.primary {
+  background: $primary-color;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+// Secondary Button
+button.secondary {
+  background: #f3f4f6;
+  border: 1px solid $border-light;
+  border-radius: 10px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 500;
+
+  &:hover {
+    background: #e5e7eb;
+  }
+}
+
+// Disabled Buttons
+button:disabled {
+  background: #e5e7eb !important;
+  color: #9ca3af !important;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+// ===== ALERT =====
+.form-alert {
+  margin-top: 1.5rem;
+  padding: 0.75rem 1rem;
+  background: #fee2e2;
+  color: #991b1b;
+  border-radius: 10px;
+  font-size: 0.9rem;
+}

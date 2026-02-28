@@ -1,0 +1,160 @@
+// ===== DESIGN TOKENS =====
+$bg-page: #f6f8fb;
+$card-bg: #ffffff;
+$border-light: #eef1f4;
+$text-primary: #1f2937;
+$text-muted: #6b7280;
+$row-hover: #f9fafb;
+$primary-color: #6366f1;
+$danger-color: #ef4444;
+
+// ===== CARD =====
+.saas-table-card {
+  background: $card-bg;
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid $border-light;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+// ===== HEADER =====
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  h5 {
+    font-weight: 600;
+    margin: 0;
+    color: $text-primary;
+  }
+}
+
+// ===== TABLE =====
+.table-scroll-container {
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.saas-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    th {
+      text-align: left;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: $text-muted;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid $border-light;
+      background: $card-bg;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+  }
+
+  tbody {
+    tr {
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: $row-hover;
+      }
+
+      td {
+        padding: 0.9rem 1rem;
+        border-bottom: 1px solid #f3f4f6;
+        font-size: 0.95rem;
+        color: $text-primary;
+      }
+    }
+  }
+}
+
+// ===== BUTTONS =====
+.btn-primary-modern {
+  background: $primary-color;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.btn-ghost-modern {
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+
+  &:hover {
+    background: #f3f4f6;
+  }
+}
+
+.btn-danger-modern {
+  background: $danger-color;
+  border: none;
+  color: white;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+// ===== PAGINATION =====
+.pagination-bar {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid $border-light;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .pagination-info {
+    font-size: 0.9rem;
+    color: $text-muted;
+  }
+
+  .pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    select {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.85rem;
+    }
+
+    button {
+      border: 1px solid #e5e7eb;
+      background: white;
+      border-radius: 8px;
+      padding: 0.3rem 0.6rem;
+      cursor: pointer;
+
+      &:hover {
+        background: #f3f4f6;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+}

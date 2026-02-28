@@ -5,7 +5,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   selector: 'app-overlay',
   imports: [CommonModule],
   templateUrl: './overlay.html',
-  styleUrl: './overlay.css',
+  styleUrl: './overlay.scss',
 })
 export class Overlay {
 

@@ -5,7 +5,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
   selector: 'app-users-shell',
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './users-shell.html',
-  styleUrl: './users-shell.css',
+  styleUrl: './users-shell.scss',
 })
 export class UsersShell {
 

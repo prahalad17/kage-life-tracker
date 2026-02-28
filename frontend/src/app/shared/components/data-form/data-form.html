@@ -1,29 +1,30 @@
-<form [formGroup]="form" (ngSubmit)="onSubmit()" class="p-3">
+<form
+  [formGroup]="form"
+  (ngSubmit)="onSubmit()"
+  class="saas-form-card">
 
-  <div class="row g-3">
+  <div class="form-grid">
 
     @for (field of config.fields; track field.name) {
       @if (!field.hidden) {
 
         <div
-          class="col-12"
-          [class.col-md-6]="config.layout === 'grid' && config.gridColumns === 2"
+          class="form-field"
+          [class.grid-2]="config.layout === 'grid' && config.gridColumns === 2"
         >
 
-          <label class="form-label">
+          <label>
             {{ field.label }}
             @if (field.required) {
-              <span class="text-danger">*</span>
+              <span class="required">*</span>
             }
           </label>
 
-          <!-- FIELD TYPES -->
           @switch (field.type) {
 
             @case ('text') {
               <input
                 type="text"
-                class="form-control"
                 [formControlName]="field.name"
                 [placeholder]="field.placeholder"
               />
@@ -32,7 +33,6 @@
             @case ('email') {
               <input
                 type="email"
-                class="form-control"
                 [formControlName]="field.name"
                 [placeholder]="field.placeholder"
               />
@@ -41,7 +41,6 @@
             @case ('password') {
               <input
                 type="password"
-                class="form-control"
                 [formControlName]="field.name"
                 [placeholder]="field.placeholder"
               />
@@ -49,7 +48,6 @@
 
             @case ('textarea') {
               <textarea
-                class="form-control"
                 rows="3"
                 [formControlName]="field.name"
                 [placeholder]="field.placeholder">
@@ -57,28 +55,25 @@
             }
 
             @case ('select') {
-              <select
-                class="form-select"
-                [formControlName]="field.name">
-                
-                 <option [ngValue]="null">
-      Select {{ field.label }}
-    </option>
+              <select [formControlName]="field.name">
+                <option [ngValue]="null">
+                  Select {{ field.label }}
+                </option>
+
                 @for (opt of dropdownOptions[field.name] ?? []; track opt.value) {
-      <option [ngValue]="opt.value">
-        {{ opt.label }}
-      </option>
-    }
+                  <option [ngValue]="opt.value">
+                    {{ opt.label }}
+                  </option>
+                }
               </select>
             }
           }
 
-          <!-- VALIDATION ERROR -->
           @if (
             form.get(field.name)?.touched &&
             form.get(field.name)?.invalid
           ) {
-            <div class="text-danger small mt-1">
+            <div class="error-text">
               {{ field.label }} is invalid
             </div>
           }
@@ -90,29 +85,27 @@
   </div>
 
   <!-- ACTION BUTTONS -->
-  <div class="d-flex justify-content-end gap-2 mt-4 mb3">
+  <div class="form-actions">
 
     @for (action of config.actions; track action.label) {
+
       <button
-        class="btn"
-        [ngClass]="{
-          'btn-primary': action.color === 'primary',
-          'btn-secondary': !action.color
-        }"
         [type]="action.type"
-        [disabled]="action.disabled"
-        (click)="action.action === 'cancel' && onCancel()"
-        (click)="action.action === 'submit' && onSubmit()">
+        [class.primary]="action.action === 'submit'"
+        [class.secondary]="action.action !== 'submit'"
+        [disabled]="action.action === 'submit' && form.invalid"
+        (click)="action.action === 'cancel' && onCancel()">
         {{ action.label }}
       </button>
+
     }
 
   </div>
 
   @if (message) {
-  <div class="alert alert-danger mb3 " role="alert">
-    {{ message }}
-  </div>
-}
+    <div class="form-alert">
+      {{ message }}
+    </div>
+  }
 
 </form>

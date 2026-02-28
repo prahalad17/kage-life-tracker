@@ -15,7 +15,7 @@ type DialogType = 'info' | 'delete' | '';
   imports: [CommonModule,
     DataTable],
   templateUrl: './dashboard-overview.html',
-  styleUrl: './dashboard-overview.css',
+  styleUrl: './dashboard-overview.scss',
 })
 export class DashboardOverview {
 

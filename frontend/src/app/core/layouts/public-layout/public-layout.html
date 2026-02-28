@@ -1,27 +1,32 @@
-<!-- TOP NAVBAR (FIXED) -->
-<nav class="navbar navbar-dark bg-dark px-3">
-  <a class="navbar-brand" routerLink="/">MyApp</a>
+<div class="public-layout">
 
-  <div>
-    <a routerLink="auth/login" class="btn btn-outline-light btn-sm me-2">
-      Sign In
-    </a>
-    <a routerLink="auth/register" class="btn btn-primary btn-sm">
-      Register
-    </a>
-  </div>
-</nav>
+  <!-- NAVBAR -->
+  <header class="public-navbar">
+    <div class="nav-container">
 
-<!-- MAIN LAYOUT -->
-<div class="container-fluid">
-  <div class="row vh-100">
+      <div class="brand" routerLink="/">
+        <span class="brand-logo">⚡</span>
+        <span class="brand-name">LifeTrack</span>
+      </div>
 
-    
+      
 
-    <!-- CENTER CONTENT -->
-    <main class="col-md-9 col-lg-10 p-4 overflow-auto">
-      <router-outlet></router-outlet>
-    </main>
+      <div class="nav-actions">
+        <a routerLink="auth/login" class="btn btn-ghost">
+          Sign In
+        </a>
 
-  </div>
+        <a routerLink="auth/register" class="btn btn-primary">
+          Start Your Journey
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="public-content">
+    <router-outlet></router-outlet>
+  </main>
+
 </div>

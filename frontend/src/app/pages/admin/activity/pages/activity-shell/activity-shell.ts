@@ -5,7 +5,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
   selector: 'app-activity-shell',
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './activity-shell.html',
-  styleUrl: './activity-shell.css',
+  styleUrl: './activity-shell.scss',
 })
 export class ActivityShellComponent {
 

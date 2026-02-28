@@ -1,0 +1,55 @@
+<div class="auth-card">
+
+  <h2>Welcome Back</h2>
+  <p class="subtitle">Sign in to your account</p>
+
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+    <!-- EMAIL -->
+    <div class="form-field">
+      <label>Email</label>
+      <input type="email"
+             formControlName="email"
+             placeholder="you@example.com" />
+
+      @if (loginForm.get('email')?.touched && loginForm.get('email')?.invalid) {
+        <small class="error">
+          Email is required and must be valid
+        </small>
+      }
+    </div>
+
+    <!-- PASSWORD -->
+    <div class="form-field">
+      <label>Password</label>
+      <input type="password"
+             formControlName="password"
+             placeholder="••••••••" />
+
+      @if (loginForm.get('password')?.touched && loginForm.get('password')?.invalid) {
+        <small class="error">
+          Password is required
+        </small>
+      }
+    </div>
+
+    @if (errorMessage) {
+      <div class="alert-error">
+        {{ errorMessage }}
+      </div>
+    }
+
+    <button class="btn btn-primary w-full"
+            type="submit"
+            [disabled]="loginForm.invalid">
+      Sign In
+    </button>
+
+  </form>
+
+  <div class="auth-footer">
+    Don’t have an account?
+    <a routerLink="/auth/register">Create one</a>
+  </div>
+
+</div>

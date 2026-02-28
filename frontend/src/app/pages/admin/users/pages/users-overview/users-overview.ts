@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-users-overview',
   imports: [],
   templateUrl: './users-overview.html',
-  styleUrl: './users-overview.css',
+  styleUrl: './users-overview.scss',
 })
 export class UsersOverviewComponent {
 
