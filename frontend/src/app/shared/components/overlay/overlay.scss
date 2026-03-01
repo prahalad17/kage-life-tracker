@@ -1,39 +1,156 @@
+/* ===============================
+   BACKDROP
+=============================== */
+
 .overlay-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(8px);
   z-index: 1000;
+  animation: fadeIn 0.2s ease;
 }
+
+/* ===============================
+   BASE PANEL
+=============================== */
 
 .overlay-panel {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #fff;
-  border-radius: 8px;
-  z-index: 1001;
-  max-height: 80vh;
+  top: 0;
+  right: 0;
+  height: 100%;
+  background: var(--color-surface);
+  box-shadow: -12px 0 50px rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
+  z-index: 1001;
+  animation: slideIn 0.25s ease;
 }
+
+/* ===============================
+   SIZE VARIANTS
+=============================== */
+
+.overlay-panel.sm {
+  width: 420px;
+}
+
+.overlay-panel {
+  width: 520px;
+}
+
+.overlay-panel.lg {
+  width: 720px;
+}
+
+/* ===============================
+   CENTERED VARIANT
+=============================== */
+
+.overlay-panel.centered {
+  top: 50%;
+  left: 50%;
+  right: auto;
+  height: auto;
+  transform: translate(-50%, -50%);
+   width: 560px;
+  max-width: 95%;
+  border-radius: var(--radius-lg);
+  animation: scaleIn 0.2s ease;
+}
+
+/* ===============================
+   HEADER
+=============================== */
 
 .overlay-header {
-  padding: 16px;
-  border-bottom: 1px solid #ddd;
+  height: 72px;
+  padding: 0 28px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.overlay-content {
-  padding: 16px;
-  overflow: auto;
+.overlay-title {
+  font-size: 18px;
+  font-weight: 600;
 }
 
-.close-btn {
-  background: none;
+.overlay-close {
   border: none;
+  background: transparent;
   font-size: 18px;
   cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+}
+
+.overlay-close:hover {
+  background: var(--color-primary-soft);
+}
+
+/* ===============================
+   BODY
+=============================== */
+
+.overlay-body {
+  flex: 1;
+  padding: 28px;
+  overflow-y: auto;
+}
+
+.overlay-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.overlay-body::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 8px;
+}
+
+/* ===============================
+   FOOTER
+=============================== */
+
+.overlay-footer {
+  padding: 20px 28px;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background: var(--color-surface-alt);
+}
+
+/* ===============================
+   ANIMATIONS
+=============================== */
+
+@keyframes slideIn {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

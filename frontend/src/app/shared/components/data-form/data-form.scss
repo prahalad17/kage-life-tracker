@@ -1,135 +1,187 @@
-// ===== DESIGN TOKENS =====
-$card-bg: #ffffff;
-$border-light: #e5e7eb;
-$text-primary: #1f2937;
-$text-muted: #6b7280;
-$primary-color: #6366f1;
-$danger-color: #ef4444;
-$input-focus: #6366f1;
-$row-hover: #f9fafb;
+/* ================================
+   FORM BASE
+================================ */
 
-// ===== FORM CARD =====
-.saas-form-card {
-  background: $card-bg;
-  padding: 2rem;
-  border-radius: 16px;
-  border: 1px solid $border-light;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+.saas-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-// ===== GRID =====
+/* CARD */
+
+.form-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ================================
+   GRID
+================================ */
+
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-
-  .grid-2 {
-    grid-column: span 1;
-  }
+  gap: 24px;
 }
 
-// ===== FIELD =====
+.form-grid.grid-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* ================================
+   FIELD
+================================ */
+
 .form-field {
   display: flex;
   flex-direction: column;
+  gap: 6px;
 }
 
-// ===== LABEL =====
 label {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: $text-muted;
-  margin-bottom: 0.4rem;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.2px;
 }
 
 .required {
-  color: $danger-color;
-  margin-left: 2px;
+  color: var(--color-error);
+  margin-left: 4px;
 }
 
-// ===== INPUTS =====
+/* INPUTS */
+
 input,
 textarea,
 select {
-  background: #ffffff;
-  border: 1px solid $border-light;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 12px 14px;
   border-radius: 10px;
-  padding: 0.6rem 0.9rem;
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
-
-  &:hover {
-    border-color: #d1d5db;
-  }
-
-  &:focus {
-    border-color: $input-focus;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
-    outline: none;
-  }
 }
 
-textarea {
-  resize: vertical;
+input:focus,
+textarea:focus,
+select:focus {
+   border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px var(--color-primary-soft);
 }
 
-// ===== ERROR TEXT =====
+input.invalid,
+textarea.invalid,
+select.invalid {
+  border-color: var(--color-error);
+  background: rgba(220, 38, 38, 0.05);
+}
+
+/* ================================
+   ERROR TEXT
+================================ */
+
 .error-text {
-  font-size: 0.8rem;
-  color: $danger-color;
-  margin-top: 0.4rem;
+  font-size: 12px;
+  color: var(--color-error);
+  margin-top: 4px;
 }
 
-// ===== ACTION BUTTONS =====
+/* ================================
+   ACTIONS
+================================ */
+
 .form-actions {
+  margin-top: 28px;
   display: flex;
   justify-content: flex-end;
-  gap: 0.75rem;
-  margin-top: 2rem;
+  gap: 12px;
 }
 
-// Primary Button
-button.primary {
-  background: $primary-color;
-  color: white;
+.form-btn {
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  cursor: pointer;
   border: none;
-  border-radius: 10px;
-  padding: 0.6rem 1.2rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-
-  &:hover {
-    opacity: 0.9;
-  }
+  transition: var(--transition-fast);
 }
 
-// Secondary Button
-button.secondary {
-  background: #f3f4f6;
-  border: 1px solid $border-light;
-  border-radius: 10px;
-  padding: 0.6rem 1.2rem;
+.form-btn.primary {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    #6d5dfc
+  );
+  color: white;
   font-weight: 500;
-
-  &:hover {
-    background: #e5e7eb;
-  }
 }
 
-// Disabled Buttons
-button:disabled {
-  background: #e5e7eb !important;
-  color: #9ca3af !important;
+.form-btn.primary:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+}
+
+.form-btn.secondary {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.form-btn.secondary:hover {
+  background: var(--color-surface-alt);
+}
+
+.form-btn:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
-  opacity: 1;
 }
 
-// ===== ALERT =====
+/* ================================
+   ALERT
+================================ */
+
 .form-alert {
-  margin-top: 1.5rem;
-  padding: 0.75rem 1rem;
-  background: #fee2e2;
-  color: #991b1b;
-  border-radius: 10px;
-  font-size: 0.9rem;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: 14px;
+}
+
+.modal-wrapper {
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-card {
+  width: 480px;
+  max-width: 90%;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  padding: 32px;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-card h3 {
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

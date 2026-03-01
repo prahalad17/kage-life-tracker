@@ -1,12 +1,42 @@
-<div class="overlay-backdrop" (click)="onBackdropClick()"></div>
+<div
+  class="overlay-backdrop"
+  (click)="onBackdropClick()"
+></div>
 
-<div class="overlay-panel">
+<div
+  class="overlay-panel"
+  [class.centered]="variant === 'center'"
+  [class.sm]="size === 'sm'"
+  [class.lg]="size === 'lg'"
+>
+
+  <!-- HEADER SLOT -->
   <div class="overlay-header">
-    <h5>{{ title }}</h5>
-    <button class="btn-close" (click)="close.emit()"></button>
+
+    <div class="overlay-title">
+      {{ title }}
+    </div>
+
+    <button
+      class="overlay-close"
+      (click)="close.emit()"
+      aria-label="Close"
+    >
+      ✕
+    </button>
+
   </div>
 
+  <!-- BODY -->
   <div class="overlay-body">
     <ng-content></ng-content>
   </div>
+
+  <!-- FOOTER SLOT (optional) -->
+  @if (showFooter) {
+    <div class="overlay-footer">
+      <ng-content select="[overlay-footer]"></ng-content>
+    </div>
+  }
+
 </div>

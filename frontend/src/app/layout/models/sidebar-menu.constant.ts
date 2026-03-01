@@ -83,6 +83,10 @@ export const USER_SIDEBAR_MENU: SidebarItem[] = [
       {
         label: 'Overview',
         route: '/user/pillars/overview'
+      },
+      {
+        label: 'Pillars',
+        route: '/user/pillars/list'
       }
     ]
   },
@@ -94,6 +98,10 @@ export const USER_SIDEBAR_MENU: SidebarItem[] = [
       {
         label: 'Overview',
         route: '/user/activity/overview'
+      },
+      {
+        label: 'Activities',
+        route: '/user/activity/list'
       }
     ]
   }

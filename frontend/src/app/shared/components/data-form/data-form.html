@@ -1,100 +1,117 @@
 <form
   [formGroup]="form"
   (ngSubmit)="onSubmit()"
-  class="saas-form-card">
+  class="saas-form">
 
-  <div class="form-grid">
+  <!-- CARD WRAPPER -->
+  <div class="form-card">
 
-    @for (field of config.fields; track field.name) {
-      @if (!field.hidden) {
+    <!-- GRID -->
+    <div
+      class="form-grid"
+      [class.grid-2]="config.layout === 'grid' && config.gridColumns === 2"
+    >
 
-        <div
-          class="form-field"
-          [class.grid-2]="config.layout === 'grid' && config.gridColumns === 2"
-        >
+      @for (field of config.fields; track field.name) {
+        @if (!field.hidden) {
 
-          <label>
-            {{ field.label }}
-            @if (field.required) {
-              <span class="required">*</span>
-            }
-          </label>
+          <div class="form-field">
 
-          @switch (field.type) {
+            <label>
+              {{ field.label }}
+              @if (field.required) {
+                <span class="required">*</span>
+              }
+            </label>
 
-            @case ('text') {
-              <input
-                type="text"
-                [formControlName]="field.name"
-                [placeholder]="field.placeholder"
-              />
-            }
+            @switch (field.type) {
 
-            @case ('email') {
-              <input
-                type="email"
-                [formControlName]="field.name"
-                [placeholder]="field.placeholder"
-              />
-            }
+              @case ('text') {
+                <input
+                  type="text"
+                  [formControlName]="field.name"
+                  [placeholder]="field.placeholder"
+                  [class.invalid]="form.get(field.name)?.touched && form.get(field.name)?.invalid"
+                />
+              }
 
-            @case ('password') {
-              <input
-                type="password"
-                [formControlName]="field.name"
-                [placeholder]="field.placeholder"
-              />
-            }
+              @case ('email') {
+                <input
+                  type="email"
+                  [formControlName]="field.name"
+                  [placeholder]="field.placeholder"
+                  [class.invalid]="form.get(field.name)?.touched && form.get(field.name)?.invalid"
+                />
+              }
 
-            @case ('textarea') {
-              <textarea
-                rows="3"
-                [formControlName]="field.name"
-                [placeholder]="field.placeholder">
-              </textarea>
-            }
+              @case ('password') {
+                <input
+                  type="password"
+                  [formControlName]="field.name"
+                  [placeholder]="field.placeholder"
+                  [class.invalid]="form.get(field.name)?.touched && form.get(field.name)?.invalid"
+                />
+              }
 
-            @case ('select') {
-              <select [formControlName]="field.name">
-                <option [ngValue]="null">
-                  Select {{ field.label }}
-                </option>
+              @case ('textarea') {
+                <textarea
+                  rows="4"
+                  [formControlName]="field.name"
+                  [placeholder]="field.placeholder"
+                  [class.invalid]="form.get(field.name)?.touched && form.get(field.name)?.invalid">
+                </textarea>
+              }
 
-                @for (opt of dropdownOptions[field.name] ?? []; track opt.value) {
-                  <option [ngValue]="opt.value">
-                    {{ opt.label }}
+              @case ('select') {
+                <select
+                  [formControlName]="field.name"
+                  [class.invalid]="form.get(field.name)?.touched && form.get(field.name)?.invalid"
+                >
+                  <option [ngValue]="null">
+                    Select {{ field.label }}
                   </option>
-                }
-              </select>
+
+                  @for (opt of dropdownOptions[field.name] ?? []; track opt.value) {
+                    <option [ngValue]="opt.value">
+                      {{ opt.label }}
+                    </option>
+                  }
+                </select>
+              }
+
             }
-          }
 
-          @if (
-            form.get(field.name)?.touched &&
-            form.get(field.name)?.invalid
-          ) {
-            <div class="error-text">
-              {{ field.label }} is invalid
-            </div>
-          }
+            @if (
+              form.get(field.name)?.touched &&
+              form.get(field.name)?.invalid
+            ) {
+              <div class="error-text">
+                {{ field.label }} is invalid
+              </div>
+            }
 
-        </div>
+          </div>
+
+        }
       }
-    }
+
+    </div>
 
   </div>
 
-  <!-- ACTION BUTTONS -->
+  <!-- ACTIONS -->
   <div class="form-actions">
 
     @for (action of config.actions; track action.label) {
 
       <button
         [type]="action.type"
+        class="form-btn"
         [class.primary]="action.action === 'submit'"
         [class.secondary]="action.action !== 'submit'"
         [disabled]="action.action === 'submit' && form.invalid"
-        (click)="action.action === 'cancel' && onCancel()">
+        (click)="action.action === 'cancel' && onCancel()"
+      >
         {{ action.label }}
       </button>
 
@@ -102,6 +119,7 @@
 
   </div>
 
+  <!-- MESSAGE -->
   @if (message) {
     <div class="form-alert">
       {{ message }}

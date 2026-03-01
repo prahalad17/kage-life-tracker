@@ -1,69 +1,105 @@
-<div class="saas-table-card">
+<div class="saas-table">
 
+  <!-- HEADER -->
   @if (config.create?.enabled) {
     <div class="table-header">
-      <h5>{{ config.tableName }}</h5>
 
-      <button class="btn-primary-modern" (click)="onCreateClick()">
+      <div class="table-title">
+        <h3>{{ config.tableName }}</h3>
+        <span class="table-count">
+          {{ totalElements }} items
+        </span>
+      </div>
+
+      <button
+        class="btn btn-primary"
+        (click)="onCreateClick()">
         {{ config.create?.label || 'Create' }}
       </button>
+
     </div>
   }
 
-  <div class="table-scroll-container">
-    <table class="saas-table">
-      <thead>
-        <tr>
-          @for (column of config.columns; track column.key) {
-            <th>{{ column.header }}</th>
-          }
+  <!-- TABLE WRAPPER -->
+  <div class="table-container">
 
-          @if (config.actions?.length) {
-            <th class="actions-column">Actions</th>
-          }
-        </tr>
-      </thead>
+     <div class="table-scroll">
+      <table>
 
-      <tbody>
-        @for (row of rows; track row.id) {
+        <thead>
           <tr>
             @for (column of config.columns; track column.key) {
-              <td>{{ row[column.key] }}</td>
+              <th>{{ column.header }}</th>
             }
 
             @if (config.actions?.length) {
-              <td class="actions-cell">
-                @for (action of config.actions; track action.type) {
-
-                  @if (action.type === 'delete') {
-                    <button
-                      class="btn-danger-modern"
-                      (click)="onActionClick(action.type, row)">
-                      {{ action.label }}
-                    </button>
-                  }
-                  @else {
-                    <button
-                      class="btn-ghost-modern"
-                      (click)="onActionClick(action.type, row)">
-                      {{ action.label }}
-                    </button>
-                  }
-
-                }
-              </td>
+              <th class="actions-column">Actions</th>
             }
           </tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+
+        <tbody>
+
+          @if (rows?.length) {
+
+            @for (row of rows; track row.id) {
+              <tr>
+
+                @for (column of config.columns; track column.key) {
+                  <td>
+                    {{ row[column.key] }}
+                  </td>
+                }
+
+                @if (config.actions?.length) {
+                  <td class="actions-cell">
+
+                    @for (action of config.actions; track action.type) {
+
+                      <button
+                        class="table-action"
+                        [class.danger]="action.type === 'delete'"
+                        (click)="onActionClick(action.type, row)">
+
+                        {{ action.label }}
+
+                      </button>
+
+                    }
+
+                  </td>
+                }
+
+              </tr>
+            }
+
+          } @else {
+
+            <tr>
+              <td
+                [attr.colspan]="config.columns.length + (config.actions?.length ? 1 : 0)"
+                class="empty-state"
+              >
+                No data available.
+              </td>
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+    </div>
   </div>
 
+  <!-- PAGINATION -->
   @if (config.pagination?.enabled) {
-    <div class="pagination-bar">
+
+    <div class="pagination">
 
       <div class="pagination-info">
-        Showing <strong>{{ startItem }}</strong>
+        Showing
+        <strong>{{ startItem }}</strong>
         –
         <strong>{{ endItem }}</strong>
         of
@@ -73,28 +109,34 @@
       <div class="pagination-controls">
 
         <select
+          class="page-size"
           [value]="pageSize"
           (change)="onPageSizeChange(+($any($event.target).value))">
+
           @for (size of config.pagination?.pageSizeOptions ?? [10,20,50]; track size) {
             <option [value]="size">{{ size }} / page</option>
           }
+
         </select>
 
         <button
+          class="page-btn"
           (click)="onPrevious()"
           [disabled]="pageIndex === 0 || loading">
-          ◀
+          ‹
         </button>
 
         <button
+          class="page-btn"
           (click)="onNext()"
           [disabled]="pageIndex >= totalPages - 1 || loading">
-          ▶
+          ›
         </button>
 
       </div>
 
     </div>
+
   }
 
 </div>

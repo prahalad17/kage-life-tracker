@@ -10,8 +10,11 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class Overlay {
 
   @Input() open = false;
-  @Input() title? : string;
-  @Input() width: string = '600px';
+ @Input() title = '';
+@Input() size: 'sm' | 'md' | 'lg' = 'md';
+@Input() variant: 'drawer' | 'center' = 'drawer';
+@Input() showFooter = false;
+
   @Input() closeOnBackdropClick = true;
 
   @Output() close = new EventEmitter<void>();

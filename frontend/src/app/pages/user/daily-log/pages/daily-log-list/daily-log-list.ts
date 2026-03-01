@@ -68,7 +68,8 @@ export class DailyLogList implements OnInit {
     overlayState = {
       open: false,
       title: '',
-      closeOnBackdrop: true
+      closeOnBackdrop: true,
+      
     };
   
     // ===== DIALOG STATE =====

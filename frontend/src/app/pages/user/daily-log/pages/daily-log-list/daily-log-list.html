@@ -20,11 +20,14 @@
   <app-overlay
     [title]="overlayState.title"
     [closeOnBackdropClick]="overlayState.closeOnBackdrop"
+    variant="center"
+    size="sm"
     (close)="closeOverlay()"
   >
     @if (formConfig) {
       <app-data-form
         [config]="formConfig"
+       
         [data]="selectedRow"
         [message]="formErrorMessage"
         (submitForm)="onFormSubmit($event)"
