@@ -13,4 +13,5 @@ export interface TableConfig {
     pageSizeOptions?: number[];
     defaultPageSize?: number;
   };
+  trackBy?: string;
 }

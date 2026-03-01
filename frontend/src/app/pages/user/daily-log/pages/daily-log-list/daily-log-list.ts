@@ -100,6 +100,7 @@ export class DailyLogList implements OnInit {
         pagination:{
           enabled:true
         }
+        // ,trackBy: "activityDailyLogId"
       };
   
     // ===== LIFECYCLE =====

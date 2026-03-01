@@ -77,5 +77,9 @@ onPageSizeChange(size: number): void {
   });
 }
 
+// ngOnChanges() {
+//   console.log(this.rows);
+// }
+
 
 }

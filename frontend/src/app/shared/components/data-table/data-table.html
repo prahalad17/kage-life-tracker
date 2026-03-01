@@ -40,9 +40,9 @@
 
         <tbody>
 
-          @if (rows?.length) {
+          @if (rows.length) {
 
-            @for (row of rows; track row.id) {
+           @for (row of rows; track row[config.trackBy!] ?? $index){
               <tr>
 
                 @for (column of config.columns; track column.key) {
