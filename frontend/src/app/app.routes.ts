@@ -64,7 +64,7 @@ export const routes: Routes = [
        *  User routes (USER only)
        * ---------------------------- */
       {
-        path: 'user',
+        path: '',
         canActivate: [roleGuard],
         data: { roles: ['ROLE_USER'] },
         loadChildren: () =>

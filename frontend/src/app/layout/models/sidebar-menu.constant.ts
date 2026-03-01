@@ -51,57 +51,57 @@ export const ADMIN_SIDEBAR_MENU: SidebarItem[] = [
 export const USER_SIDEBAR_MENU: SidebarItem[] = [
   {
     label: 'Dashboard',
-    route: '/user/dashboard',
+    route: '/dashboard',
     icon: '🏠',
      children: [
       {
         label: 'Overview',
-        route: '/user/dashboard/overview'
+        route: '/dashboard/overview'
       }
     ]
   },
   {
     label: 'Daily Logs',
-     route: '/user/daily-log',
+     route: '/daily-log',
     icon: '📝',
     children: [
       {
         label: 'Overview',
-        route: '/user/daily-log/overview'
+        route: '/daily-log/overview'
       },
       {
         label: 'History',
-        route: '/user/daily-log/list'
+        route: '/daily-log/list'
       }
     ]
   },
   {
     label: 'My Pillars',
-    route: '/user/pillars',
+    route: '/pillars',
     icon: '🧱',
     children: [
       {
         label: 'Overview',
-        route: '/user/pillars/overview'
+        route: '/pillars/overview'
       },
       {
         label: 'Pillars',
-        route: '/user/pillars/list'
+        route: '/pillars/list'
       }
     ]
   },
   {
     label: 'My Activities',
-    route: '/user/activity',
+    route: '/activity',
     icon: '⚡',
     children: [
       {
         label: 'Overview',
-        route: '/user/activity/overview'
+        route: '/activity/overview'
       },
       {
         label: 'Activities',
-        route: '/user/activity/list'
+        route: '/activity/list'
       }
     ]
   }

@@ -16,11 +16,14 @@ export const guestGuard: CanActivateFn = (route, state) => {
   if (token) {
     // Redirect away from auth pages
 
+    console.log(token +'token')
+    console.log(role +'token')
+
     if (role === 'ROLE_ADMIN') {
-        return router.createUrlTree(['/admin/dashboard']);
-        } else {
-           return router.createUrlTree(['/dashboard']);
-        }
+      return router.createUrlTree(['/admin/dashboard']);
+      } else {
+        return router.createUrlTree(['/dashboard']);
+      }
   }
 
   // No token → allow access to login/register
