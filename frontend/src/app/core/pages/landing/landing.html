@@ -1,82 +1,110 @@
 <div class="landing">
 
-  <!-- HERO SECTION -->
-  <section class="hero container">
-    <div class="hero-content">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="landing-container">
 
-      <h1>
-        Build Better Habits.
-        <span class="highlight">Transform Your Life.</span>
-      </h1>
+      <div class="hero-content">
 
-      <p class="text-secondary">
-        Stay consistent. Build momentum.  
-  Grow one habit at a time — with clarity and calm.
-      </p>
+        <h1>
+          Build Better Habits.
+          <span class="highlight">Transform Your Life.</span>
+        </h1>
 
-      <div class="hero-actions">
-        <a routerLink="/auth/register" class="btn btn-primary">
-          Start Your Journey
-        </a>
+        <p class="hero-subtext">
+          Stay consistent. Build momentum.
+          Grow one habit at a time — with clarity and calm.
+        </p>
 
-        <a routerLink="/auth/login" class="btn btn-outline">
-          Already a Member
-        </a>
+        <div class="hero-actions">
+          <a routerLink="/auth/register" class="btn btn-primary">
+            Start Your Journey
+          </a>
+
+          <a routerLink="/auth/login" class="btn btn-outline">
+            Already a Member
+          </a>
+        </div>
+
       </div>
 
     </div>
   </section>
 
-  <!-- FEATURES SECTION -->
-  <section class="features container">
+  <!-- FEATURES -->
+  <section class="features">
+    <div class="landing-container">
 
-    <div class="section-header">
-      <h2>Everything You Need to Stay Consistent</h2>
-      <p class="text-secondary">
-        Simple tools designed for powerful personal growth.
-      </p>
+      <div class="section-header">
+        <h2>Everything You Need to Stay Consistent</h2>
+        <p>
+          Simple tools designed for powerful personal growth.
+        </p>
+      </div>
+
+      <div class="feature-grid">
+
+        <div class="feature-card">
+          <h3>Daily Habit Tracking</h3>
+          <p>Track routines, build streaks, and maintain momentum effortlessly.</p>
+        </div>
+
+        <div class="feature-card">
+          <h3>Progress Insights</h3>
+          <p>Visualize improvements and understand your growth patterns.</p>
+        </div>
+
+        <div class="feature-card">
+          <h3>Secure & Private</h3>
+          <p>Your data is protected with modern authentication standards.</p>
+        </div>
+
+        <div class="feature-card">
+          <h3>Adaptive Feedback</h3>
+          <p>Receive meaningful insights to continuously improve habits.</p>
+        </div>
+
+      </div>
+
     </div>
-
-    <div class="feature-grid">
-
-      <div class="card">
-        <h3>Daily Habit Tracking</h3>
-        <p class="text-secondary">
-          Track routines, build streaks, and maintain momentum effortlessly.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>Progress Insights</h3>
-        <p class="text-secondary">
-          Visualize improvements and understand your growth patterns.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>Secure & Private</h3>
-        <p class="text-secondary">
-          Your data is protected with modern authentication standards.
-        </p>
-      </div>
-
-    </div>
-
   </section>
 
+  <!-- FINAL CTA -->
   <section class="final-cta">
-  <div class="container">
-    <h2>Ready to build the life you want?</h2>
-    <p class="text-secondary">
-      Start small. Stay consistent. Watch your growth compound.
-    </p>
-    <a routerLink="/auth/register" class="btn btn-primary">
-      Start Your Journey Today
-    </a>
-  </div>
+    <div class="landing-container">
+      <h2>Ready to build the life you want?</h2>
+      <p>
+        Start small. Stay consistent. Watch your growth compound.
+      </p>
+      <a routerLink="/auth/register" class="btn btn-primary">
+        Start Your Journey Today
+      </a>
+    </div>
+  </section>
 
-  
-</section>
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="landing-container footer-content">
 
+      <div class="footer-left">
+        <span class="brand-logo">⚡</span>
+        <span class="brand-name">LifeTrack</span>
+        <p class="footer-tagline">
+          Build habits. Stay consistent. Grow daily.
+        </p>
+      </div>
+
+      <div class="footer-links">
+        <a routerLink="/">Home</a>
+        <a routerLink="/auth/login">Login</a>
+        <a routerLink="/auth/register">Register</a>
+      </div>
+
+      <div class="footer-right">
+        <span>© 2026 LifeTrack</span>
+      </div>
+
+    </div>
+  </footer>
 
 </div>

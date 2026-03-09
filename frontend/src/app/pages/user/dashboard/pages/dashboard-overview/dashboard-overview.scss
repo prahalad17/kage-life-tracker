@@ -1,0 +1,103 @@
+/* ====================================
+   PAGE WRAPPER
+==================================== */
+
+.dashboard-page {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ====================================
+   HEADER
+==================================== */
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard-title h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.dashboard-title p {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+/* ====================================
+   GRID
+==================================== */
+
+.dashboard-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ====================================
+   PANEL
+==================================== */
+
+.dashboard-panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* HEADER */
+
+.panel-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface-alt);
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.panel-title h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* INDICATOR */
+
+.panel-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.panel-indicator.todo {
+  background: var(--color-warning);
+}
+
+.panel-indicator.done {
+  background: var(--color-success);
+}
+
+/* BODY */
+
+.panel-body {
+  padding: 20px 24px;
+}

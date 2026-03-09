@@ -3,16 +3,18 @@ package com.kage.util;
 import com.kage.common.dto.request.FilterCriteria;
 import com.kage.common.dto.request.SearchRequestDto;
 import com.kage.enums.FilterOperator;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
-import jakarta.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public final class SpecificationBuilderUtil {
 
-    private SpecificationBuilderUtil() {}
+    private SpecificationBuilderUtil() {
+    }
 
     public static <T> Specification<T> build(SearchRequestDto request) {
 
@@ -30,32 +32,26 @@ public final class SpecificationBuilderUtil {
 
                 switch (operator) {
 
-                    case EQUALS ->
-                            predicates.add(criteriaBuilder.equal(path, value));
+                    case EQUALS -> predicates.add(criteriaBuilder.equal(path, value));
 
-                    case NOT_EQUALS ->
-                            predicates.add(criteriaBuilder.notEqual(path, value));
+                    case NOT_EQUALS -> predicates.add(criteriaBuilder.notEqual(path, value));
 
-                    case GREATER_THAN ->
-                            predicates.add(criteriaBuilder.greaterThan(
-                                    path.as(Comparable.class),
-                                    (Comparable) value
-                            ));
+                    case GREATER_THAN -> predicates.add(criteriaBuilder.greaterThan(
+                            path.as(Comparable.class),
+                            (Comparable) value
+                    ));
 
-                    case LESS_THAN ->
-                            predicates.add(criteriaBuilder.lessThan(
-                                    path.as(Comparable.class),
-                                    (Comparable) value
-                            ));
+                    case LESS_THAN -> predicates.add(criteriaBuilder.lessThan(
+                            path.as(Comparable.class),
+                            (Comparable) value
+                    ));
 
-                    case LIKE ->
-                            predicates.add(criteriaBuilder.like(
-                                    criteriaBuilder.lower(path.as(String.class)),
-                                    "%" + value.toString().toLowerCase() + "%"
-                            ));
+                    case LIKE -> predicates.add(criteriaBuilder.like(
+                            criteriaBuilder.lower(path.as(String.class)),
+                            "%" + value.toString().toLowerCase() + "%"
+                    ));
 
-                    case IN ->
-                            predicates.add(path.in((List<?>) value));
+                    case IN -> predicates.add(path.in((List<?>) value));
 
                     case BETWEEN -> {
                         if (!(value instanceof List<?> values) || values.size() != 2) {
@@ -69,8 +65,7 @@ public final class SpecificationBuilderUtil {
                         ));
                     }
 
-                    default ->
-                            throw new IllegalArgumentException("Unsupported operator");
+                    default -> throw new IllegalArgumentException("Unsupported operator");
                 }
             }
 
