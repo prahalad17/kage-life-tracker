@@ -1,5 +1,6 @@
 package com.kage.entity;
 
+import com.kage.enums.ActionPlanStatus;
 import com.kage.enums.PlanSource;
 import com.kage.enums.LogStatus;
 import jakarta.persistence.*;
@@ -14,13 +15,13 @@ import static com.kage.util.DomainGuardsUtil.normalize;
 import static com.kage.util.DomainGuardsUtil.requireNonNull;
 
 @Entity
-@Table(name = "activity_logs")
+@Table(name = "action_entry")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ActivityDailyLog extends BaseEntity {
+public class ActionPlan extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "activity_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "activity_id")
     private Activity activity;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -30,14 +31,8 @@ public class ActivityDailyLog extends BaseEntity {
     /**
      * Business date (used for streaks & reports)
      */
-    @Column(name = "log_date", nullable = false)
-    private LocalDate logDate;
-
-    /**
-     * Exact execution timestamp (system-generated)
-     */
-    @Column(name = "logged_at", nullable = false, updatable = false)
-    private Instant loggedAt;
+    @Column(name = "plan_date", nullable = false)
+    private LocalDate planDate;
 
     /**
      * Log Source tracking (system , user)
@@ -51,7 +46,7 @@ public class ActivityDailyLog extends BaseEntity {
      */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private LogStatus logStatus;
+    private ActionPlanStatus planStatus;
 
 
     /**
@@ -71,7 +66,7 @@ public class ActivityDailyLog extends BaseEntity {
 
     /* -------- Constructor -------- */
 
-    protected ActivityDailyLog(
+    protected ActionPlan(
             Activity activity,
             User user,
             LocalDate logDate,
@@ -83,8 +78,6 @@ public class ActivityDailyLog extends BaseEntity {
     ) {
         this.activity = requireNonNull(activity, "activity is required");
         this.user = requireNonNull(user, "user is required");
-        this.logDate = requireNonNull(logDate, "log date is required");
-        this.loggedAt = Instant.now();
 
         validateOwnership(activity, user);
         validateTrackingValues(actualValue, completed);
@@ -92,13 +85,12 @@ public class ActivityDailyLog extends BaseEntity {
         this.actualValue = actualValue;
         this.completed = completed;
         this.notes = normalize(notes);
-        this.logStatus = logStatus;
         this.planSource = planSource;
     }
 
     /* -------- Factory -------- */
 
-    public static ActivityDailyLog create(
+    public static ActionPlan create(
             Activity activity,
             User user,
             LocalDate logDate,
@@ -106,7 +98,7 @@ public class ActivityDailyLog extends BaseEntity {
             Boolean completed,
             String notes
     ) {
-        return new ActivityDailyLog(
+        return new ActionPlan(
                 activity,
                 user,
                 logDate,
@@ -118,12 +110,12 @@ public class ActivityDailyLog extends BaseEntity {
         );
     }
 
-    public static ActivityDailyLog createBaseline(
+    public static ActionPlan createBaseline(
             Activity activity,
             User user,
             LocalDate logDate
     ) {
-        return new ActivityDailyLog(
+        return new ActionPlan(
                 activity,
                 user,
                 logDate,
@@ -138,14 +130,14 @@ public class ActivityDailyLog extends BaseEntity {
     /**
      * Default factory for "log now"
      */
-    public static ActivityDailyLog logNow(
+    public static ActionPlan logNow(
             Activity activity,
             User user,
             Integer actualValue,
             Boolean completed,
             String notes
     ) {
-        return new ActivityDailyLog(
+        return new ActionPlan(
                 activity,
                 user,
                 LocalDate.now(),

@@ -1,7 +1,8 @@
 package com.kage.entity;
 
-import com.kage.enums.PlanSource;
-import com.kage.enums.LogStatus;
+import com.kage.enums.ActionStatus;
+import com.kage.enums.ActivityNature;
+import com.kage.enums.TrackingType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -14,13 +15,13 @@ import static com.kage.util.DomainGuardsUtil.normalize;
 import static com.kage.util.DomainGuardsUtil.requireNonNull;
 
 @Entity
-@Table(name = "activity_logs")
+@Table(name = "action_entry")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ActivityDailyLog extends BaseEntity {
+public class ActionEntry extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "activity_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "activity_id")
     private Activity activity;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -28,31 +29,40 @@ public class ActivityDailyLog extends BaseEntity {
     private User user;
 
     /**
-     * Business date (used for streaks & reports)
-     */
-    @Column(name = "log_date", nullable = false)
-    private LocalDate logDate;
-
-    /**
      * Exact execution timestamp (system-generated)
      */
-    @Column(name = "logged_at", nullable = false, updatable = false)
+    @Column(name = "logged_at", nullable = false)
     private Instant loggedAt;
 
     /**
-     * Log Source tracking (system , user)
+     * Business date (used for streaks & reports)
      */
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PlanSource planSource;
+    @Column(name = "action_date", nullable = false)
+    private LocalDate actionDate;
+
+    @Column(length = 100, nullable = false)
+    private String actionName;
 
     /**
-     * Log Status tracking
+     * Action Status tracking
      */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private LogStatus logStatus;
+    private ActionStatus actionStatus;
 
+    /**
+     * POSITIVE / NEGATIVE
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private ActivityNature nature;
+
+    /**
+     * How this activity is tracked
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private TrackingType trackingType;
 
     /**
      * Numeric tracking (reps, minutes, etc.)
@@ -71,19 +81,18 @@ public class ActivityDailyLog extends BaseEntity {
 
     /* -------- Constructor -------- */
 
-    protected ActivityDailyLog(
+    protected ActionEntry(
             Activity activity,
             User user,
-            LocalDate logDate,
+            LocalDate actionDate,
             Integer actualValue,
             Boolean completed,
-            String notes,
-            LogStatus logStatus,
-            PlanSource planSource
+            String notes
+
     ) {
         this.activity = requireNonNull(activity, "activity is required");
         this.user = requireNonNull(user, "user is required");
-        this.logDate = requireNonNull(logDate, "log date is required");
+        this.actionDate = requireNonNull(actionDate, "log date is required");
         this.loggedAt = Instant.now();
 
         validateOwnership(activity, user);
@@ -92,13 +101,11 @@ public class ActivityDailyLog extends BaseEntity {
         this.actualValue = actualValue;
         this.completed = completed;
         this.notes = normalize(notes);
-        this.logStatus = logStatus;
-        this.planSource = planSource;
     }
 
     /* -------- Factory -------- */
 
-    public static ActivityDailyLog create(
+    public static ActionEntry create(
             Activity activity,
             User user,
             LocalDate logDate,
@@ -106,54 +113,48 @@ public class ActivityDailyLog extends BaseEntity {
             Boolean completed,
             String notes
     ) {
-        return new ActivityDailyLog(
+        return new ActionEntry(
                 activity,
                 user,
                 logDate,
                 actualValue,
                 completed,
-                notes,
-                LogStatus.PENDING,
-                PlanSource.USER_ENTRY
+                notes
         );
     }
 
-    public static ActivityDailyLog createBaseline(
+    public static ActionEntry createBaseline(
             Activity activity,
             User user,
             LocalDate logDate
     ) {
-        return new ActivityDailyLog(
+        return new ActionEntry(
                 activity,
                 user,
                 logDate,
                 null,
                 false,
-                null,
-                LogStatus.PENDING,
-                PlanSource.SYSTEM_BASELINE
+                null
         );
     }
 
     /**
      * Default factory for "log now"
      */
-    public static ActivityDailyLog logNow(
+    public static ActionEntry logNow(
             Activity activity,
             User user,
             Integer actualValue,
             Boolean completed,
             String notes
     ) {
-        return new ActivityDailyLog(
+        return new ActionEntry(
                 activity,
                 user,
                 LocalDate.now(),
                 actualValue,
                 completed,
-                notes,
-                LogStatus.DONE,
-                PlanSource.USER_ENTRY
+                notes
         );
     }
 

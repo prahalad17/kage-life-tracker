@@ -1,10 +1,13 @@
 package com.kage.entity;
 
 import com.kage.enums.ActivityNature;
+import com.kage.enums.ActivityType;
 import com.kage.enums.ScheduleType;
 import com.kage.enums.TrackingType;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.DayOfWeek;
 import java.util.Set;
@@ -57,6 +60,13 @@ public class Activity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private TrackingType trackingType;
+
+    /**
+     * How this activity is tracked
+     */
+    @Enumerated(EnumType.STRING)
+        @Column(nullable = false, length = 30)
+    private ActivityType activityType;
 
     /**
      * Unit for tracking (reps, minutes, pages)
@@ -123,6 +133,7 @@ public class Activity extends BaseEntity {
     public void updateSchedule(ScheduleType type, Set<DayOfWeek> days) {
         this.schedule.changeSchedule(type, days);
     }
+
     public void deactivateSchedule() {
         this.schedule.deactivate();
     }
@@ -138,15 +149,16 @@ public class Activity extends BaseEntity {
                 requireNonNull(trackingType, "tracking type is required");
         this.unit = normalize(unit);
     }
-    public void deactivate() {
-        super.deactivate();
-    }
+
+//    public void deactivate() {
+//        super.deactivate();
+//    }
 
     public void updateDescription(String description) {
         this.description = normalize(description);
     }
 
     public void updateNature(ActivityNature nature) {
-        this.nature =nature;
+        this.nature = nature;
     }
 }

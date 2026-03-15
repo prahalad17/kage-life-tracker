@@ -1,7 +1,6 @@
 package com.kage.repository;
 
 import com.kage.entity.Activity;
-import com.kage.entity.ActivityTemplate;
 import com.kage.entity.Pillar;
 import com.kage.entity.User;
 import com.kage.enums.RecordStatus;
