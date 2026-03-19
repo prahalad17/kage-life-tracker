@@ -1,6 +1,6 @@
 package com.kage.entity;
 
-import com.kage.enums.LogSource;
+import com.kage.enums.PlanSource;
 import com.kage.enums.LogStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,9 +9,10 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalTime;
 
-import static com.kage.util.DomainGuardsUtil.*;
+import static com.kage.util.DomainGuardsUtil.normalize;
+import static com.kage.util.DomainGuardsUtil.requireNonNull;
+
 @Entity
 @Table(name = "activity_logs")
 @Getter
@@ -43,7 +44,7 @@ public class ActivityDailyLog extends BaseEntity {
      */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private LogSource logSource;
+    private PlanSource planSource;
 
     /**
      * Log Status tracking
@@ -78,7 +79,7 @@ public class ActivityDailyLog extends BaseEntity {
             Boolean completed,
             String notes,
             LogStatus logStatus,
-            LogSource logSource
+            PlanSource planSource
     ) {
         this.activity = requireNonNull(activity, "activity is required");
         this.user = requireNonNull(user, "user is required");
@@ -92,7 +93,7 @@ public class ActivityDailyLog extends BaseEntity {
         this.completed = completed;
         this.notes = normalize(notes);
         this.logStatus = logStatus;
-        this.logSource = logSource;
+        this.planSource = planSource;
     }
 
     /* -------- Factory -------- */
@@ -113,7 +114,7 @@ public class ActivityDailyLog extends BaseEntity {
                 completed,
                 notes,
                 LogStatus.PENDING,
-                LogSource.USER_ENTRY
+                PlanSource.USER_ENTRY
         );
     }
 
@@ -130,7 +131,7 @@ public class ActivityDailyLog extends BaseEntity {
                 false,
                 null,
                 LogStatus.PENDING,
-                LogSource.SYSTEM_BASELINE
+                PlanSource.SYSTEM_BASELINE
         );
     }
 
@@ -152,7 +153,7 @@ public class ActivityDailyLog extends BaseEntity {
                 completed,
                 notes,
                 LogStatus.DONE,
-                LogSource.USER_ENTRY
+                PlanSource.USER_ENTRY
         );
     }
 

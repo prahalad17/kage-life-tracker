@@ -3,8 +3,9 @@ package com.kage.enums;
 /**
  * Defines whether an activity is something to do or avoid.
  */
-public enum ActivityNature {
-    POSITIVE,
-    NEGATIVE,
-    NEUTRAL
-}
+public enum ActionAttributeType {
+    INTEGER,
+    DECIMAL,
+    BOOLEAN,
+    TEXT
+    }

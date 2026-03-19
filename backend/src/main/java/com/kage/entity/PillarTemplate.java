@@ -4,8 +4,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import lombok.*;
-import static com.kage.util.DomainGuardsUtil.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import static com.kage.util.DomainGuardsUtil.requireNonEmpty;
 
 @Entity
 @Table(
@@ -20,8 +23,17 @@ public class PillarTemplate extends BaseEntity {
     @Column(length = 100, nullable = false)
     private String name;
 
-    @Column(length = 255)
+    @Column()
     private String description;
+
+    @Column(name = "priority_weight")
+    private Integer priorityWeight;
+
+    @Column(name = "order_index")
+    private Integer orderIndex;
+
+    @Column(length = 30)
+    private String color;
 
     protected PillarTemplate(String name, String description) {
         this.name = requireNonEmpty(name, "name is required");

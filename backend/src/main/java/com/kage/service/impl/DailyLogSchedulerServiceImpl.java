@@ -3,7 +3,7 @@ package com.kage.service.impl;
 import com.kage.dto.response.ActivityDailyLogSchedulerResponse;
 import com.kage.entity.Activity;
 import com.kage.entity.ActivityDailyLog;
-import com.kage.enums.LogSource;
+import com.kage.enums.PlanSource;
 import com.kage.enums.RecordStatus;
 import com.kage.enums.ScheduleType;
 import com.kage.mapper.ActivityMapper;
@@ -57,7 +57,7 @@ public class DailyLogSchedulerServiceImpl implements DailyLogSchedulerService {
                                     activity.getId(),
                                     activity.getUser().getId(),
                                     date,
-                                    LogSource.SYSTEM_BASELINE
+                                    PlanSource.SYSTEM_BASELINE
                             );
 
             if (exists) {

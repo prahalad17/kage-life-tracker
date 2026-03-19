@@ -2,7 +2,7 @@ package com.kage.entity;
 
 import com.kage.enums.RecordStatus;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -10,7 +10,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 @Getter
 @MappedSuperclass
@@ -41,7 +40,7 @@ public abstract class BaseEntity {
     @Column(nullable = false)
     private RecordStatus status = RecordStatus.ACTIVE;
 
-    @Column(length = 255)
+    @Column()
     private String remarks;
 
 
