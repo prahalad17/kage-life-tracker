@@ -13,6 +13,9 @@ import static com.kage.util.DomainGuardsUtil.requireNonNull;
         name = "pillar",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"user_id", "name"})
+        },
+        indexes = {
+                @Index(name = "idx_pillar_user", columnList = "user_id")
         }
 )
 @Getter
@@ -33,14 +36,12 @@ public class Pillar extends BaseEntity {
     @Column(length = 255)
     private String description;
 
-    @Column()
     private Integer priorityWeight;
 
-    @Column()
     private Integer orderIndex;
 
     @Column(length = 30)
-    private String color;
+    private String color; // HEX format
 
     protected Pillar(User user, String name) {
         this.user = requireNonNull(user, "user is required");

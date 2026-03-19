@@ -1,30 +1,42 @@
 package com.kage.entity;
 
-import com.kage.enums.DayMetricType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
 
 @Entity
+@Table(name = "day_metric",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        columnNames = {"day_entry_id", "day_metric_definition_id"}
+                )
+        },
+        indexes = {
+                @Index(name = "idx_day_metric_day", columnList = "day_entry_id")
+        }
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DayMetric extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "day_entry_id", nullable = false)
     private DayEntry dayEntry;
 
-    @Column()
-    private LocalDate date;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "day_metric_definition_id", nullable = false)
+    private DayMetricDefinition dayMetricDefinition;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private DayMetricType metricType;
+    private Integer intValue;
 
-    @Column()
-    private Double metricValue;
+    private BigDecimal decimalValue;
 
+    private Boolean booleanValue;
+
+    private String textValue;
+
+    //  later: add validation method
 }

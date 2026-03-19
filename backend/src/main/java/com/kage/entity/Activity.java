@@ -21,56 +21,39 @@ import static com.kage.util.DomainGuardsUtil.*;
                 @UniqueConstraint(
                         columnNames = {"user_id", "pillar_id", "name"}
                 )
+        },
+        indexes = {
+                @Index(name = "idx_activity_user", columnList = "user_id"),
+                @Index(name = "idx_activity_pillar", columnList = "pillar_id")
         }
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Activity extends BaseEntity {
 
-    /**
-     * Owner of this activity
-     */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    /**
-     * User life area context
-     */
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "pillar_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pillar_id")
     private Pillar pillar;
 
-    /**
-     * User-facing name
-     */
     @Column(length = 100, nullable = false)
     private String name;
 
-    /**
-     * POSITIVE / NEGATIVE
-     */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private ActivityNature nature;
 
-    /**
-     * How this activity is tracked
-     */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private TrackingType trackingType;
 
-    /**
-     * How this activity is tracked
-     */
     @Enumerated(EnumType.STRING)
-        @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 30)
     private ActivityType activityType;
 
-    /**
-     * Unit for tracking (reps, minutes, pages)
-     */
     @Column(length = 30)
     private String unit;
 
@@ -150,9 +133,6 @@ public class Activity extends BaseEntity {
         this.unit = normalize(unit);
     }
 
-//    public void deactivate() {
-//        super.deactivate();
-//    }
 
     public void updateDescription(String description) {
         this.description = normalize(description);

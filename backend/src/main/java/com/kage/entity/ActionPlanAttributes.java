@@ -8,23 +8,23 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "action_entry_attributes",
+@Table(name = "action_plan_attributes",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        columnNames = {"action_entry_id", "attribute_definition_id"}
+                        columnNames = {"action_plan_id", "attribute_definition_id"}
                 )
         },
         indexes = {
-                @Index(name = "idx_action_attr_entry", columnList = "action_entry_id")
+                @Index(name = "idx_action_attr_plan", columnList = "action_plan_id")
         }
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ActionEntryAttributes extends BaseEntity {
+public class ActionPlanAttributes extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "action_entry_id", nullable = false)
-    private ActionEntry actionEntry;
+    @JoinColumn(name = "action_plan_id", nullable = false)
+    private ActionPlan actionPlan;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "attribute_definition_id", nullable = false)

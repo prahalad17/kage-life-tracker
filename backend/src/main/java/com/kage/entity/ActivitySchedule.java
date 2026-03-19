@@ -1,19 +1,22 @@
 package com.kage.entity;
 
-import com.kage.enums.ActivityNature;
 import com.kage.enums.ScheduleType;
-import com.kage.enums.TrackingType;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.util.Set;
 
 import static com.kage.util.DomainGuardsUtil.requireNonNull;
 
 @Entity
-@Table(name = "activity_schedules")
+@Table(name = "activity_schedule",
+        indexes = {
+                @Index(name = "idx_schedule_activity", columnList = "activity_id")
+        }
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ActivitySchedule extends BaseEntity {
@@ -22,24 +25,22 @@ public class ActivitySchedule extends BaseEntity {
     @JoinColumn(name = "activity_id", nullable = false, unique = true)
     private Activity activity;
 
-    /**
-     * DAILY, WEEKDAYS, WEEKENDS, CUSTOM
-     */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private ScheduleType type;
 
-    /**
-     * Used only when type = CUSTOM
-     */
     @ElementCollection(targetClass = DayOfWeek.class, fetch = FetchType.LAZY)
     @CollectionTable(
-            name     = "activity_schedule_days",
-            joinColumns = @JoinColumn(name = "schedule_id")
+            name = "activity_schedule_days",
+            joinColumns = @JoinColumn(name = "schedule_id"),
+            indexes = {
+                    @Index(name = "idx_schedule_days", columnList = "schedule_id")
+            }
     )
     @Enumerated(EnumType.STRING)
     @Column(name = "day", nullable = false, length = 15)
     private Set<DayOfWeek> days;
+
 
     protected ActivitySchedule(
             Activity activity,
@@ -78,12 +79,9 @@ public class ActivitySchedule extends BaseEntity {
     public boolean isScheduledOn(DayOfWeek day) {
         return switch (type) {
             case DAILY -> true;
-            case WEEKDAYS ->
-                    day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY;
-            case WEEKENDS ->
-                    day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY;
-            case CUSTOM ->
-                    days != null && days.contains(day);
+            case WEEKDAYS -> day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY;
+            case WEEKENDS -> day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY;
+            case CUSTOM -> days != null && days.contains(day);
         };
     }
 
