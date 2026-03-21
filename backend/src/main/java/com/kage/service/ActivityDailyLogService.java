@@ -6,11 +6,9 @@ import com.kage.dto.request.activity.ActivityDailyLogCreateRequest;
 import com.kage.dto.request.activity.ActivityDailyLogUpdateRequest;
 import com.kage.dto.response.ActivityDailyLogResponse;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 public interface ActivityDailyLogService {
@@ -27,10 +25,10 @@ public interface ActivityDailyLogService {
     List<ActivityDailyLogResponse> getAll(Long userId);
 
     @Transactional(readOnly = true)
-    List<ActivityDailyLogResponse> getToDo(Long userId , LocalDate date);
+    List<ActivityDailyLogResponse> getToDo(Long userId, LocalDate date);
 
     @Transactional(readOnly = true)
-    List<ActivityDailyLogResponse> getCompleted(Long userId , LocalDate date);
+    List<ActivityDailyLogResponse> getCompleted(Long userId, LocalDate date);
 
     ActivityDailyLogResponse update(
             ActivityDailyLogUpdateRequest request,

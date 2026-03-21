@@ -1,0 +1,118 @@
+package com.kage.service.impl;
+
+import com.kage.common.dto.request.SearchRequestDto;
+import com.kage.dto.request.action.ActionEntryCreateRequest;
+import com.kage.dto.request.action.ActionEntryUpdateRequest;
+import com.kage.dto.response.ActionEntryResponse;
+import com.kage.entity.*;
+import com.kage.enums.RecordStatus;
+import com.kage.exception.NotFoundException;
+import com.kage.mapper.ActionEntryMapper;
+import com.kage.repository.ActionEntryRepository;
+import com.kage.service.*;
+import com.kage.util.PageableBuilderUtil;
+import com.kage.util.SpecificationBuilderUtil;
+import com.kage.util.UserSpecificationBuilderUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+@Slf4j
+public class ActionEntryServiceImpl implements ActionEntryService {
+
+    private final ActionEntryRepository actionEntryRepository;
+    private final ActionEntryMapper actionEntryMapper;
+    private final UserService userService;
+    private final DayEntryService dayEntryService;
+    private final ActivityService activityService;
+    private final PillarService pillarService;
+
+
+    @Override
+    public Page<ActionEntryResponse> getAll(Long userId, SearchRequestDto request) {
+
+        Pageable pageable = PageableBuilderUtil.build(request);
+
+        Specification<ActionEntry> dynamicSpec =
+                SpecificationBuilderUtil.build(request);
+
+        Specification<ActionEntry> mandatorySpec =
+                UserSpecificationBuilderUtil.build(userId);
+
+        Specification<ActionEntry> finalSpec =
+                mandatorySpec.and(dynamicSpec);
+
+        return actionEntryRepository.findAll(finalSpec, pageable)
+                .map(actionEntryMapper::toDto);
+    }
+
+    @Override
+    @Transactional
+    public ActionEntryResponse create(ActionEntryCreateRequest request, Long userId) {
+
+//        log.debug("Creating Action Entry for userId={} for date = {}", userId, request.date());
+        User user = userService.loadActiveUser(userId);
+        DayEntry dayEntry = dayEntryService.loadActiveDayEntry(userId, request.dayEntryId());
+
+        ActionEntry actionEntry = ActionEntry.create(
+                dayEntry,
+                user,
+                request.actionName(),
+                request.actionStatus(),
+                request.nature(),
+                request.trackingType());
+
+        if (request.activityId() != null) {
+
+            Activity activity = activityService.loadOwnedActiveActivity(request.activityId(), userId);
+            actionEntry.addActivity(activity);
+
+        } else if (request.pillarId() != null) {
+
+            Pillar pillar = pillarService.loadOwnedActivePillar(request.pillarId(), userId);
+            actionEntry.addPillar(pillar);
+        }
+
+        actionEntryRepository.save(actionEntry);
+
+        return actionEntryMapper.toDto(actionEntry);
+    }
+
+    @Override
+    public ActionEntryResponse update(ActionEntryUpdateRequest request, Long userId) {
+
+        ActionEntry actionEntry = loadOwnedActionEntry(request.actionEntryId(), userId);
+
+        return actionEntryMapper.toDto(actionEntry);
+    }
+
+    @Override
+    public ActionEntryResponse getById(Long id, Long userId) {
+        ActionEntry actionEntry = loadOwnedActionEntry(id, userId);
+
+        return actionEntryMapper.toDto(actionEntry);
+    }
+
+
+    @Override
+    public ActionEntry loadOwnedActionEntry(Long actionEntryId, Long userId) {
+
+        return actionEntryRepository
+                .findByIdAndUserIdAndStatus(actionEntryId, userId, RecordStatus.ACTIVE)
+                .orElseThrow(() ->
+                        new NotFoundException("Pillar not found"));
+
+
+    }
+
+
+}
+

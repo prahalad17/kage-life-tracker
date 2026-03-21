@@ -3,7 +3,10 @@ package com.kage.service.impl;
 import com.kage.dto.request.activity.ActivityCreateRequest;
 import com.kage.dto.request.activity.ActivityUpdateRequest;
 import com.kage.dto.response.ActivityResponse;
-import com.kage.entity.*;
+import com.kage.entity.Activity;
+import com.kage.entity.ActivitySchedule;
+import com.kage.entity.Pillar;
+import com.kage.entity.User;
 import com.kage.enums.RecordStatus;
 import com.kage.exception.BusinessException;
 import com.kage.exception.NotFoundException;
@@ -146,7 +149,6 @@ public class ActivityServiceImpl implements ActivityService {
         );
 
 
-
         log.info("Activity updated with id={}", activity.getId());
 
         // No save() — dirty checking
@@ -171,9 +173,8 @@ public class ActivityServiceImpl implements ActivityService {
     /* -----------------------------------------------------
        Internal helpers (aggregate loaders)
        ----------------------------------------------------- */
-
-    @Transactional(readOnly = true)
-    protected Activity loadOwnedActiveActivity(Long id, Long userId) {
+    @Override
+    public Activity loadOwnedActiveActivity(Long id, Long userId) {
 
         Activity activity = activityRepository
                 .findByIdAndStatus(id, RecordStatus.ACTIVE)

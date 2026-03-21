@@ -141,8 +141,8 @@ public class PillarServiceImpl implements PillarService {
        Internal helpers (aggregate loaders)
        ----------------------------------------------------- */
 
-    @Transactional(readOnly = true)
-    protected Pillar loadOwnedActivePillar(Long id, Long userId) {
+    @Override
+    public Pillar loadOwnedActivePillar(Long id, Long userId) {
 
         Pillar pillar = pillarRepository
                 .findByIdAndUserIdAndStatus(id, userId, RecordStatus.ACTIVE)

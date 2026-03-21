@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
+import static com.kage.util.DomainGuardsUtil.requireNonNull;
+
 @Entity
 @Table(name = "action_entry_attributes",
         uniqueConstraints = {
@@ -20,7 +22,7 @@ import java.math.BigDecimal;
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ActionEntryAttributes extends BaseEntity {
+public class ActionEntryAttribute extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "action_entry_id", nullable = false)
@@ -36,4 +38,14 @@ public class ActionEntryAttributes extends BaseEntity {
 
     @Column(length = 1000)
     private String textValue;
+
+    protected ActionEntryAttribute(ActionEntry actionEntry, ActionAttributeDefinition attributeDefinition) {
+        this.actionEntry = requireNonNull(actionEntry, "actionEntry is null");
+        this.attributeDefinition = requireNonNull(attributeDefinition, "attributeDefinition is null");
+    }
+
+    public static ActionEntryAttribute create(ActionEntry actionEntry, ActionAttributeDefinition attributeDefinition) {
+
+        return new ActionEntryAttribute(actionEntry, attributeDefinition);
+    }
 }
