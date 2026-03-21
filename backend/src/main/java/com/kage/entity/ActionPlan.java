@@ -11,6 +11,10 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+
+import static com.kage.util.DomainGuardsUtil.requireNonEmpty;
+import static com.kage.util.DomainGuardsUtil.requireNonNull;
 
 @Entity
 @Table(name = "action_plan",
@@ -46,11 +50,11 @@ public class ActionPlan extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PlanSource planSource;
+    private PlanSource actionPlanSource;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ActionPlanStatus planStatus;
+    private ActionPlanStatus actionPlanStatus;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -62,4 +66,49 @@ public class ActionPlan extends BaseEntity {
 
     @Column(length = 1000)
     private String notes;
+
+    @OneToMany(
+            mappedBy = "actionPlan",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<ActionPlanAttribute> attributeList;
+
+
+    protected ActionPlan(
+            User user,
+            String actionPlanName,
+            ActionPlanStatus actionPlanStatus,
+            ActivityNature nature,
+            TrackingType trackingType
+    ) {
+        this.user = requireNonNull(user, "user is required");
+        this.actionPlanName = requireNonEmpty(actionPlanName, "actionName is required");
+        this.actionPlanStatus = requireNonNull(actionPlanStatus, "actionStatus is required");
+        this.nature = requireNonNull(nature, "nature is required");
+        this.trackingType = requireNonNull(trackingType, "trackingType is required");
+    }
+
+    public static ActionPlan create(
+            User user,
+            String actionName,
+            ActionPlanStatus actionStatus,
+            ActivityNature nature,
+            TrackingType trackingType) {
+        return new ActionPlan(user, actionName, actionStatus, nature, trackingType);
+    }
+
+    public void addActivity(Activity activity) {
+
+        this.activity = requireNonNull(activity, "activity is required");
+        this.pillar = requireNonNull(activity.getPillar(), "pillar is required");
+    }
+
+    public void addPillar(Pillar pillar) {
+        if (this.activity != null) {
+            throw new IllegalStateException("activity is already set");
+        }
+        this.pillar = requireNonNull(pillar, "pillar is required");
+    }
+
 }

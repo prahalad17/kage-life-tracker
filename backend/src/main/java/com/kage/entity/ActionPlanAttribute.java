@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ActionPlanAttributes extends BaseEntity {
+public class ActionPlanAttribute extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "action_plan_id", nullable = false)

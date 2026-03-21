@@ -1,7 +1,7 @@
 package com.kage.enums;
 
 /**
- * Defines completion of an action
+ * Defines status of a day
  */
 public enum DayStatus {
     OPEN,

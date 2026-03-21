@@ -39,6 +39,10 @@ public class ActivityDailyLog extends BaseEntity {
     @Column(name = "logged_at", nullable = false, updatable = false)
     private Instant loggedAt;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PlanSource logSource;
+
     /**
      * Log Source tracking (system , user)
      */

@@ -25,5 +25,7 @@ public interface PillarService {
     void deactivate(Long id , Long userId);
 
     Pillar loadActivePillar(Long templateId);
+
+    Pillar loadOwnedActivePillar(Long id, Long userId);
 }
 

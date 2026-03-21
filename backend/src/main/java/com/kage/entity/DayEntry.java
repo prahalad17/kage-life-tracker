@@ -6,8 +6,11 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
+
+import static com.kage.util.DomainGuardsUtil.requireNonNull;
 
 @Entity
 @Table(name = "day_entry",
@@ -30,7 +33,8 @@ public class DayEntry extends BaseEntity {
     private LocalDate date;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column
+    @Setter
     private Mood mood;
 
     @Column
@@ -39,4 +43,15 @@ public class DayEntry extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DayStatus dayStatus;
+
+    protected DayEntry(User user, LocalDate date, DayStatus dayStatus) {
+        this.user = requireNonNull(user, "user must not be null");
+        this.date = requireNonNull(date, "date must not be null");
+        this.dayStatus = requireNonNull(dayStatus, "dayStatus must not be null");
+    }
+
+    public static DayEntry create(User user, LocalDate date, DayStatus dayStatus) {
+        return new DayEntry(user, date, dayStatus);
+    }
+
 }
