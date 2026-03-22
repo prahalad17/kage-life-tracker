@@ -1,13 +1,12 @@
 import { Component } from '@angular/core';
-import { DailyLogService } from '../../../daily-log/service/daily-log.service';
-import { DailyLog } from '../../../daily-log/models/daily-log.model';
 import { Observable } from 'rxjs';
 import { FormConfig } from '../../../../../shared/models/form/form-config';
 import { TableConfig } from '../../../../../shared/models/table/table-config.model';
 import { DataTable } from '../../../../../shared/components/data-table/data-table';
 import { CommonModule } from '@angular/common';
 import { DashboardService } from '../../service/dashboard.service';
-import { UpdateDailyLogReq } from '../../../daily-log/models/update-daily-log-resuest';
+import { ActionEntry } from '../../../action-entry/models/action-entry.model';
+import { UpdateActionEntryReq } from '../../../action-entry/models/update-action-entry-resuest';
 type DialogType = 'info' | 'delete' | '';
 
 @Component({
@@ -22,11 +21,11 @@ export class DashboardOverview {
   constructor(private dashboardService : DashboardService) {}
 
   // ===== DATA =====
-  tasksTodo$!: Observable<DailyLog[]>;
+  tasksTodo$!: Observable<ActionEntry[]>;
 
-  tasksCompleted$!: Observable<DailyLog[]>;
+  tasksCompleted$!: Observable<ActionEntry[]>;
 
-  selectedRow: DailyLog | null = null;
+  selectedRow: ActionEntry | null = null;
   formConfig: FormConfig | null = null;
   formErrorMessage = '';
 
@@ -85,14 +84,14 @@ export class DashboardOverview {
 
 
     // ===== TABLE ACTIONS =====
-      onTableAction(event: { type: string; row: DailyLog }) {
+      onTableAction(event: { type: string; row: ActionEntry }) {
 
         console.log(event);
         switch (event.type) {
           
           
           case 'edit':
-          const request: UpdateDailyLogReq = {
+          const request: UpdateActionEntryReq = {
                       logId: event.row.activityDailyLogId,
                       activityId:  event.row.activityId,
                       actualValue:  event.row.actualValue,

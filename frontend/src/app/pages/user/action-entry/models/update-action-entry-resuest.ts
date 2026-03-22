@@ -1,7 +1,7 @@
-export interface DailyLog {
-  activityDailyLogId: number;
+export interface UpdateActionEntryReq
+ {
+  logId: number;
   activityId: number;
-  activityName:string
   actualValue: number;
   completed: boolean;
   notes:string;

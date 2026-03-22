@@ -61,17 +61,17 @@ export const USER_SIDEBAR_MENU: SidebarItem[] = [
     ]
   },
   {
-    label: 'Daily Logs',
-     route: '/daily-log',
+    label: 'Action Entries',
+     route: '/action-entry',
     icon: '📝',
     children: [
       {
         label: 'Overview',
-        route: '/daily-log/overview'
+        route: '/action-entry/overview'
       },
       {
         label: 'History',
-        route: '/daily-log/list'
+        route: '/action-entry/list'
       }
     ]
   },

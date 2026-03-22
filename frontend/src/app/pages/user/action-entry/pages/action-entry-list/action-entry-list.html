@@ -1,4 +1,4 @@
-<ng-container *ngIf="dailyLogs$ | async as page">
+<ng-container *ngIf="actionEntry$ | async as page">
 
   <app-data-table
   [rows]="page.content"

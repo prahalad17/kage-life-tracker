@@ -1,4 +1,4 @@
-export interface CreateDailyLogReq
+export interface CreateActionEntryReq
  {
   activityId: number;
   actualValue: number;

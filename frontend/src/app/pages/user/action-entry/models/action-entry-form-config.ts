@@ -2,7 +2,7 @@ import { FormActionConfig } from "../../../../shared/models/form/form-action-con
 import { FormConfig } from "../../../../shared/models/form/form-config";
 import { FormFieldConfig } from "../../../../shared/models/form/form-field-config";
 
-export function buildDailyLogFormConfig(
+export function buildActionEntryFormConfig(
   mode: 'create' | 'edit' | 'view'
 ): FormConfig {
   return {

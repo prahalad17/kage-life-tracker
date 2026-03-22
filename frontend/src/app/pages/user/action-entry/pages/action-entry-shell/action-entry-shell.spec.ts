@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DailyLogList } from './daily-log-list';
+import { ActionEntryShell } from './action-entry-shell';
 
-describe('DailyLogList', () => {
-  let component: DailyLogList;
-  let fixture: ComponentFixture<DailyLogList>;
+describe('ActionEntryShell', () => {
+  let component: ActionEntryShell;
+  let fixture: ComponentFixture<ActionEntryShell>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DailyLogList]
+      imports: [ActionEntryShell]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(DailyLogList);
+    fixture = TestBed.createComponent(ActionEntryShell);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
