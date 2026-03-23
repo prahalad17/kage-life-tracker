@@ -99,8 +99,8 @@ private loadDropdownOptions() {
         this.dropdownOptions[field.name] = res.map(item => ({
           
           label: item[cfg.labelKey],
-          value: item[cfg.valueKey]
-          
+          value: item[cfg.valueKey],
+           ...item
         }));
          if (this.formData) {
           this.adaptIncomingData(this.formData);
@@ -180,44 +180,84 @@ private adaptIncomingData(data: any) {
 
     const dep = field.dependsOn;
     const controller = this.form.get(dep.field);
-    const target = this.form.get(field.name);
 
-    if (!controller || !target) return;
+    if (!controller) return;
 
     controller.valueChanges.subscribe(value => {
-      this.applyDependency(dep, value, field);
+      this.applyDependency(dep, value);
     });
   });
 }
 
 private applyDependency(
   dep: FieldDependency,
-  value: any,
-  field: FormFieldConfig
+  value: any
 ) {
-  const control = this.form.get(field.name);
-  if (!control) return;
-
   const conditionMet = dep.condition
     ? dep.condition(value)
     : value === dep.value;
 
-  switch (dep.action) {
-    case 'show':
-      field.hidden = !conditionMet;
-      break;
+  if (!dep.actions) return;
 
-    case 'hide':
-      field.hidden = conditionMet;
-      break;
+  dep.actions.forEach(action => {
 
-    case 'enable':
-      conditionMet ? control.enable() : control.disable();
-      break;
+    // ✅ ENABLE / DISABLE / SHOW / HIDE
+    if (['enable', 'disable', 'show', 'hide'].includes(action.type)) {
+      action.targets?.forEach(targetName => {
+        const targetCtrl = this.form.get(targetName);
+        const targetField = this.config.fields.find(f => f.name === targetName);
 
-    case 'disable':
-      conditionMet ? control.disable() : control.enable();
-      break;
+        if (!targetCtrl || !targetField) return;
+
+        switch (action.type) {
+          case 'enable':
+            conditionMet ? targetCtrl.enable({ emitEvent: false }) : targetCtrl.disable({ emitEvent: false });
+            break;
+
+          case 'disable':
+            conditionMet ? targetCtrl.disable({ emitEvent: false }) : targetCtrl.enable({ emitEvent: false });
+            break;
+
+          case 'show':
+            targetField.hidden = !conditionMet;
+            break;
+
+          case 'hide':
+            targetField.hidden = conditionMet;
+            break;
+        }
+      });
+    }
+
+    // ✅ PATCH FROM SELECTED OPTION
+    if (action.type === 'patchFromOption' && conditionMet && value) {
+      const options = this.dropdownOptions[dep.field];
+      const selected = options?.find(o => o.value === value);
+
+      if (!selected) return;
+
+      const patch: any = {};
+
+      Object.entries(action.mapping || {}).forEach(([target, sourceKey]) => {
+        patch[target] = (selected as any)[sourceKey];
+      });
+
+      this.form.patchValue(patch, { emitEvent: false });
+    }
+
+    // ✅ STATIC VALUE SET
+    if (action.type === 'setValue' && conditionMet) {
+      this.form.patchValue(action.values || {}, { emitEvent: false });
+    }
+
+  });
+}
+
+onHexChange(controlName: string, value: string) {
+  const hexRegex = /^#([0-9A-Fa-f]{6})$/;
+
+  if (hexRegex.test(value)) {
+    this.form.get(controlName)?.setValue(value);
   }
 }
 

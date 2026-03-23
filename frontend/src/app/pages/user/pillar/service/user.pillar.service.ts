@@ -6,6 +6,9 @@ import { UserPillar } from "../model/user-pillar.model";
 import { CreateUserPillarRequest } from "../model/create-user-pillar-request";
 import { UpdateUserPillarRequest } from "../model/update-user-pillar-request";
 import { Pillar } from "../../../admin/pillars/models/pillar.model";
+import { SearchRequestDto } from "../../../../shared/models/api/search-request.model";
+import { PageResponse } from "../../../../shared/models/api/page-response.model";
+import { ActionEntry } from "../../action-entry/models/action-entry.model";
 @Injectable({
     providedIn:'root'
 })
@@ -24,9 +27,18 @@ export class UserPillarService{
       
   }
 
-   getAllAvailable(user : number): Observable<Pillar[]> {
+  search(request: SearchRequestDto): Observable<PageResponse<UserPillar>> {
+    return this.http.post<PageResponse<UserPillar>>(
+      `${this.BASE_URL}/search`,
+      request
+    );
+  }
+
+  
+
+   getAllAvailable(user : number): Observable<UserPillar[]> {
     return this.http
-      .get<Pillar[]>(
+      .get<UserPillar[]>(
          `${this.BASE_URL}/${user}`
         )
       

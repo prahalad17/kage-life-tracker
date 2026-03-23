@@ -8,9 +8,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.kage.util.DomainGuardsUtil.requireNonEmpty;
@@ -39,11 +39,8 @@ public class ActionPlan extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "planned_date")
-    private LocalDate plannedDate;
-
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    @Column(name = "action_plan_date")
+    private LocalDate actionPlanDate;
 
     @Column(nullable = false, length = 100)
     private String actionPlanName;
@@ -58,44 +55,73 @@ public class ActionPlan extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ActivityNature nature;
+    private ActivityNature actionPlanNature;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TrackingType trackingType;
+    private TrackingType actionPlanTrackingType;
 
+    @Setter
     @Column(length = 1000)
-    private String notes;
+    private String actionPlanNotes;
 
     @OneToMany(
             mappedBy = "actionPlan",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<ActionPlanAttribute> attributeList;
+    private List<ActionPlanAttribute> actionPlanAttributeList;
 
 
     protected ActionPlan(
             User user,
             String actionPlanName,
+            LocalDate actionPlanDate,
             ActionPlanStatus actionPlanStatus,
             ActivityNature nature,
             TrackingType trackingType
     ) {
         this.user = requireNonNull(user, "user is required");
         this.actionPlanName = requireNonEmpty(actionPlanName, "actionName is required");
+        this.actionPlanDate = requireNonNull(actionPlanDate, "actionPlanDate is required");
         this.actionPlanStatus = requireNonNull(actionPlanStatus, "actionStatus is required");
-        this.nature = requireNonNull(nature, "nature is required");
-        this.trackingType = requireNonNull(trackingType, "trackingType is required");
+        this.actionPlanNature = requireNonNull(nature, "nature is required");
+        this.actionPlanTrackingType = requireNonNull(trackingType, "trackingType is required");
+        this.actionPlanSource = PlanSource.USER_ENTRY;
     }
 
-    public static ActionPlan create(
+    protected ActionPlan(
+            String actionPlanName,
+            LocalDate actionPlanDate,
+            ActionPlanStatus actionPlanStatus,
+            ActivityNature nature,
+            TrackingType trackingType
+    ) {
+        this.actionPlanName = requireNonEmpty(actionPlanName, "actionName is required");
+        this.actionPlanDate = requireNonNull(actionPlanDate, "actionPlanDate is required");
+        this.actionPlanStatus = requireNonNull(actionPlanStatus, "actionStatus is required");
+        this.actionPlanNature = requireNonNull(nature, "nature is required");
+        this.actionPlanTrackingType = requireNonNull(trackingType, "trackingType is required");
+        this.actionPlanSource = PlanSource.SYSTEM_BASELINE;
+    }
+
+    public static ActionPlan createUserActionPlan(
             User user,
             String actionName,
+            LocalDate actionPlanDate,
             ActionPlanStatus actionStatus,
             ActivityNature nature,
             TrackingType trackingType) {
-        return new ActionPlan(user, actionName, actionStatus, nature, trackingType);
+        return new ActionPlan(user, actionName, actionPlanDate, actionStatus, nature, trackingType);
+    }
+
+    public static ActionPlan createSystemActionPlan(
+            String actionName,
+            LocalDate actionPlanDate,
+            ActionPlanStatus actionStatus,
+            ActivityNature nature,
+            TrackingType trackingType) {
+        return new ActionPlan(actionName, actionPlanDate, actionStatus, nature, trackingType);
     }
 
     public void addActivity(Activity activity) {

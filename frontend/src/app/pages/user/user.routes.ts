@@ -10,6 +10,9 @@ import { DashboardOverview } from './dashboard/pages/dashboard-overview/dashboar
 import { ActionEntryShell } from './action-entry/pages/action-entry-shell/action-entry-shell';
 import { ActionEntryOverview } from './action-entry/pages/action-entry-overview/action-entry-overview';
 import { ActionEntryList } from './action-entry/pages/action-entry-list/action-entry-list';
+import { ActionPlanShell } from './action-plan/pages/action-plan-shell/action-plan-shell';
+import { ActionPlanOverview } from './action-plan/pages/action-plan-overview/action-plan-overview';
+import { ActionPlanList } from './action-plan/pages/action-plan-list/action-plan-list';
 
  const userRoutes: Routes = [
 
@@ -33,6 +36,16 @@ import { ActionEntryList } from './action-entry/pages/action-entry-list/action-e
         { path: '', redirectTo: 'overview', pathMatch: 'full' },
         { path: 'overview', component: ActionEntryOverview },
         { path: 'list', component: ActionEntryList },
+      ]
+    },
+
+    {
+      path: 'action-plan',
+      component: ActionPlanShell,
+      children: [
+        { path: '', redirectTo: 'overview', pathMatch: 'full' },
+        { path: 'overview', component: ActionPlanOverview },
+        { path: 'list', component: ActionPlanList },
       ]
     },
   

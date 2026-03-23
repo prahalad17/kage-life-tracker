@@ -1,5 +1,6 @@
 package com.kage.service.impl;
 
+import com.kage.common.dto.request.SearchRequestDto;
 import com.kage.dto.request.pillar.PillarCreateRequest;
 import com.kage.dto.request.pillar.PillarUpdateRequest;
 import com.kage.dto.response.PillarResponse;
@@ -12,12 +13,16 @@ import com.kage.exception.NotFoundException;
 import com.kage.mapper.PillarMapper;
 import com.kage.repository.PillarRepository;
 import com.kage.service.PillarService;
+import com.kage.util.PageableBuilderUtil;
+import com.kage.util.SpecificationBuilderUtil;
+import com.kage.util.UserSpecificationBuilderUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 
 @Service
@@ -41,21 +46,26 @@ public class PillarServiceImpl implements PillarService {
 
         User user = userService.loadActiveUser(userId);
 
-        PillarTemplate template = pillarTemplateService.loadActiveTemplate(request.getPillarTemplateId());
-
         Pillar pillar = Pillar.create(
                 user,
-                template.getName()
+                request.pillarName()
         );
 
-        pillar.assignTemplate(template);
-        pillar.updateDescription(template.getDescription());
-        Pillar saved = pillarRepository.save(pillar);
+        if (request.pillarTemplateId() != null) {
+            PillarTemplate template = pillarTemplateService.loadActiveTemplate(request.pillarTemplateId());
+            pillar.assignTemplate(template);
+        }
 
+        pillar.setColor(request.pillarColor());
+        pillar.setOrderIndex(request.orderIndex());
+        pillar.setPriorityWeight(request.priorityWeight());
+        pillar.updateDescription(request.pillarDescription());
+
+        Pillar saved = pillarRepository.save(pillar);
 
         log.info("Pillar created with id={}", saved.getId());
 
-        return pillarMapper.toResponse(saved);
+        return pillarMapper.toDto(saved);
     }
 
     /**
@@ -69,7 +79,7 @@ public class PillarServiceImpl implements PillarService {
 
         Pillar pillar = loadOwnedActivePillar(id, userId);
 
-        return pillarMapper.toResponse(pillar);
+        return pillarMapper.toDto(pillar);
     }
 
     /**
@@ -77,14 +87,21 @@ public class PillarServiceImpl implements PillarService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<PillarResponse> getAll(Long userId) {
+    public Page<PillarResponse> getAll(Long userId, SearchRequestDto request) {
 
-        log.debug("Fetching all active user pillars");
+        Pageable pageable = PageableBuilderUtil.build(request);
 
-        return pillarRepository.findByUserIdAndStatus(userId, RecordStatus.ACTIVE)
-                .stream()
-                .map(pillarMapper::toResponse)
-                .toList();
+        Specification<Pillar> dynamicSpec =
+                SpecificationBuilderUtil.build(request);
+
+        Specification<Pillar> mandatorySpec =
+                UserSpecificationBuilderUtil.build(userId);
+
+        Specification<Pillar> finalSpec =
+                mandatorySpec.and(dynamicSpec);
+
+        return pillarRepository.findAll(finalSpec, pageable)
+                .map(pillarMapper::toDto);
     }
 
     /**
@@ -95,20 +112,23 @@ public class PillarServiceImpl implements PillarService {
 
 //        log.debug("Updating user pillar with id={}", id);
 
-        Pillar pillar = loadOwnedActivePillar(request.getId(), userId);
+        Pillar pillar = loadOwnedActivePillar(request.pillarId(), userId);
 
-        PillarTemplate template = pillarTemplateService.loadActiveTemplate(request.getPillarTemplateId());
+        if (request.pillarTemplateId() != null) {
+            PillarTemplate template = pillarTemplateService.loadActiveTemplate(request.pillarTemplateId());
+            pillar.assignTemplate(template);
+        }
 
-
-        pillar.rename(template.getName());
-        pillar.updateDescription(template.getDescription());
-        pillar.assignTemplate(template);
+        pillar.setColor(request.pillarColor());
+        pillar.setOrderIndex(request.orderIndex());
+        pillar.setPriorityWeight(request.priorityWeight());
+        pillar.updateDescription(request.description());
 
         Pillar updated = pillarRepository.save(pillar);
 
         log.info("Pillar updated with id={}", updated.getId());
 
-        return pillarMapper.toResponse(updated);
+        return pillarMapper.toDto(updated);
     }
 
     /**

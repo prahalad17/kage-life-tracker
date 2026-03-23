@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import static com.kage.util.DomainGuardsUtil.requireNonEmpty;
 import static com.kage.util.DomainGuardsUtil.requireNonNull;
@@ -12,7 +13,7 @@ import static com.kage.util.DomainGuardsUtil.requireNonNull;
 @Table(
         name = "pillar",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"user_id", "name"})
+                @UniqueConstraint(columnNames = {"user_id", "pillar_name"})
         },
         indexes = {
                 @Index(name = "idx_pillar_user", columnList = "user_id")
@@ -31,21 +32,22 @@ public class Pillar extends BaseEntity {
     private PillarTemplate pillarTemplate;
 
     @Column(length = 100, nullable = false)
-    private String name;
+    private String pillarName;
 
     @Column(length = 255)
-    private String description;
+    private String pillarDescription;
 
     private Integer priorityWeight;
 
     private Integer orderIndex;
 
+    @Setter
     @Column(length = 30)
-    private String color; // HEX format
+    private String pillarColor; // HEX format
 
     protected Pillar(User user, String name) {
         this.user = requireNonNull(user, "user is required");
-        this.name = requireNonEmpty(name, "name is required");
+        this.pillarName = requireNonEmpty(name, "name is required");
     }
 
     public static Pillar create(User user, String name) {
@@ -56,15 +58,15 @@ public class Pillar extends BaseEntity {
         if (this.pillarTemplate != null) {
             throw new IllegalStateException("Template already assigned");
         }
-        this.pillarTemplate = template;
+        this.pillarTemplate = requireNonNull(template, "template is required");
     }
 
     public void rename(String name) {
-        this.name = requireNonEmpty(name, "name is required");
+        this.pillarName = requireNonEmpty(name, "name is required");
     }
 
     public void updateDescription(String description) {
-        this.description = description;
+        this.pillarDescription = description;
     }
 
     public void setPriorityWeight(Integer weight) {
@@ -79,6 +81,13 @@ public class Pillar extends BaseEntity {
             throw new IllegalArgumentException("order index must be positive");
         }
         this.orderIndex = orderIndex;
+    }
+
+    public void setColor(String color) {
+        if (color == null || !color.matches("^#([A-Fa-f0-9]{6})$")) {
+            throw new IllegalArgumentException("Invalid HEX color");
+        }
+        this.pillarColor = color;
     }
 
 

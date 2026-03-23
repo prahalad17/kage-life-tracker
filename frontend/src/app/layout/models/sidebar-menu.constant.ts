@@ -76,6 +76,21 @@ export const USER_SIDEBAR_MENU: SidebarItem[] = [
     ]
   },
   {
+    label: 'Action Plans',
+     route: '/action-plan',
+    icon: '📝',
+    children: [
+      {
+        label: 'Overview',
+        route: '/action-plan/overview'
+      },
+      {
+        label: 'History',
+        route: '/action-plan/list'
+      }
+    ]
+  },
+  {
     label: 'My Pillars',
     route: '/pillars',
     icon: '🧱',

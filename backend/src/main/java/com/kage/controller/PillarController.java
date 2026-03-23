@@ -1,6 +1,8 @@
 package com.kage.controller;
 
 
+import com.kage.common.dto.request.SearchRequestDto;
+import com.kage.common.dto.response.PageResponse;
 import com.kage.dto.request.pillar.PillarCreateRequest;
 import com.kage.dto.request.pillar.PillarUpdateRequest;
 import com.kage.dto.response.ApiResponse;
@@ -10,12 +12,11 @@ import com.kage.service.PillarService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/pillar")
@@ -28,20 +29,21 @@ public class PillarController {
     /**
      * Get all active user pillars
      */
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<PillarResponse>>> getAll(
-            @AuthenticationPrincipal CustomUserDetails user) {
+    @PostMapping("/search")
+    public ResponseEntity<ApiResponse<PageResponse<PillarResponse>>> getAll(
+            @AuthenticationPrincipal CustomUserDetails user,
+            @RequestBody SearchRequestDto request) {
 
         log.info("Fetching all active user pillars");
 
-        List<PillarResponse> data =
-                pillarService.getAll(user.getUser().getId());
+        Page<PillarResponse> page =
+                pillarService.getAll(user.getUser().getId(),request );
 
         return ResponseEntity.ok(
                 new ApiResponse<>(
                         true,
                         "Fetched user pillars successfully",
-                        data
+                        new PageResponse<>(page)
                 )
         );
     }
@@ -57,7 +59,7 @@ public class PillarController {
         log.info("Fetching user pillar with id={}", id);
 
         PillarResponse data =
-                pillarService.getById(id,user.getUser().getId());
+                pillarService.getById(id, user.getUser().getId());
 
         return ResponseEntity.ok(
                 new ApiResponse<>(
@@ -79,7 +81,7 @@ public class PillarController {
         log.info("Creating user pillar with name={}", request);
 
         PillarResponse data =
-                pillarService.create(request ,user.getUser().getId());
+                pillarService.create(request, user.getUser().getId());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse<>(
@@ -97,7 +99,7 @@ public class PillarController {
             @AuthenticationPrincipal CustomUserDetails user,
             @RequestBody @Valid PillarUpdateRequest request) {
 
-        log.info("Updating user pillar with id={}", request.getId());
+        log.info("Updating user pillar with id={}", request.pillarId());
 
         PillarResponse data =
                 pillarService.update(request, user.getUser().getId());
@@ -106,7 +108,7 @@ public class PillarController {
                 new ApiResponse<>(
                         true,
                         "User pillar updated successfully",
-                            data
+                        data
                 )
         );
     }
@@ -121,7 +123,7 @@ public class PillarController {
 
         log.info("Deactivating user pillar with id={}", id);
 
-        pillarService.deactivate(id,user.getUser().getId());
+        pillarService.deactivate(id, user.getUser().getId());
 
         return ResponseEntity.ok(
                 new ApiResponse<>(

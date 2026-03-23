@@ -86,17 +86,20 @@ export class DashboardOverview {
     // ===== TABLE ACTIONS =====
       onTableAction(event: { type: string; row: ActionEntry }) {
 
-        console.log(event);
         switch (event.type) {
           
           
           case 'edit':
           const request: UpdateActionEntryReq = {
-                      logId: event.row.activityDailyLogId,
-                      activityId:  event.row.activityId,
-                      actualValue:  event.row.actualValue,
-                      completed: true,
-                      notes: event.row.notes
+                     actionEntryId: event.row.actionEntryId,
+               actionEntryDate: event.row.actionEntryDate,
+            actionEntryName: event.row.actionEntryName,
+            actionEntryStatus: event.row.actionEntryStatus,
+            actionEntryNature: event.row.actionEntryNature,
+            actionEntryTrackingType: event.row.actionEntryTrackingType,
+            activityId: event.row.activityId,
+            pillarId: event.row.pillarId,
+            actionEntryNotes: event.row.actionEntryNotes
                     };
 
           this.dashboardService.updateLog(request).subscribe({
@@ -107,7 +110,7 @@ export class DashboardOverview {
               this.dialogState = {
                 open: true,
                 title: 'Daily Log Updated',
-                message: `Daily Log updated: ${log.activityName}`,
+                message: `Daily Log updated: ${log.actionEntryName}`,
                 type: 'info'
               };
             },

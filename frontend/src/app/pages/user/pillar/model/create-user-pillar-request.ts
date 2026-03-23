@@ -1,6 +1,10 @@
 export interface CreateUserPillarRequest
  {
-  description?: string;
-  name: string;
-  pillarTemplateId:number;
+  pillarName: string;
+  pillarDescription: string;
+  priorityWeight:number;
+  orderIndex:number;
+  pillarColor:number;
+
+  pillarTemplateId: number;
 }

@@ -185,3 +185,75 @@ select.invalid {
     transform: translateY(0);
   }
 }
+
+.color-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .color-picker-wrapper {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #dcdcdc;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: #999;
+    }
+
+    &:focus-within {
+      border-color: #4f46e5; // nice indigo focus
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+    }
+  }
+
+  .color-picker {
+    width: 100%;
+    height: 100%;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    background: none;
+
+    // remove default ugly styles
+    &::-webkit-color-swatch {
+      border: none;
+      border-radius: 8px;
+    }
+
+    &::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+  }
+
+  .hex-input {
+    width: 110px;
+    height: 40px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 1px solid #dcdcdc;
+    font-family: monospace;
+    font-size: 14px;
+    transition: all 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+    }
+
+    &.invalid {
+      border-color: #e11d48;
+    }
+  }
+}
+
+.color-preview {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}

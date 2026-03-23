@@ -49,16 +49,16 @@ export class ActionEntryList implements OnInit {
       pageSize=0
   
       private searchRequestSubject = new BehaviorSubject<SearchRequestDto>({
-    page: 0,
-    size: 10,
-    sort: [
-      {
-        field: "logDate",
-        direction: "DESC"
-      }
-    ],
-    filters: []
-  });
+          page: 0,
+          size: 10,
+          sort: [
+            // {
+            //   field: "actionEntryDate",
+            //   direction: "DESC"
+            // }
+          ],
+          filters: []
+        });
   
     
       
@@ -80,11 +80,12 @@ export class ActionEntryList implements OnInit {
     
       // ===== TABLE CONFIG =====
       tableConfig: TableConfig = {
-          tableName: 'Daily Log',
+          tableName: 'Action Entries',
           columns: [
-            { key: 'activityName', header: 'Activity Name' },
-            { key: 'completed', header: 'Completed' },
-            { key: 'logDate', header: 'Date' }
+            { key: 'actionEntryName', header: 'Action Entry Name' },
+            { key: 'actionEntryDate', header: 'Date' },
+            { key: 'actionEntryStatus', header: 'Status' }
+            
           ],
           actions: [
             { type: 'view', label: 'View' },
@@ -93,7 +94,7 @@ export class ActionEntryList implements OnInit {
           ],
           create: {
             enabled: true,
-            label: 'Add New Daily Log'
+            label: 'Log New Action Entry'
           },
           pagination:{
             enabled:true
@@ -107,9 +108,6 @@ export class ActionEntryList implements OnInit {
       }
   
     onPageChange(event: { pageIndex: number; pageSize: number }) {
-  
-      console.log('Parent received:', event);
-      
   
     const current = this.searchRequestSubject.value;
   
@@ -175,17 +173,17 @@ export class ActionEntryList implements OnInit {
         }
     
          openCreate() {
-            this.openForm('create', 'Add Daily Log', null, false);
+            this.openForm('create', 'Add Action Entry', null, false);
           }
         
           openView(row: ActionEntry) {
             console.log(row);
             
-            this.openForm('view', 'View Daily Log', row, true);
+            this.openForm('view', 'View Action Entry', row, true);
           }
         
           openEdit(row: ActionEntry) {
-            this.openForm('edit', 'Edit Daily Log', row, false);
+            this.openForm('edit', 'Edit Action Entry', row, false);
           }
     
           closeOverlay() {
@@ -200,8 +198,8 @@ export class ActionEntryList implements OnInit {
             this.selectedRow = row;
             this.dialogState = {
               open: true,
-              title: 'Delete Daily Log',
-              message: `Are you sure you want to delete daily log: ${row.activityName}?`,
+              title: 'Delete Action Entry',
+              message: `Are you sure you want to delete action entry: ${row.actionEntryName} for : ${row.actionEntryDate}?`,
               type: 'delete'
             };
           }
@@ -225,8 +223,8 @@ export class ActionEntryList implements OnInit {
     
             this.dialogState = {
               open: true,
-              title: 'Daily Log Deleted',
-              message: `Daily Log deleted: ${row.email}`,
+              title: 'Action Entry Deleted',
+              message: `Action Entry deleted: ${row.email}`,
               type: 'info'
             };
           },
@@ -248,21 +246,26 @@ export class ActionEntryList implements OnInit {
       
           if (this.formConfig.mode === 'create') {
             const request: CreateActionEntryReq = {
-              activityId: data.activityId,
-              actualValue: data.actualValue,
-              completed: data.completed,
-              notes:data.notes
+
+            actionEntryDate: data.actionEntryDate,
+            actionEntryName: data.actionEntryName,
+            actionEntryStatus: data.actionEntryStatus,
+            actionEntryNature: data.actionEntryNature,
+            actionEntryTrackingType: data.actionEntryTrackingType,
+            activityId: data.activityId,
+            pillarId: data.pillarName,
+            actionEntryNotes: data.actionEntryNotes
             };
       
             this.actionEntryService.createLog(request).subscribe({
-              next: dailyLog => {
+              next: actionEntry => {
                 this.closeOverlay();
                 this.loadActionEntrys();
       
                 this.dialogState = {
                   open: true,
-                  title: 'Daily Log Created',
-                  message: `New log  created: ${dailyLog.activityName}`,
+                  title: 'Action Entry Created',
+                  message: `New log  created: ${actionEntry.actionEntryName}`,
                   type: 'info'
                 };
               },
@@ -274,22 +277,26 @@ export class ActionEntryList implements OnInit {
       
           if (this.formConfig.mode === 'edit' && this.selectedRow) {
             const request: UpdateActionEntryReq = {
-              logId: data.activityActionEntryId,
-              activityId: data.activityId,
-              actualValue: data.actualValue,
-              completed: data.completed,
-              notes:data.notes
+              actionEntryId: data.actionEntryId,
+               actionEntryDate: data.actionEntryDate,
+            actionEntryName: data.actionEntryName,
+            actionEntryStatus: data.actionEntryStatus,
+            actionEntryNature: data.actionEntryNature,
+            actionEntryTrackingType: data.actionEntryTrackingType,
+            activityId: data.activityId,
+            pillarId: data.pillarName,
+            actionEntryNotes: data.actionEntryNotes
             };
       
             this.actionEntryService.updateLog(request).subscribe({
-              next: log  => {
+              next: actionEntry  => {
                 this.closeOverlay();
                 this.loadActionEntrys();
       
                 this.dialogState = {
                   open: true,
-                  title: 'Daily Log Updated',
-                  message: `Daily Log updated: ${log.activityName}`,
+                  title: 'Action Entry Updated',
+                  message: `Action Entry updated: ${actionEntry.actionEntryName}`,
                   type: 'info'
                 };
               },

@@ -1,14 +1,25 @@
 package com.kage.dto.response;
 
-import lombok.Data;
+/**
+ * DTO for {@link com.kage.entity.Pillar}
+ */
 
-@Data
-public class PillarResponse {
+public record PillarResponse(
 
-    private Long id;
-    private String pillarName;
-    private String description;
-    // Optional for UI
-    private Long pillarTemplateId;
+        Long pillarId,
+
+        Long pillarTemplateId,
+
+        String pillarName,
+
+        String pillarDescription,
+
+        Integer priorityWeight,
+
+        Integer orderIndex,
+
+        String pillarColor
+
+) {
 
 }

@@ -1,8 +1,12 @@
 export interface UpdateActionEntryReq
  {
-  logId: number;
+  actionEntryId: number;
+  actionEntryDate: Date;
+  actionEntryName: string;
+  actionEntryStatus: string;
+  actionEntryNature: string;
+  actionEntryTrackingType: string;
   activityId: number;
-  actualValue: number;
-  completed: boolean;
-  notes:string;
+  pillarId: number;
+  actionEntryNotes: string;
 }

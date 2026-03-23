@@ -4,7 +4,10 @@ import com.kage.common.dto.request.SearchRequestDto;
 import com.kage.dto.request.action.ActionPlanCreateRequest;
 import com.kage.dto.request.action.ActionPlanUpdateRequest;
 import com.kage.dto.response.ActionPlanResponse;
-import com.kage.entity.*;
+import com.kage.entity.ActionPlan;
+import com.kage.entity.Activity;
+import com.kage.entity.Pillar;
+import com.kage.entity.User;
 import com.kage.enums.RecordStatus;
 import com.kage.exception.NotFoundException;
 import com.kage.mapper.ActionPlanMapper;
@@ -58,16 +61,15 @@ public class ActionPlanServiceImpl implements ActionPlanService {
     @Transactional
     public ActionPlanResponse create(ActionPlanCreateRequest request, Long userId) {
 
-//        log.debug("Creating Action Entry for userId={} for date = {}", userId, request.date());
         User user = userService.loadActiveUser(userId);
-        DayEntry dayEntry = dayEntryService.loadActiveDayEntry(userId, request.dayEntryId());
 
-        ActionPlan actionPlan = ActionPlan.create(
+        ActionPlan actionPlan = ActionPlan.createUserActionPlan(
                 user,
-                request.actionName(),
-                request.actionStatus(),
-                request.nature(),
-                request.trackingType());
+                request.actionPlanName(),
+                request.actionPlanDate(),
+                request.actionPlanStatus(),
+                request.actionPlanNature(),
+                request.actionPlanTrackingType());
 
         if (request.activityId() != null) {
 
@@ -80,6 +82,8 @@ public class ActionPlanServiceImpl implements ActionPlanService {
             actionPlan.addPillar(pillar);
         }
 
+        actionPlan.setActionPlanNotes(request.actionPlanNotes());
+
         actionPlanRepository.save(actionPlan);
 
         return actionPlanMapper.toDto(actionPlan);
@@ -89,6 +93,10 @@ public class ActionPlanServiceImpl implements ActionPlanService {
     public ActionPlanResponse update(ActionPlanUpdateRequest request, Long userId) {
 
         ActionPlan actionPlan = loadOwnedActionPlan(request.actionPlanId(), userId);
+
+
+
+        actionPlan.setActionPlanNotes(request.actionPlanNotes());
 
         return actionPlanMapper.toDto(actionPlan);
     }

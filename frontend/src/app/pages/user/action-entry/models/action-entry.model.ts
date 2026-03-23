@@ -1,8 +1,14 @@
 export interface ActionEntry {
-  activityDailyLogId: number;
+
+  actionEntryId: number;
+  dayEntryId: number;
+  actionEntryDate: Date;
+  actionEntryName: string;
+  actionEntryStatus: string;
+  actionEntryNature: string;
+  actionEntryTrackingType: string;
   activityId: number;
-  activityName:string
-  actualValue: number;
-  completed: boolean;
-  notes:string;
+  pillarId: number;
+  actionEntryNotes: string;
+  
 }

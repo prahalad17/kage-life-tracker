@@ -2,7 +2,7 @@ import { FormActionConfig } from "../../../../shared/models/form/form-action-con
 import { FormConfig } from "../../../../shared/models/form/form-config";
 import { FormFieldConfig } from "../../../../shared/models/form/form-field-config";
 
-export function buildActionEntryFormConfig(
+export function buildActionPlanFormConfig(
   mode: 'create' | 'edit' | 'view'
 ): FormConfig {
   return {
@@ -26,7 +26,7 @@ export function buildActionEntryFormConfig(
 function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
   return [
   {
-      name: 'actionEntryId',
+      name: 'actionPlanId',
       label: 'Id',
       type: 'text',
       placeholder: 'Id',
@@ -35,15 +35,15 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
     },
 
     {
-      name: 'actionEntryDate',
-      label: 'Action Entry Date',
+      name: 'actionPlanDate',
+      label: 'Action Plan Date',
       type: 'date',
       placeholder: 'Value',
       required: true
     },
     {
-      name: 'actionEntryName',
-      label: 'Action Entry Name',
+      name: 'actionPlanName',
+      label: 'Action Plan Name',
       type: 'text',
       placeholder: 'Name',
       required: true
@@ -109,7 +109,7 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
     },
 
     {
-      name: 'actionEntryNature',
+      name: 'actionPlanNature',
       label: 'Activity Nature',
       type: 'select',
       placeholder: 'Activity Nature',
@@ -123,7 +123,7 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
       }
     },
     {
-      name: 'actionEntryTrackingType',
+      name: 'actionPlanTrackingType',
       label: 'Tracking Type',
       type: 'select',
       placeholder: 'Tracking Type',
@@ -139,7 +139,7 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
       }
     },
     {
-      name: 'actionEntryStatus',
+      name: 'actionPlanStatus',
       label: 'Status',
       placeholder: 'Status',
       type: 'select',
@@ -147,14 +147,16 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
       optionsConfig :{
         type :'static',
         options:[
+          { label: 'SCHEDULED', value: 'SCHEDULED' },
           { label: 'IN_PROGRESS', value: 'IN_PROGRESS' },
-          { label: 'PARTIALLY_COMPLETED', value: 'PARTIALLY_COMPLETED' },
-          { label: 'COMPLETED', value: 'COMPLETED' }
+           { label: 'PARTIALLY_COMPLETED', value: 'PARTIALLY_COMPLETED' },
+            { label: 'COMPLETED', value: 'COMPLETED' },
+          { label: 'MISSED', value: 'MISSED' }
         ], 
       }
     },
     {
-      name: 'actionEntryNotes',
+      name: 'actionPlanNotes',
       label: 'Notes',
       type: 'text',
       placeholder: 'Description',

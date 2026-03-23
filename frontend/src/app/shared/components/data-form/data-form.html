@@ -1,22 +1,11 @@
-<form
-  [formGroup]="form"
-  (ngSubmit)="onSubmit()"
-  class="saas-form">
-
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="saas-form">
   <!-- CARD WRAPPER -->
   <div class="form-card">
-
     <!-- GRID -->
-    <div
-      class="form-grid"
-      [class.grid-2]="config.layout === 'grid' && config.gridColumns === 2"
-    >
-
+    <div class="form-grid" [class.grid-2]="config.layout === 'grid' && config.gridColumns === 2">
       @for (field of config.fields; track field.name) {
         @if (!field.hidden) {
-
           <div class="form-field">
-
             <label>
               {{ field.label }}
               @if (field.required) {
@@ -25,7 +14,6 @@
             </label>
 
             @switch (field.type) {
-
               @case ('text') {
                 <input
                   type="text"
@@ -58,7 +46,8 @@
                   rows="4"
                   [formControlName]="field.name"
                   [placeholder]="field.placeholder"
-                  [class.invalid]="form.get(field.name)?.touched && form.get(field.name)?.invalid">
+                  [class.invalid]="form.get(field.name)?.touched && form.get(field.name)?.invalid"
+                >
                 </textarea>
               }
 
@@ -67,9 +56,7 @@
                   [formControlName]="field.name"
                   [class.invalid]="form.get(field.name)?.touched && form.get(field.name)?.invalid"
                 >
-                  <option [ngValue]="null">
-                    Select {{ field.label }}
-                  </option>
+                  <option [ngValue]="null">Select {{ field.label }}</option>
 
                   @for (opt of dropdownOptions[field.name] ?? []; track opt.value) {
                     <option [ngValue]="opt.value">
@@ -79,31 +66,60 @@
                 </select>
               }
 
+              @case ('date') {
+                <input
+                  type="date"
+                  [formControlName]="field.name"
+                  [class.invalid]="form.get(field.name)?.touched && form.get(field.name)?.invalid"
+                />
+              }
+
+              @case ('number') {
+                <input
+                  type="number"
+                  [formControlName]="field.name"
+                  [placeholder]="field.placeholder"
+                  [class.invalid]="form.get(field.name)?.touched && form.get(field.name)?.invalid"
+                />
+              }
+
+              @case ('color') {
+                <div class="color-field">
+                  
+                  <div class="color-picker-wrapper">
+                    <input
+                      type="color"
+                      class="color-picker"
+                      [value]="form.get(field.name)?.value || '#000000'"
+                      (input)="form.get(field.name)?.setValue($event.target.value)"
+                    />
+                  </div>
+
+                  <input
+                    type="text"
+                    maxlength="7"
+                    placeholder="#ffffff"
+                    [value]="form.get(field.name)?.value"
+                    (input)="onHexChange(field.name, $event.target.value)"
+                    class="hex-input"
+                  />
+                  
+                </div>
+              }
             }
 
-            @if (
-              form.get(field.name)?.touched &&
-              form.get(field.name)?.invalid
-            ) {
-              <div class="error-text">
-                {{ field.label }} is invalid
-              </div>
+            @if (form.get(field.name)?.touched && form.get(field.name)?.invalid) {
+              <div class="error-text">{{ field.label }} is invalid</div>
             }
-
           </div>
-
         }
       }
-
     </div>
-
   </div>
 
   <!-- ACTIONS -->
   <div class="form-actions">
-
     @for (action of config.actions; track action.label) {
-
       <button
         [type]="action.type"
         class="form-btn"
@@ -111,12 +127,11 @@
         [class.secondary]="action.action !== 'submit'"
         [disabled]="action.action === 'submit' && form.invalid"
         (click)="action.action === 'cancel' && onCancel()"
+        (click)="action.action === 'submit' && onSubmit()"
       >
         {{ action.label }}
       </button>
-
     }
-
   </div>
 
   <!-- MESSAGE -->
@@ -125,5 +140,4 @@
       {{ message }}
     </div>
   }
-
 </form>

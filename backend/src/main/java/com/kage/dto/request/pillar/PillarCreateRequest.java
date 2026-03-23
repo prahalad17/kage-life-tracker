@@ -1,18 +1,35 @@
 package com.kage.dto.request.pillar;
 
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class PillarCreateRequest {
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 
-    private Long pillarTemplateId;
+/**
+ * DTO for {@link com.kage.entity.Pillar}
+ */
+public record PillarCreateRequest(
 
-    @Size(max = 255)
-    private String description;
+        @NotBlank(message = "Pillar Name must not be blank")
+        String pillarName,
+
+        Long pillarTemplateId,
+
+        String pillarDescription,
+
+        @Min(1) @Max(10)
+        Integer priorityWeight,
+
+        @Min(1) @Max(10)
+        Integer orderIndex,
+
+        @Pattern(
+                regexp = "^#([A-Fa-f0-9]{6})$",
+                message = "Color must be a valid HEX code like #A1B2C3"
+        )
+        String pillarColor
+) {
+
 }
+

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserPillarService } from '../../service/user.pillar.service';
 import { UserPillar } from '../../model/user-pillar.model';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, finalize, Observable, shareReplay, switchMap } from 'rxjs';
 import { FormConfig } from '../../../../../shared/models/form/form-config';
 import { TableConfig } from '../../../../../shared/models/table/table-config.model';
 import { buildUserPillarFormConfig } from '../../model/user-pillar-form-config';
@@ -14,6 +14,8 @@ import { DataForm } from '../../../../../shared/components/data-form/data-form';
 import { ConfirmDialog } from '../../../../../shared/components/confirm-dialog/confirm-dialog';
 import { Pillar } from '../../../../admin/pillars/models/pillar.model';
 import { AuthStateService } from '../../../../../auth/services/auth-state.service';
+import { SearchRequestDto } from '../../../../../shared/models/api/search-request.model';
+import { PageResponse } from '../../../../../shared/models/api/page-response.model';
 
 type DialogType = 'info' | 'delete' | '';
 @Component({
@@ -33,15 +35,32 @@ export class PillarList implements OnInit {
   constructor(private userPillarService: UserPillarService , private authStateService : AuthStateService) {}
   
     // ===== DATA =====
-    userPillars$!: Observable<UserPillar[]>;
-
-    userAvailablePillars$!: Observable<Pillar[]>;
+    pillars$!: Observable<PageResponse<UserPillar>>;
+     loading = false;
 
 
   
     selectedRow: UserPillar | null = null;
     formConfig: FormConfig | null = null;
     formErrorMessage = '';
+
+    // ===== PAGINATION =====
+      
+          totalElements=0
+          pageIndex=0
+          pageSize=0
+      
+          private searchRequestSubject = new BehaviorSubject<SearchRequestDto>({
+              page: 0,
+              size: 10,
+              sort: [
+                // {
+                //   field: "actionEntryDate",
+                //   direction: "DESC"
+                // }
+              ],
+              filters: []
+            });
   
     
     // ===== OVERLAY STATE =====
@@ -82,15 +101,30 @@ export class PillarList implements OnInit {
     // ===== LIFECYCLE =====
     ngOnInit(): void {
       this.loadPillars();
-       this.loadUserAvailablePillars();
-    }
-  
-     loadPillars() {
-      this.userPillars$ = this.userPillarService.getAll();
     }
 
-     loadUserAvailablePillars() {
-      this.userPillars$ = this.userPillarService.getAll();
+    onPageChange(event: { pageIndex: number; pageSize: number }) {
+  
+    const current = this.searchRequestSubject.value;
+  
+    this.searchRequestSubject.next({
+      ...current,
+      page: event.pageIndex,
+      size: event.pageSize
+    });
+  
+  }
+  
+     loadPillars() {
+      this.pillars$ = this.searchRequestSubject.pipe(
+            switchMap(request => {
+              this.loading = true;
+        
+              return this.userPillarService.search(request).pipe(
+                finalize(() => this.loading = false)
+              );
+            }),
+            shareReplay(1));
     }
   
     
@@ -202,9 +236,12 @@ export class PillarList implements OnInit {
     
         if (this.formConfig.mode === 'create') {
           const request: CreateUserPillarRequest = {
-            name : data.pillarName,
-            description : data.description,
-            pillarTemplateId: data.pillarName
+            pillarName: data.pillarName,
+            pillarDescription: data.description,
+            pillarTemplateId: data.pillarTemplateId,
+            priorityWeight: data.priorityWeight,
+            orderIndex: data.orderIndex,
+            pillarColor: data.pillarColor
           };
     
           this.userPillarService.createPillar(request).subscribe({
@@ -230,10 +267,13 @@ export class PillarList implements OnInit {
           console.log(data);
           
           const request: UpdateUserPillarRequest = {
-            id: data.id,
-            name : data.name,
-            description : data.description,
-            pillarTemplateId: data.pillarName
+            pillarId: data.id,
+            pillarName: data.name,
+            pillarDescription: data.description,
+            pillarTemplateId: data.pillarTemplateId,
+            priorityWeight: data.priorityWeight,
+            orderIndex: data.orderIndex,
+            pillarColor: data.pillarColor
           };
     
           this.userPillarService.updatePillar(request).subscribe({

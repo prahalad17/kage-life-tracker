@@ -1,6 +1,6 @@
 package com.kage.dto.request.action;
 
-import com.kage.enums.ActionStatus;
+import com.kage.enums.ActionEntryStatus;
 import com.kage.enums.ActivityNature;
 import com.kage.enums.TrackingType;
 
@@ -11,12 +11,13 @@ import java.util.List;
  * DTO for {@link com.kage.entity.ActionEntry}
  */
 public record ActionEntryCreateRequest(
-        Long dayEntryId,
-        String actionName,
-        ActionStatus actionStatus,
-        ActivityNature nature,
-        TrackingType trackingType,
+        LocalDate actionEntryDate,
+        String actionEntryName,
+        ActionEntryStatus actionEntryStatus,
+        ActivityNature actionEntryNature,
+        TrackingType actionEntryTrackingType,
+        String actionEntryNotes,
         Long activityId,
         Long pillarId,
-        List<ActionEntryAttributesRequest> attributes) {
+        List<ActionEntryAttributesRequest> actionEntryAttributes) {
 }

@@ -1,7 +1,12 @@
 export interface CreateActionEntryReq
  {
+  actionEntryDate: Date;
+  actionEntryName: string;
+  actionEntryStatus: string;
+  actionEntryNature: string;
+  actionEntryTrackingType: string;
   activityId: number;
-  actualValue: number;
-  completed: boolean;
-  notes:string;
+  pillarId: number;
+  actionEntryNotes: string;
+
 }

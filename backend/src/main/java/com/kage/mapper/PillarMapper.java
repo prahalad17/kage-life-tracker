@@ -1,37 +1,17 @@
 package com.kage.mapper;
 
-import com.kage.dto.request.pillar.PillarCreateRequest;
-import com.kage.dto.request.pillar.PillarUpdateRequest;
 import com.kage.dto.response.PillarResponse;
 import com.kage.entity.Pillar;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.ReportingPolicy;
 
-import java.util.List;
-
-@Mapper(componentModel = "spring")
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface PillarMapper {
 
-//    @Mapping(target = "id", ignore = true)
-//    @Mapping(target = "createdAt", ignore = true)
-//    @Mapping(target = "updatedAt", ignore = true)
-//    @Mapping(target = "status", ignore = true)
-//    @Mapping(target = "remarks", ignore = true)
-//    Pillar toEntity(PillarCreateRequest request);
+    @Mapping(target = "pillarTemplateId", source = "pillarTemplate.id")
+    PillarResponse toDto(Pillar pillar);
 
-    @Mapping(target = "pillarTemplateId",source = "pillarTemplate.id")
-    @Mapping(target = "pillarName",source = "pillarTemplate.name")
-    PillarResponse toResponse(Pillar pillar);
-
-//    @Mapping(target = "id", ignore = true)
-//    @Mapping(target = "createdAt", ignore = true)
-//    @Mapping(target = "updatedAt", ignore = true)
-//    @Mapping(target = "status", ignore = true)
-//    @Mapping(target = "remarks", ignore = true)
-//    void updateEntityFromDto(PillarUpdateRequest dto , @MappingTarget Pillar pillar);
-
-//    @Mapping(target = "templatePillarId",source = "pillarTemplate.id")
-    List<PillarResponse> toResponseList(List<Pillar> pillarsListUser);
 
 }
