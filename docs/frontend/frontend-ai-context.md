@@ -103,7 +103,8 @@ Admin features:
 User features:
 
 - dashboard
-- daily-log
+- action-entry
+- action-plan
 - pillars
 - activity
 

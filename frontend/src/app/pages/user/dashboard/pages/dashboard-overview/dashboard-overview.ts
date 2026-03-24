@@ -1,18 +1,18 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { FormConfig } from '../../../../../shared/models/form/form-config';
-import { TableConfig } from '../../../../../shared/models/table/table-config.model';
 import { DataTable } from '../../../../../shared/components/data-table/data-table';
 import { CommonModule } from '@angular/common';
 import { DashboardService } from '../../service/dashboard.service';
-import { ActionEntry } from '../../../action-entry/models/action-entry.model';
-import { UpdateActionEntryReq } from '../../../action-entry/models/update-action-entry-resuest';
+import { WidgetEvent } from '../../../../../shared/models/dashboard/widget-event';
+import { WidgetRenderer } from '../../../../../shared/components/dashboard-engine/widget-renderer/widget-renderer';
+import { dashboardConfig } from './dashboard-overview-config';
+import { DashboardConfig } from '../../../../../shared/models/dashboard/dashboard-config';
 type DialogType = 'info' | 'delete' | '';
 
 @Component({
   selector: 'app-dashboard-overview',
   imports: [CommonModule,
-    DataTable],
+    WidgetRenderer],
   templateUrl: './dashboard-overview.html',
   styleUrl: './dashboard-overview.scss',
 })
@@ -20,132 +20,76 @@ export class DashboardOverview {
 
   constructor(private dashboardService : DashboardService) {}
 
-  // ===== DATA =====
-  tasksTodo$!: Observable<ActionEntry[]>;
-
-  tasksCompleted$!: Observable<ActionEntry[]>;
-
-  selectedRow: ActionEntry | null = null;
-  formConfig: FormConfig | null = null;
-  formErrorMessage = '';
-
-  // ===== OVERLAY STATE =====
-    overlayState = {
-      open: false,
-      title: '',
-      closeOnBackdrop: true
-    };
-
-    // ===== DIALOG STATE =====
-    dialogState = {
-      open: false,
-      title: '',
-      message: '',
-      type: '' as DialogType  
-    };
-
-    // ===== TABLE CONFIG =====
-  toDoTableConfig: TableConfig = {
-      tableName: 'Today\'s Tasks',
-      columns: [
-        { key: 'activityName', header: 'Activity Name' }
-      ],
-      actions: [
-        // { type: 'view', label: 'View' },
-        { type: 'edit', label: 'Done' },
-        // { type: 'delete', label: 'Delete', confirm: true }
-      ]
-    };
-
-  completedTableConfig: TableConfig = {
-    tableName: 'Today\'s Tasks',
-    columns: [
-      { key: 'activityName', header: 'Activity Name' }
-    ],
-    actions: [
-      // { type: 'edit', label: 'Undone'},
+   dashboardConfig: DashboardConfig = {
+    id: 'home',
+  
+    layout: {
+      type: 'grid',
+      columns: 2
+    },
+  
+    widgets: [
+      {
+        id: 'tasks',
+        type: 'interactive-list',
+        title: "Today's Tasks",
+        dataKey: 'tasks'
+      },
+      {
+        id: 'actions',
+        type: 'list',
+        title: 'Completed Actions',
+        dataKey: 'actions'
+      },
+      {
+        id: 'sleep',
+        type: 'metric',
+        title: 'Sleep',
+        dataKey: 'sleepData'
+      },
+      {
+        id: 'note',
+        type: 'text',
+        title: 'Daily Note',
+        dataKey: 'note'
+      }
     ]
   };
 
+ dashboardData : Record<string, any> = {
+  tasks: {
+    items: [
+      { id: '1', title: 'Workout', completed: false },
+      { id: '2', title: 'Study', completed: true }
+    ]
+  },
 
-  // ===== LIFECYCLE =====
-    ngOnInit(): void {
-      this.loadToDo();
-      this.loadCompleted();
+  actions: {
+    items: [
+      { id: '1', title: 'Ran 5km', subtitle: 'Morning' }
+    ]
+  },
+
+  sleepData: {
+    value: 6,
+    unit: 'hrs',
+    label: 'Last Night'
+  },
+
+  note: {
+    content: 'Felt productive today. Keep going.'
+  }
+};
+
+ handleWidgetEvent(event: WidgetEvent) {
+    console.log('Widget Event:', event);
+
+    if (event.actionType === 'TOGGLE') {
+      console.log('Toggle item:', event.payload.itemId);
+
+      // later → call API here
     }
-  
-     loadToDo() {
-      this.tasksTodo$ = this.dashboardService.getToDo();
-    }
-
-    loadCompleted() {
-      this.tasksCompleted$ = this.dashboardService.getDone();
-    }
-
-
-    // ===== TABLE ACTIONS =====
-      onTableAction(event: { type: string; row: ActionEntry }) {
-
-        switch (event.type) {
-          
-          
-          case 'edit':
-          const request: UpdateActionEntryReq = {
-                     actionEntryId: event.row.actionEntryId,
-               actionEntryDate: event.row.actionEntryDate,
-            actionEntryName: event.row.actionEntryName,
-            actionEntryStatus: event.row.actionEntryStatus,
-            actionEntryNature: event.row.actionEntryNature,
-            actionEntryTrackingType: event.row.actionEntryTrackingType,
-            activityId: event.row.activityId,
-            pillarId: event.row.pillarId,
-            actionEntryNotes: event.row.actionEntryNotes
-                    };
-
-          this.dashboardService.updateLog(request).subscribe({
-            next: log  => {
-              this.loadToDo();
-              this.loadCompleted();
-    
-              this.dialogState = {
-                open: true,
-                title: 'Daily Log Updated',
-                message: `Daily Log updated: ${log.actionEntryName}`,
-                type: 'info'
-              };
-            },
-            error: err => {
-              this.formErrorMessage = err?.message || 'Failed to update log ';
-            }
-          });
-
-            break;
-        }
-      }
-
-
-      scheduleTodayTasks(){
-
-         const today = new Date().toISOString().split('T')[0];
-
-         this.dashboardService.schedule(today).subscribe({
-            next: log  => {
-              this.loadToDo();
-              this.loadCompleted();
-    
-              // this.dialogState = {
-              //   open: true,
-              //   title: 'Daily Log Updated',
-              //   message: `Daily Log updated: ${log.activityName}`,
-              //   type: 'info'
-              // };
-            },
-            error: err => {
-              this.formErrorMessage = err?.message || 'Failed to update log ';
-            }
-          });
-
-      }
+  }
   
 
 }

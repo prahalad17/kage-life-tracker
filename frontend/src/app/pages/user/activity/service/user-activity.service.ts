@@ -6,6 +6,8 @@ import { UserActivity } from "../models/user-activity.model";
 import { ApiResponse } from "../../../../shared/models/api/api-response.model";
 import { CreateUserActivityRequest } from "../models/create-user-activity-request";
 import { UpdateUserActivityRequest } from "../models/update-user-activity-request";
+import { SearchRequestDto } from "../../../../shared/models/api/search-request.model";
+import { PageResponse } from "../../../../shared/models/api/page-response.model";
 
 @Injectable({
     providedIn:'root'
@@ -15,6 +17,13 @@ export class UserActivityService{
       private BASE_URL = 'http://localhost:8080/api/v1/activity';
 
      constructor(private http: HttpClient) {}
+
+     search(request: SearchRequestDto): Observable<PageResponse<UserActivity>> {
+         return this.http.post<PageResponse<UserActivity>>(
+           `${this.BASE_URL}/search`,
+           request
+         );
+       }
 
      getAll(): Observable<UserActivity[]> {
          return this.http

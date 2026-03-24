@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserActivityService } from '../../service/user-activity.service';
 import { UserActivity } from '../../models/user-activity.model';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, finalize, Observable, shareReplay, switchMap } from 'rxjs';
 import { FormConfig } from '../../../../../shared/models/form/form-config';
 import { TableConfig } from '../../../../../shared/models/table/table-config.model';
 import { buildUserActivityFormConfig } from '../../models/user-activity-form-config';
@@ -12,6 +12,8 @@ import { DataTable } from '../../../../../shared/components/data-table/data-tabl
 import { Overlay } from '../../../../../shared/components/overlay/overlay';
 import { DataForm } from '../../../../../shared/components/data-form/data-form';
 import { ConfirmDialog } from '../../../../../shared/components/confirm-dialog/confirm-dialog';
+import { PageResponse } from '../../../../../shared/models/api/page-response.model';
+import { SearchRequestDto } from '../../../../../shared/models/api/search-request.model';
 
 type DialogType = 'info' | 'delete' | '';
 
@@ -32,11 +34,31 @@ export class ActivityList implements OnInit{
   constructor(private userActivityService: UserActivityService) {}
   
     // ===== DATA =====
-    userActivity$! : Observable<UserActivity[]>;
+    userActivity$! : Observable<PageResponse<UserActivity>>;
+    loading = false;
   
     selectedRow: UserActivity | null = null;
     formConfig: FormConfig | null = null;
     formErrorMessage = '';
+
+     // ===== PAGINATION =====
+          
+              totalElements=0
+              pageIndex=0
+              pageSize=0
+          
+              private searchRequestSubject = new BehaviorSubject<SearchRequestDto>({
+                  page: 0,
+                  size: 10,
+                  sort: [
+                    // {
+                    //   field: "actionEntryDate",
+                    //   direction: "DESC"
+                    // }
+                  ],
+                  filters: []
+                });
+      
   
   // ===== OVERLAY STATE =====
     overlayState = {
@@ -76,9 +98,29 @@ export class ActivityList implements OnInit{
     ngOnInit(): void {
       this.loadActivity();
     }
+
+    onPageChange(event: { pageIndex: number; pageSize: number }) {
+  
+    const current = this.searchRequestSubject.value;
+  
+    this.searchRequestSubject.next({
+      ...current,
+      page: event.pageIndex,
+      size: event.pageSize
+    });
+  
+  }
   
      loadActivity() {
-      this.userActivity$ = this.userActivityService.getAll();
+      this.userActivity$ = this.searchRequestSubject.pipe(
+                  switchMap(request => {
+                    this.loading = true;
+              
+                    return this.userActivityService.search(request).pipe(
+                      finalize(() => this.loading = false)
+                    );
+                  }),
+                  shareReplay(1));
     }
   
   
@@ -190,13 +232,13 @@ export class ActivityList implements OnInit{
       
           if (this.formConfig.mode === 'create') {
             const request: CreateUserActivityRequest     = {
-            activityName: data.activityName,
-            description: data.description,
-            nature: data.nature,
-            pillarId: data.pillarName,
-            trackingType: data.trackingType,
-            unit: data.unit,
-            scheduleType : data.scheduleType
+              activityName: data.activityName,
+              activityType: data.activityType,
+              activityNature: data.activityNature,
+              activityTrackingType: data.activityTrackingType,
+              activityDescription: data.activityDescription,
+              activityScheduleType: data.activityScheduleType,
+              pillarId: data.pillarId
             };
       
             this.userActivityService.createActivity(request).subscribe({
@@ -221,12 +263,12 @@ export class ActivityList implements OnInit{
             const request: UpdateUserActivityRequest = {
             activityId: data.activityId,
             activityName: data.activityName,
-            description: data.description,
-            nature: data.nature,
-            pillarId: data.pillarName,
-            trackingType: data.trackingType,
-            unit: data.unit,
-            scheduleType : data.scheduleType
+              activityType: data.activityType,
+              activityNature: data.activityNature,
+              activityTrackingType: data.activityTrackingType,
+              activityDescription: data.activityDescription,
+              activityScheduleType: data.activityScheduleType,
+              pillarId: data.pillarId
             };
       
             this.userActivityService.updateActivity(request).subscribe({

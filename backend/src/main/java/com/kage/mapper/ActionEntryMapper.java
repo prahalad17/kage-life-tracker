@@ -12,7 +12,7 @@ public interface ActionEntryMapper {
 
     @Mapping(target = "actionEntryId", source = "id")
     @Mapping(target = "dayEntryId", source = "dayEntry.id")
-    @Mapping(target = "activityId", source = "activity.name")
+    @Mapping(target = "activityId", source = "activity.activityName")
     @Mapping(target = "pillarId", source = "pillar.id")
     ActionEntryResponse toDto(ActionEntry actionEntry);
 

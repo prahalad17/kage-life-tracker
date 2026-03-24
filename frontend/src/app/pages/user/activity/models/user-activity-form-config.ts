@@ -46,7 +46,6 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
       label: 'Pillar',
       type: 'select',
       placeholder: 'Pillar',
-      required: true,
       optionsConfig :{
         type :'api',
         endpoint: '/api/v1/pillar',
@@ -57,7 +56,7 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
       // disabled: mode !== 'create'
     },
     {
-      name: 'nature',
+      name: 'activityNature',
       label: 'Activity Nature',
       type: 'select',
       placeholder: 'Activity Nature',
@@ -71,7 +70,7 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
       }
     },
     {
-      name: 'trackingType',
+      name: 'activityTrackingType',
       label: 'Tracking Type',
       type: 'select',
       placeholder: 'Tracking Type',
@@ -87,7 +86,7 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
       }
     },
     {
-      name: 'description',
+      name: 'activityDescription',
       label: 'Description',
       type: 'text',
       placeholder: 'Description',
@@ -95,7 +94,7 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
       // disabled: mode !== 'create'
     },
      {
-      name: 'scheduleType',
+      name: 'activityScheduleType',
       label: 'Schedule Type',
       type: 'select',
       placeholder: 'Schedule Type',
@@ -106,6 +105,19 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
           { label: 'Daily', value: 'DAILY' },
           { label: 'Weekdays', value: 'WEEKDAYS' },
           { label: 'Weekends', value: 'WEEKENDS' }
+        ]
+      }
+    },
+    {
+      name: 'activityType',
+      label: 'Activity Type',
+      type: 'select',
+      placeholder: 'Activity Type',
+      required: true,
+      optionsConfig :{
+        type :'static',
+        options:[
+          { label: 'Daily', value: 'HABIT' },
         ]
       }
     }

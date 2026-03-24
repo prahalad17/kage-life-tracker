@@ -122,7 +122,7 @@ public class PillarServiceImpl implements PillarService {
         pillar.setColor(request.pillarColor());
         pillar.setOrderIndex(request.orderIndex());
         pillar.setPriorityWeight(request.priorityWeight());
-        pillar.updateDescription(request.description());
+        pillar.updateDescription(request.pillarDescription());
 
         Pillar updated = pillarRepository.save(pillar);
 

@@ -1,0 +1,38 @@
+<div class="interactive-list-widget">
+
+  @if (config.title) {
+    <div class="list-title">
+      {{ config.title }}
+    </div>
+  }
+
+  <div class="list-items">
+
+    @for (item of data.items; track item.id) {
+
+      <div class="list-item">
+
+        <input
+          type="checkbox"
+          [checked]="item.completed"
+          (change)="onToggle(item.id)" />
+
+        <span
+          class="item-title"
+          [class.completed]="item.completed">
+          {{ item.title }}
+        </span>
+
+      </div>
+
+    }
+
+    @if (!data.items?.length) {
+      <div class="empty-state">
+        No items available
+      </div>
+    }
+
+  </div>
+
+</div>

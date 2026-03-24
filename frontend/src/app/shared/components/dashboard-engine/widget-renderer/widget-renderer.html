@@ -1,0 +1,40 @@
+<div class="widget-container">
+
+@switch (config.type) {
+
+  @case ('metric') {
+    <app-metric-widget
+      [config]="config"
+      [data]="data">
+    </app-metric-widget>
+  }
+
+  @case ('list') {
+    <app-list-widget
+      [config]="config"
+      [data]="data">
+    </app-list-widget>
+  }
+
+  @case ('interactive-list') {
+    <app-interactive-list-widget
+      [config]="config"
+      [data]="data"
+      (action)="onWidgetEvent($event)">
+    </app-interactive-list-widget>
+  }
+
+  @case ('text') {
+    <app-text-widget
+      [config]="config"
+      [data]="data">
+    </app-text-widget>
+  }
+
+  @default {
+    <div>Unsupported widget type</div>
+  }
+
+}
+
+</div>

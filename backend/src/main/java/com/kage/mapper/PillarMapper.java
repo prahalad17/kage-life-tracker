@@ -11,6 +11,7 @@ import org.mapstruct.ReportingPolicy;
 public interface PillarMapper {
 
     @Mapping(target = "pillarTemplateId", source = "pillarTemplate.id")
+    @Mapping(target = "pillarId", source = "id")
     PillarResponse toDto(Pillar pillar);
 
 

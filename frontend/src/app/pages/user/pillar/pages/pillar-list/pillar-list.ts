@@ -22,7 +22,6 @@ type DialogType = 'info' | 'delete' | '';
   selector: 'app-pillar-list',
   imports: [
     CommonModule,
-    DataTable,
     Overlay,
     DataForm,
     ConfirmDialog
@@ -36,7 +35,7 @@ export class PillarList implements OnInit {
   
     // ===== DATA =====
     pillars$!: Observable<PageResponse<UserPillar>>;
-     loading = false;
+    loading = false;
 
 
   
@@ -83,7 +82,7 @@ export class PillarList implements OnInit {
         tableName: 'My Pillars',
         columns: [
           { key: 'pillarName', header: 'Pillar' },
-          { key: 'description', header: 'Description' }
+          { key: 'pillarDescription', header: 'Description' }
         ],
         actions: [
           { type: 'view', label: 'View' },
@@ -267,9 +266,9 @@ export class PillarList implements OnInit {
           console.log(data);
           
           const request: UpdateUserPillarRequest = {
-            pillarId: data.id,
-            pillarName: data.name,
-            pillarDescription: data.description,
+            pillarId: data.pillarId,
+            pillarName: data.pillarName,
+            pillarDescription: data.pillarDescription,
             pillarTemplateId: data.pillarTemplateId,
             priorityWeight: data.priorityWeight,
             orderIndex: data.orderIndex,

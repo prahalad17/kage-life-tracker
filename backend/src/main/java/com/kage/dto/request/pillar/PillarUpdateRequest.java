@@ -15,7 +15,7 @@ public record PillarUpdateRequest(
 
         Long pillarTemplateId,
 
-        String description,
+        String pillarDescription,
 
         @Min(1) @Max(10)
         Integer priorityWeight,

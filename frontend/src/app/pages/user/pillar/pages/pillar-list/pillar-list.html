@@ -1,9 +1,7 @@
-<app-data-table
-  [rows]="(userPillars$ | async) ?? []"
-  [config]="tableConfig"
-  (action)="onTableAction($event)"
-  (create)="openCreate()">
-</app-data-table>
+
+@if (pillars$ | async; as page) {
+  
+}
 
 
 

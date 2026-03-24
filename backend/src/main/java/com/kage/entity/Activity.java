@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.DayOfWeek;
 import java.util.Set;
@@ -40,15 +41,15 @@ public class Activity extends BaseEntity {
     private Pillar pillar;
 
     @Column(length = 100, nullable = false)
-    private String name;
+    private String activityName;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    private ActivityNature nature;
+    private ActivityNature activityNature;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    private TrackingType trackingType;
+    private TrackingType activityTrackingType;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
@@ -58,7 +59,8 @@ public class Activity extends BaseEntity {
     private String unit;
 
     @Column
-    private String description;
+    @Setter
+    private String activityDescription;
 
     @OneToOne(
             mappedBy = "activity",
@@ -69,40 +71,33 @@ public class Activity extends BaseEntity {
 
     protected Activity(
             User user,
-            Pillar pillar,
-            String name,
-            ActivityNature nature,
-            TrackingType trackingType,
-            String unit,
-            String description
+            String activityName,
+            ActivityType activityType,
+            ActivityNature activityNature,
+            TrackingType activityTrackingType
     ) {
         this.user = requireNonNull(user, "user is required");
-        this.pillar = requireNonNull(pillar, "pillar is required");
-        this.name = requireNonEmpty(name, "name is required");
-        this.nature = requireNonNull(nature, "nature is required");
-        this.trackingType =
-                requireNonNull(trackingType, "tracking type is required");
-        this.unit = normalize(unit);
-        this.description = normalize(description);
+        this.activityName = requireNonEmpty(activityName, "name is required");
+        this.activityNature = requireNonNull(activityNature, "nature is required");
+        this.activityType = requireNonNull(activityType, "activityType is required");
+        this.activityTrackingType =
+                requireNonNull(activityTrackingType, "tracking type is required");
     }
 
     public static Activity create(
             User user,
-            Pillar pillar,
-            String name,
-            ActivityNature nature,
-            TrackingType trackingType,
-            String unit,
-            String description
+            String activityName,
+            ActivityType activityType,
+            ActivityNature activityNature,
+            TrackingType activityTrackingType
+
     ) {
         return new Activity(
                 user,
-                pillar,
-                name,
-                nature,
-                trackingType,
-                unit,
-                description
+                activityName,
+                activityType,
+                activityNature,
+                activityTrackingType
         );
     }
 
@@ -117,6 +112,10 @@ public class Activity extends BaseEntity {
         this.schedule.changeSchedule(type, days);
     }
 
+    public void addPillar(Pillar pillar) {
+        this.pillar = requireNonNull(pillar, "pillar is required");
+    }
+
     public void deactivateSchedule() {
         this.schedule.deactivate();
     }
@@ -124,21 +123,20 @@ public class Activity extends BaseEntity {
     /* -------- Controlled mutation -------- */
 
     public void rename(String name) {
-        this.name = requireNonEmpty(name, "name is required");
+        this.activityName = requireNonEmpty(name, "name is required");
     }
 
-    public void changeTracking(TrackingType trackingType, String unit) {
-        this.trackingType =
+    public void changeTracking(TrackingType trackingType) {
+        this.activityTrackingType =
                 requireNonNull(trackingType, "tracking type is required");
-        this.unit = normalize(unit);
     }
 
 
     public void updateDescription(String description) {
-        this.description = normalize(description);
+        this.activityDescription = normalize(description);
     }
 
     public void updateNature(ActivityNature nature) {
-        this.nature = nature;
+        this.activityNature = nature;
     }
 }

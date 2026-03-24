@@ -59,7 +59,7 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
       // disabled: mode !== 'create'
     },
     {
-      name: 'description',
+      name: 'pillarDescription',
       label: 'Description',
       type: 'text',
       placeholder: 'Description',

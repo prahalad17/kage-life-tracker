@@ -2,30 +2,23 @@ package com.kage.dto.request.activity;
 
 import com.kage.entity.Activity;
 import com.kage.enums.ActivityNature;
+import com.kage.enums.ActivityType;
 import com.kage.enums.ScheduleType;
 import com.kage.enums.TrackingType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-import java.time.DayOfWeek;
-import java.util.Set;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * DTO for {@link Activity}
  */
-@AllArgsConstructor
-@Getter
-public class ActivityUpdateRequest {
+public record ActivityUpdateRequest(
 
-    private  Long pillarId;
-    private Long activityId;
-    private  String activityName;
-    private  ActivityNature nature;
-    private  TrackingType trackingType;
-    private  String unit;
-    private  String description;
-
-    private ScheduleType scheduleType;
-
-    private Set<DayOfWeek> days;
+        @NotNull Long activityId,
+        @NotBlank String activityName,
+        @NotNull ActivityType activityType,
+        @NotNull ActivityNature activityNature,
+        @NotNull TrackingType activityTrackingType,
+        String activityDescription,
+        ScheduleType activityScheduleType,
+        Long pillarId) {
 }

@@ -1,6 +1,8 @@
 package com.kage.controller;
 
 
+import com.kage.common.dto.request.SearchRequestDto;
+import com.kage.common.dto.response.PageResponse;
 import com.kage.dto.request.activity.ActivityCreateRequest;
 import com.kage.dto.request.activity.ActivityUpdateRequest;
 import com.kage.dto.response.ActivityResponse;
@@ -10,12 +12,11 @@ import com.kage.service.ActivityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/activity")
@@ -26,22 +27,23 @@ public class ActivityController {
     private final ActivityService activityService;
 
     /**
-     * Get all active activity
+     * Get all active activity entries
      */
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<ActivityResponse>>> getAll(
-            @AuthenticationPrincipal CustomUserDetails user) {
+    @PostMapping("/search")
+    public ResponseEntity<ApiResponse<PageResponse<ActivityResponse>>> getAll(
+            @AuthenticationPrincipal CustomUserDetails user,
+            @RequestBody SearchRequestDto request) {
 
-        log.info("Fetching all active activity");
+        log.info("Fetching all active day entries");
 
-        List<ActivityResponse> data =
-                activityService.getAll(user.getUser().getId());
+        Page<ActivityResponse> page =
+                activityService.getAll(user.getUser().getId(), request);
 
         return ResponseEntity.ok(
                 new ApiResponse<>(
                         true,
                         "Fetched activity successfully",
-                        data
+                        new PageResponse<>(page)
                 )
         );
     }
@@ -57,7 +59,7 @@ public class ActivityController {
         log.info("Fetching activity with id={}", id);
 
         ActivityResponse data =
-                activityService.getById(id,user.getUser().getId());
+                activityService.getById(id, user.getUser().getId());
 
         return ResponseEntity.ok(
                 new ApiResponse<>(
@@ -76,10 +78,10 @@ public class ActivityController {
             @AuthenticationPrincipal CustomUserDetails user,
             @RequestBody @Valid ActivityCreateRequest request) {
 
-        log.info("Creating activity with name={}", request.getActivityName());
+        log.info("Creating activity with name={}", request.activityName());
 
         ActivityResponse data =
-                activityService.create(request , user.getUser().getId());
+                activityService.create(request, user.getUser().getId());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse<>(
@@ -100,13 +102,13 @@ public class ActivityController {
 //        log.info("Updating activity with id={}", id);
 
         ActivityResponse data =
-                activityService.update( request, user.getUser().getId());
+                activityService.update(request, user.getUser().getId());
 
         return ResponseEntity.ok(
                 new ApiResponse<>(
                         true,
                         "activity updated successfully",
-                            data
+                        data
                 )
         );
     }
@@ -121,7 +123,7 @@ public class ActivityController {
 
         log.info("Deactivating activity with id={}", id);
 
-        activityService.deactivate(id,user.getUser().getId());
+        activityService.deactivate(id, user.getUser().getId());
 
         return ResponseEntity.ok(
                 new ApiResponse<>(

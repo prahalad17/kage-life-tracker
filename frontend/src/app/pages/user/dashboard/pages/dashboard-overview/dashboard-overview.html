@@ -1,63 +1,13 @@
-<div class="dashboard-page">
+<div class="dashboard">
 
-  <!-- TOP ACTION -->
-  <div class="dashboard-header">
+  @for (widget of dashboardConfig.widgets; track widget.id) {
 
-    <div class="dashboard-title">
-      <h2>Today's Focus</h2>
-      <p>Track and complete your scheduled tasks.</p>
-    </div>
+    <app-widget-renderer
+      [config]="widget"
+      [data]="dashboardData[widget.dataKey]"
+      (action)="handleWidgetEvent($event)">
+    </app-widget-renderer>
 
-    <button
-      class="btn btn-primary"
-      (click)="scheduleTodayTasks()">
-      Schedule Today
-    </button>
-
-  </div>
-
-  <!-- TASK PANELS -->
-  <div class="dashboard-grid">
-
-    <!-- TODO PANEL -->
-    <div class="dashboard-panel">
-
-      <div class="panel-header">
-        <div class="panel-title">
-          <span class="panel-indicator todo"></span>
-          <h3>To Do</h3>
-        </div>
-      </div>
-
-      <div class="panel-body">
-        <app-data-table
-          [rows]="(tasksTodo$ | async) ?? []"
-          [config]="toDoTableConfig"
-          (action)="onTableAction($event)">
-        </app-data-table>
-      </div>
-
-    </div>
-
-    <!-- COMPLETED PANEL -->
-    <div class="dashboard-panel">
-
-      <div class="panel-header">
-        <div class="panel-title">
-          <span class="panel-indicator done"></span>
-          <h3>Completed</h3>
-        </div>
-      </div>
-
-      <div class="panel-body">
-        <app-data-table
-          [rows]="(tasksCompleted$ | async) ?? []"
-          [config]="completedTableConfig">
-        </app-data-table>
-      </div>
-
-    </div>
-
-  </div>
+  }
 
 </div>
