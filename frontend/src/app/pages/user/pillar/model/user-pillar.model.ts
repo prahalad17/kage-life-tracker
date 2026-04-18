@@ -1,6 +1,12 @@
 export interface UserPillar {
-  description?: string;
-  id: number;
+
+  pillarId: number;
   pillarName: string;
-  pillarTemplateId:number;
+  pillarDescription: string;
+  priorityWeight:number;
+  orderIndex:number;
+  pillarColor:number;
+
+  pillarTemplateId: number;
+
 }

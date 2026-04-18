@@ -71,7 +71,11 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
       dependsOn: {
         field: 'role',
         value: 'ADMIN',
-        action: 'show'
+        actions:[
+          {
+            type : 'show'
+          }
+        ] 
       }
     }
   ];

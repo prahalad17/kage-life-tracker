@@ -1,9 +1,18 @@
-<app-data-table
-  [rows]="(userActivity$ | async) ?? []"
-  [config]="tableConfig"
-  (action)="onTableAction($event)"
-  (create)="openCreate()">
-</app-data-table>
+@if (userActivity$ | async; as page) {
+
+  <app-data-table
+    [rows]="page.content"
+    [config]="tableConfig"
+    (action)="onTableAction($event)"
+    (create)="openCreate()"
+
+    [totalElements]="page.totalElements"
+    [pageIndex]="page.page"
+    [pageSize]="page.size"
+    [loading]="loading"
+    (pageChange)="onPageChange($event)">
+  </app-data-table>
+}
 
 @if (overlayState.open) {
   <app-overlay

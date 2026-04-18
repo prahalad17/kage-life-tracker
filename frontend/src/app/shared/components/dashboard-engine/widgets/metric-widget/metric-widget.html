@@ -1,0 +1,22 @@
+<div class="metric-widget">
+
+  @if (config.title) {
+    <div class="metric-title">
+      {{ config.title }}
+    </div>
+  }
+
+  <div class="metric-value">
+    {{ data.value }}
+    @if (data.unit) {
+      <span class="metric-unit">{{ data.unit }}</span>
+    }
+  </div>
+
+  @if (data.label) {
+    <div class="metric-label">
+      {{ data.label }}
+    </div>
+  }
+
+</div>

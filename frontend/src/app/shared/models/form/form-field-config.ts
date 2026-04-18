@@ -7,6 +7,7 @@ export type FieldType =
   | 'select'
   | 'checkbox'
   | 'radio'
+  | 'color'
   | 'date';
 
   export type OptionsSource =
@@ -26,10 +27,26 @@ export type FieldType =
     };
 
   export interface FieldDependency {
-  field: string;          // controlling field
-  value?: any;            // value to match
-  condition?: (val: any) => boolean; // advanced use
-  action?: 'show' | 'hide' | 'enable' | 'disable';
+  field: string;
+
+  // condition
+  value?: any;
+  condition?: (val: any) => boolean;
+
+  // actions
+  actions?: {
+    type: 'show' | 'hide' | 'enable' | 'disable' | 'patchFromOption' | 'setValue';
+    
+    // for enable/disable/show/hide
+    targets?: string[];
+
+    // for patching
+    mapping?: Record<string, string>; 
+    // { targetField: sourceKey }
+
+    // for static values
+    values?: Record<string, any>;
+  }[];
 }
 
   export interface FormFieldConfig {

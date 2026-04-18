@@ -64,9 +64,11 @@ public class DayEntryServiceImpl implements DayEntryService {
 
         log.debug("Creating Day Entry for userId={} for date = {}", userId, request.date());
 
+        User user = userService.loadActiveUser(userId);
+
         if (dayEntryRepository.existsByDateAndUserAndStatus(
                 request.date(),
-                userId,
+                user,
                 RecordStatus.ACTIVE)) {
 
             throw new BusinessException(
@@ -74,7 +76,6 @@ public class DayEntryServiceImpl implements DayEntryService {
             );
         }
 
-        User user = userService.loadActiveUser(userId);
 
         DayEntry dayEntry = DayEntry.create(
                 user, request.date(), DayStatus.OPEN
@@ -116,6 +117,17 @@ public class DayEntryServiceImpl implements DayEntryService {
         return dayEntryRepository
                 .findByIdAndUserIdAndStatus(
                         dayEntryId,
+                        userId,
+                        RecordStatus.ACTIVE
+                )
+                .orElseThrow(() -> new NotFoundException("Day Entry not found"));
+    }
+
+    @Override
+    public DayEntry loadActiveDayEntry(Long userId, LocalDate date) {
+        return dayEntryRepository
+                .findByDateAndUserIdAndStatus(
+                        date,
                         userId,
                         RecordStatus.ACTIVE
                 )

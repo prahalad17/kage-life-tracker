@@ -1,0 +1,15 @@
+.text-widget {
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+
+  .text-title {
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .text-content {
+    font-size: 14px;
+    color: #444;
+  }
+}

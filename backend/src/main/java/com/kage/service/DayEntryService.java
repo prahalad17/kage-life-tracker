@@ -22,5 +22,7 @@ public interface DayEntryService {
     DayEntryResponse getByDate(LocalDate date, Long id);
 
     DayEntry loadActiveDayEntry(Long userId, Long dayEntryId);
+
+    DayEntry loadActiveDayEntry(Long userId, LocalDate date);
 }
 

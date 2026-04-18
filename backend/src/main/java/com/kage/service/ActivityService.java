@@ -1,11 +1,13 @@
 package com.kage.service;
 
 
+import com.kage.common.dto.request.SearchRequestDto;
 import com.kage.dto.request.activity.ActivityCreateRequest;
 import com.kage.dto.request.activity.ActivityUpdateRequest;
 import com.kage.dto.response.ActivityResponse;
 import com.kage.entity.Activity;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -15,7 +17,7 @@ public interface ActivityService {
 
     ActivityResponse create(@Valid ActivityCreateRequest request, Long userId);
 
-    List<ActivityResponse> getAll(Long userId);
+    Page<ActivityResponse> getAll(Long userId, SearchRequestDto request);
 
     ActivityResponse update(@Valid ActivityUpdateRequest request, Long userId);
 

@@ -1,14 +1,16 @@
 package com.kage.entity;
 
-import com.kage.enums.ActionStatus;
+import com.kage.enums.ActionEntryStatus;
 import com.kage.enums.ActivityNature;
 import com.kage.enums.TrackingType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.kage.util.DomainGuardsUtil.requireNonEmpty;
@@ -49,23 +51,27 @@ public class ActionEntry extends BaseEntity {
     @Column(name = "logged_at", nullable = false)
     private Instant loggedAt;
 
+    @Column(name = "action_entry_date", nullable = false)
+    private LocalDate actionEntryDate;
+
     @Column(length = 100, nullable = false)
-    private String actionName;
+    private String actionEntryName;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ActionStatus actionStatus;
+    private ActionEntryStatus actionEntryStatus;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ActivityNature nature;
+    private ActivityNature actionEntryNature;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TrackingType trackingType;
+    private TrackingType actionEntryTrackingType;
 
+    @Setter
     @Column(length = 1000)
-    private String notes;
+    private String actionEntryNotes;
 
     @OneToMany(
             mappedBy = "actionEntry",
@@ -79,16 +85,17 @@ public class ActionEntry extends BaseEntity {
             DayEntry dayEntry,
             User user,
             String actionName,
-            ActionStatus actionStatus,
+            ActionEntryStatus actionEntryStatus,
             ActivityNature nature,
             TrackingType trackingType
     ) {
         this.dayEntry = requireNonNull(dayEntry, "dayEntry is required");
         this.user = requireNonNull(user, "user is required");
-        this.actionName = requireNonEmpty(actionName, "actionName is required");
-        this.actionStatus = requireNonNull(actionStatus, "actionStatus is required");
-        this.nature = requireNonNull(nature, "nature is required");
-        this.trackingType = requireNonNull(trackingType, "trackingType is required");
+        this.actionEntryName = requireNonEmpty(actionName, "actionName is required");
+        this.actionEntryStatus = requireNonNull(actionEntryStatus, "actionEntryStatus is required");
+        this.actionEntryNature = requireNonNull(nature, "nature is required");
+        this.actionEntryTrackingType = requireNonNull(trackingType, "trackingType is required");
+        this.actionEntryDate = requireNonNull(dayEntry.getDate(), "actionEntryDate is required");
         this.loggedAt = Instant.now();
     }
 
@@ -96,10 +103,10 @@ public class ActionEntry extends BaseEntity {
             DayEntry dayEntry,
             User user,
             String actionName,
-            ActionStatus actionStatus,
+            ActionEntryStatus actionEntryStatus,
             ActivityNature nature,
             TrackingType trackingType) {
-        return new ActionEntry(dayEntry, user, actionName, actionStatus, nature, trackingType);
+        return new ActionEntry(dayEntry, user, actionName, actionEntryStatus, nature, trackingType);
     }
 
     public void addActivity(Activity activity) {

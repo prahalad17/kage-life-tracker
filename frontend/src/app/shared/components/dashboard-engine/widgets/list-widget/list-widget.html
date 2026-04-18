@@ -1,0 +1,35 @@
+<div class="list-widget">
+
+  @if (config.title) {
+    <div class="list-title">
+      {{ config.title }}
+    </div>
+  }
+
+  <div class="list-items">
+
+    @for (item of data.items; track item.id) {
+      <div class="list-item">
+
+        <div class="item-title">
+          {{ item.title }}
+        </div>
+
+        @if (item.subtitle) {
+          <div class="item-subtitle">
+            {{ item.subtitle }}
+          </div>
+        }
+
+      </div>
+    }
+
+    @if (!data.items?.length) {
+      <div class="empty-state">
+        No items available
+      </div>
+    }
+
+  </div>
+
+</div>

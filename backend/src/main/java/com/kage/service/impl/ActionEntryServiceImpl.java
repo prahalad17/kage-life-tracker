@@ -21,6 +21,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 
 @Service
 @RequiredArgsConstructor
@@ -59,16 +61,19 @@ public class ActionEntryServiceImpl implements ActionEntryService {
     public ActionEntryResponse create(ActionEntryCreateRequest request, Long userId) {
 
 //        log.debug("Creating Action Entry for userId={} for date = {}", userId, request.date());
+
+        LocalDate date = request.actionEntryDate();
+
         User user = userService.loadActiveUser(userId);
-        DayEntry dayEntry = dayEntryService.loadActiveDayEntry(userId, request.dayEntryId());
+        DayEntry dayEntry = dayEntryService.loadActiveDayEntry(userId, date);
 
         ActionEntry actionEntry = ActionEntry.create(
                 dayEntry,
                 user,
-                request.actionName(),
-                request.actionStatus(),
-                request.nature(),
-                request.trackingType());
+                request.actionEntryName(),
+                request.actionEntryStatus(),
+                request.actionEntryNature(),
+                request.actionEntryTrackingType());
 
         if (request.activityId() != null) {
 
@@ -81,6 +86,8 @@ public class ActionEntryServiceImpl implements ActionEntryService {
             actionEntry.addPillar(pillar);
         }
 
+        actionEntry.setActionEntryNotes(request.actionEntryNotes());
+
         actionEntryRepository.save(actionEntry);
 
         return actionEntryMapper.toDto(actionEntry);
@@ -90,6 +97,10 @@ public class ActionEntryServiceImpl implements ActionEntryService {
     public ActionEntryResponse update(ActionEntryUpdateRequest request, Long userId) {
 
         ActionEntry actionEntry = loadOwnedActionEntry(request.actionEntryId(), userId);
+
+        actionEntry.setActionEntryNotes(request.actionEntryNotes());
+
+
 
         return actionEntryMapper.toDto(actionEntry);
     }

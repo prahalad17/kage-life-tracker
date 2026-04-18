@@ -4,6 +4,7 @@ import com.kage.enums.ActionPlanStatus;
 import com.kage.enums.ActivityNature;
 import com.kage.enums.TrackingType;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -11,12 +12,14 @@ import java.util.List;
  */
 public record ActionPlanUpdateRequest(
         Long actionPlanId,
-        String actionName,
-        ActionPlanStatus actionStatus,
-        ActivityNature nature,
-        TrackingType trackingType,
+        LocalDate actionPlanDate,
+        String actionPlanName,
+        ActionPlanStatus actionPlanStatus,
+        ActivityNature actionPlanNature,
+        TrackingType actionPlanTrackingType,
+        String actionPlanNotes,
         Long activityId,
         Long pillarId,
-        List<ActionEntryAttributesRequest> attributes) {
+        List<ActionEntryAttributesRequest> actionPlanAttributes) {
 
 }

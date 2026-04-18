@@ -1,10 +1,10 @@
 package com.kage.service.impl;
 
+import com.kage.common.dto.request.SearchRequestDto;
 import com.kage.dto.request.activity.ActivityCreateRequest;
 import com.kage.dto.request.activity.ActivityUpdateRequest;
 import com.kage.dto.response.ActivityResponse;
 import com.kage.entity.Activity;
-import com.kage.entity.ActivitySchedule;
 import com.kage.entity.Pillar;
 import com.kage.entity.User;
 import com.kage.enums.RecordStatus;
@@ -15,12 +15,16 @@ import com.kage.repository.ActivityRepository;
 import com.kage.service.ActivityService;
 import com.kage.service.PillarService;
 import com.kage.service.UserService;
+import com.kage.util.PageableBuilderUtil;
+import com.kage.util.SpecificationBuilderUtil;
+import com.kage.util.UserSpecificationBuilderUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 
 @Service
@@ -43,41 +47,61 @@ public class ActivityServiceImpl implements ActivityService {
         log.debug("Creating activity for userId={}", userId);
 
         User user = userService.loadActiveUser(userId);
-        Pillar pillar = pillarService.loadActivePillar(request.getPillarId());
 
-        // Uniqueness: user + pillar + name + ACTIVE
-        if (activityRepository.existsByUserAndPillarAndNameIgnoreCaseAndStatus(
-                user,
-                pillar,
-                request.getActivityName(),
-                RecordStatus.ACTIVE)) {
+        Pillar pillar = null;
 
-            throw new BusinessException(
-                    "Activity with this name already exists in this pillar"
-            );
+        if (request.pillarId() != null) {
+            pillar = pillarService.loadActivePillar(request.pillarId());
+
+            // Uniqueness: user + pillar + name + ACTIVE
+            if (activityRepository.existsByUserAndPillarAndActivityNameIgnoreCaseAndStatus(
+                    user,
+                    pillar,
+                    request.activityName(),
+                    RecordStatus.ACTIVE)) {
+
+                throw new BusinessException(
+                        "Activity with this name already exists in this pillar"
+                );
+            }
+        } else {
+
+            // Uniqueness: user + name + ACTIVE
+            if (activityRepository.existsByUserAndActivityNameIgnoreCaseAndStatus(
+                    user,
+                    request.activityName(),
+                    RecordStatus.ACTIVE)) {
+
+                throw new BusinessException(
+                        "Activity with this name already exists for the user, Consider Adding To a pillar"
+                );
+            }
         }
 
-        // Create aggregate root
+
         Activity activity = Activity.create(
                 user,
-                pillar,
-                request.getActivityName(),
-                request.getNature(),
-                request.getTrackingType(),
-                request.getUnit(),
-                request.getDescription()
+                request.activityName(),
+                request.activityType(),
+                request.activityNature(),
+                request.activityTrackingType()
         );
 
         // Create and attach dependent entity
-        ActivitySchedule schedule = ActivitySchedule.create(
-                activity,
-                request.getScheduleType(),
-                request.getDays()
-        );
+//        ActivitySchedule schedule = ActivitySchedule.create(
+//                activity,
+//                request.activityScheduleType(),
+//                request.getDays()
+//        );
 
-        activity.attachSchedule(schedule);
+//        activity.attachSchedule(schedule);
 
-        // One save – cascades schedule
+        activity.setActivityDescription(request.activityDescription());
+
+        if (pillar != null) {
+            activity.addPillar(pillar);
+        }
+
         activityRepository.save(activity);
 
         log.info("Activity created with id={}", activity.getId());
@@ -101,13 +125,21 @@ public class ActivityServiceImpl implements ActivityService {
      */
     @Transactional(readOnly = true)
     @Override
-    public List<ActivityResponse> getAll(Long userId) {
+    public Page<ActivityResponse> getAll(Long userId, SearchRequestDto request) {
 
-        return activityRepository
-                .findByUserIdAndStatus(userId, RecordStatus.ACTIVE)
-                .stream()
-                .map(activityMapper::toDto)
-                .toList();
+        Pageable pageable = PageableBuilderUtil.build(request);
+
+        Specification<Activity> dynamicSpec =
+                SpecificationBuilderUtil.build(request);
+
+        Specification<Activity> mandatorySpec =
+                UserSpecificationBuilderUtil.build(userId);
+
+        Specification<Activity> finalSpec =
+                mandatorySpec.and(dynamicSpec);
+
+        return activityRepository.findAll(finalSpec, pageable)
+                .map(activityMapper::toDto);
     }
 
     /**
@@ -116,17 +148,17 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public ActivityResponse update(ActivityUpdateRequest request, Long userId) {
 
-        log.debug("Updating activity id={}", request.getActivityId());
+        log.debug("Updating activity id={}", request.activityId());
 
         Activity activity =
-                loadOwnedActiveActivity(request.getActivityId(), userId);
+                loadOwnedActiveActivity(request.activityId(), userId);
 
         // Rename (uniqueness only if changed)
-        if (!activity.getName().equalsIgnoreCase(request.getActivityName())
-                && activityRepository.existsByUserAndPillarAndNameIgnoreCaseAndStatus(
+        if (!activity.getActivityName().equalsIgnoreCase(request.activityName())
+                && activityRepository.existsByUserAndPillarAndActivityNameIgnoreCaseAndStatus(
                 activity.getUser(),
                 activity.getPillar(),
-                request.getActivityName(),
+                request.activityName(),
                 RecordStatus.ACTIVE)) {
 
             throw new BusinessException(
@@ -134,19 +166,18 @@ public class ActivityServiceImpl implements ActivityService {
             );
         }
 
-        activity.rename(request.getActivityName());
-        activity.updateDescription(request.getDescription());
-        activity.updateNature(request.getNature());
+        activity.rename(request.activityName());
+        activity.updateDescription(request.activityDescription());
+        activity.updateNature(request.activityNature());
 
         activity.changeTracking(
-                request.getTrackingType(),
-                request.getUnit()
+                request.activityTrackingType()
         );
 
-        activity.updateSchedule(
-                request.getScheduleType(),
-                request.getDays()
-        );
+//        activity.updateSchedule(
+//                request.activityScheduleType()),
+//                request.getDays()
+//        );
 
 
         log.info("Activity updated with id={}", activity.getId());

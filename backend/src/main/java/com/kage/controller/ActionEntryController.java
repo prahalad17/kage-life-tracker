@@ -100,7 +100,7 @@ public class ActionEntryController {
             @AuthenticationPrincipal CustomUserDetails user,
             @RequestBody @Valid ActionEntryUpdateRequest request) {
 
-        log.info("Updating action entry for ={}", request.dayEntryId());
+        log.info("Updating action entry for ={}", request.actionEntryDate());
 
         ActionEntryResponse data =
                 actionEntryService.update(request, user.getUser().getId());
