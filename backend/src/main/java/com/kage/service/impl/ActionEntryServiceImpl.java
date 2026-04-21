@@ -5,7 +5,10 @@ import com.kage.dto.request.action.ActionEntryCreateRequest;
 import com.kage.dto.request.action.ActionEntryUpdateRequest;
 import com.kage.dto.response.ActionEntryResponse;
 import com.kage.entity.*;
+import com.kage.enums.ActionEntryStatus;
+import com.kage.enums.ActivityNature;
 import com.kage.enums.RecordStatus;
+import com.kage.enums.TrackingType;
 import com.kage.exception.NotFoundException;
 import com.kage.mapper.ActionEntryMapper;
 import com.kage.repository.ActionEntryRepository;
@@ -60,29 +63,43 @@ public class ActionEntryServiceImpl implements ActionEntryService {
     @Transactional
     public ActionEntryResponse create(ActionEntryCreateRequest request, Long userId) {
 
-//        log.debug("Creating Action Entry for userId={} for date = {}", userId, request.date());
+//      log.debug("Creating Action Entry for userId={} for date = {}", userId, request.date());
 
         LocalDate date = request.actionEntryDate();
 
         User user = userService.loadActiveUser(userId);
-        DayEntry dayEntry = dayEntryService.loadActiveDayEntry(userId, date);
+
+        DayEntry dayEntry = dayEntryService.loadOrCreateActiveDayEntry(user, date);
+
+        String actionName = request.actionEntryName();
+        ActionEntryStatus actionStatus = request.actionEntryStatus();
+        ActivityNature nature = request.actionEntryNature();
+        TrackingType trackingType = request.actionEntryTrackingType();
+
+        Activity activity = null;
+        Pillar pillar = null;
+
+        if (request.activityId() != null) {
+            activity = activityService.loadOwnedActiveActivity(request.activityId(), userId);
+            actionName = activity.getActivityName();
+            nature = activity.getActivityNature();
+            trackingType = activity.getActivityTrackingType();
+        } else if (request.pillarId() != null) {
+            pillar = pillarService.loadOwnedActivePillar(request.pillarId(), userId);
+        }
 
         ActionEntry actionEntry = ActionEntry.create(
                 dayEntry,
                 user,
-                request.actionEntryName(),
-                request.actionEntryStatus(),
-                request.actionEntryNature(),
-                request.actionEntryTrackingType());
+                actionName,
+                actionStatus,
+                nature,
+                trackingType
+        );
 
-        if (request.activityId() != null) {
-
-            Activity activity = activityService.loadOwnedActiveActivity(request.activityId(), userId);
+        if (activity != null) {
             actionEntry.addActivity(activity);
-
-        } else if (request.pillarId() != null) {
-
-            Pillar pillar = pillarService.loadOwnedActivePillar(request.pillarId(), userId);
+        } else if (pillar != null) {
             actionEntry.addPillar(pillar);
         }
 
@@ -96,11 +113,40 @@ public class ActionEntryServiceImpl implements ActionEntryService {
     @Override
     public ActionEntryResponse update(ActionEntryUpdateRequest request, Long userId) {
 
+
+        User user = userService.loadActiveUser(userId);
         ActionEntry actionEntry = loadOwnedActionEntry(request.actionEntryId(), userId);
 
+        LocalDate date = request.actionEntryDate();
+        DayEntry dayEntry = dayEntryService.loadOrCreateActiveDayEntry(user, date);
+
+        String actionName = request.actionEntryName();
+        ActionEntryStatus actionStatus = request.actionEntryStatus();
+        ActivityNature nature = request.actionEntryNature();
+        TrackingType trackingType = request.actionEntryTrackingType();
+
+        Activity activity = null;
+        Pillar pillar = null;
+
+        if (request.activityId() != null) {
+            activity = activityService.loadOwnedActiveActivity(request.activityId(), userId);
+            actionName = activity.getActivityName();
+            nature = activity.getActivityNature();
+            trackingType = activity.getActivityTrackingType();
+        } else if (request.pillarId() != null) {
+            pillar = pillarService.loadOwnedActivePillar(request.pillarId(), userId);
+        }
+
+        actionEntry.create(
+                dayEntry,
+                user,
+                actionName,
+                actionStatus,
+                nature,
+                trackingType
+        );
+
         actionEntry.setActionEntryNotes(request.actionEntryNotes());
-
-
 
         return actionEntryMapper.toDto(actionEntry);
     }

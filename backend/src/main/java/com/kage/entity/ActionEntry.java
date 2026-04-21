@@ -112,7 +112,7 @@ public class ActionEntry extends BaseEntity {
     public void addActivity(Activity activity) {
 
         this.activity = requireNonNull(activity, "activity is required");
-        this.pillar = requireNonNull(activity.getPillar(), "pillar is required");
+        this.pillar = activity.getPillar();
     }
 
     public void addPillar(Pillar pillar) {

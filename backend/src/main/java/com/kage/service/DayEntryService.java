@@ -6,6 +6,7 @@ import com.kage.dto.request.day.DayEntryCreateRequest;
 import com.kage.dto.request.day.DayEntryUpdateRequest;
 import com.kage.dto.response.DayEntryResponse;
 import com.kage.entity.DayEntry;
+import com.kage.entity.User;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 
@@ -24,5 +25,9 @@ public interface DayEntryService {
     DayEntry loadActiveDayEntry(Long userId, Long dayEntryId);
 
     DayEntry loadActiveDayEntry(Long userId, LocalDate date);
+
+    DayEntry loadOrCreateActiveDayEntry(User user, LocalDate date);
+
+    DayEntry loadActiveDayEntry(User user, LocalDate date);
 }
 

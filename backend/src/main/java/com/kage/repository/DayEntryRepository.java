@@ -14,9 +14,11 @@ public interface DayEntryRepository extends JpaRepository<DayEntry, Long>, JpaSp
 
     Optional<DayEntry> findByIdAndStatus(Long dayEntryId, RecordStatus recordStatus);
 
-    Optional<DayEntry> findByDateAndUserAndStatus(LocalDate date, Long userId, RecordStatus recordStatus);
+    Optional<DayEntry> findByDateAndUserAndStatus(LocalDate date, User user, RecordStatus recordStatus);
+
+    Optional<DayEntry> findByDateAndUserAndStatus(LocalDate date, Long user, RecordStatus recordStatus);
 
     Optional<DayEntry> findByIdAndUserIdAndStatus(Long dayEntryId, Long userId, RecordStatus recordStatus);
 
-    Optional<DayEntry> findByDateAndUserIdAndStatus(LocalDate date, Long userId, RecordStatus recordStatus);
+    Optional<DayEntry> findByDateAndUserIdAndStatus(LocalDate date, User user, RecordStatus recordStatus);
 }

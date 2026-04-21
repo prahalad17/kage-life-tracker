@@ -125,10 +125,29 @@ public class DayEntryServiceImpl implements DayEntryService {
 
     @Override
     public DayEntry loadActiveDayEntry(Long userId, LocalDate date) {
+        return null;
+    }
+
+    @Override
+    public DayEntry loadOrCreateActiveDayEntry(User user, LocalDate date) {
         return dayEntryRepository
-                .findByDateAndUserIdAndStatus(
+                .findByDateAndUserAndStatus(
                         date,
-                        userId,
+                        user,
+                        RecordStatus.ACTIVE
+                )
+                .orElseGet(() -> {
+                    DayEntry newEntry = DayEntry.create(user, date, DayStatus.OPEN);
+                    return dayEntryRepository.save(newEntry);
+                });
+    }
+
+    @Override
+    public DayEntry loadActiveDayEntry(User user, LocalDate date) {
+        return dayEntryRepository
+                .findByDateAndUserAndStatus(
+                        date,
+                        user,
                         RecordStatus.ACTIVE
                 )
                 .orElseThrow(() -> new NotFoundException("Day Entry not found"));
