@@ -81,6 +81,7 @@ public class ActivitySchedule extends BaseEntity {
             case DAILY -> true;
             case WEEKDAYS -> day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY;
             case WEEKENDS -> day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY;
+            case ONE_TIME -> day == DayOfWeek.FRIDAY;
             case CUSTOM -> days != null && days.contains(day);
         };
     }

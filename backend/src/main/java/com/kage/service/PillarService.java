@@ -7,6 +7,9 @@ import com.kage.dto.response.PillarResponse;
 import com.kage.entity.Pillar;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 public interface PillarService {
@@ -17,6 +20,9 @@ public interface PillarService {
     PillarResponse getById(Long id, Long userId);
 
     PillarResponse create(@Valid PillarCreateRequest request, Long user);
+
+    @Transactional(readOnly = true)
+    List<PillarResponse> getAll(Long userId);
 
     PillarResponse update(@Valid PillarUpdateRequest request, Long user);
 

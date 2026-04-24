@@ -109,6 +109,23 @@ public class ActionEntry extends BaseEntity {
         return new ActionEntry(dayEntry, user, actionName, actionEntryStatus, nature, trackingType);
     }
 
+    public void  update (
+            DayEntry dayEntry,
+            User user,
+            String actionName,
+            ActionEntryStatus actionEntryStatus,
+            ActivityNature nature,
+            TrackingType trackingType) {
+
+        this.dayEntry = requireNonNull(dayEntry, "dayEntry is required");
+        this.user = requireNonNull(user, "user is required");
+        this.actionEntryName = requireNonEmpty(actionName, "actionName is required");
+        this.actionEntryStatus = requireNonNull(actionEntryStatus, "actionEntryStatus is required");
+        this.actionEntryNature = requireNonNull(nature, "nature is required");
+        this.actionEntryTrackingType = requireNonNull(trackingType, "trackingType is required");
+        this.actionEntryDate = requireNonNull(dayEntry.getDate(), "actionEntryDate is required");
+    }
+
     public void addActivity(Activity activity) {
 
         this.activity = requireNonNull(activity, "activity is required");

@@ -1,9 +1,9 @@
 package com.kage.enums;
 
 /**
- * Defines whether an activity is something to do or avoid.
+ * Defines the types Of possible Metrics
  */
-public enum PillarMetricType {
+public enum MetricType {
     MOOD,
     ENERGY,
     SLEEP,

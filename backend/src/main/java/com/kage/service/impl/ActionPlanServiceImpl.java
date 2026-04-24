@@ -1,6 +1,8 @@
 package com.kage.service.impl;
 
 import com.kage.common.dto.request.SearchRequestDto;
+import com.kage.dto.request.action.ActionEntryCreateRequest;
+import com.kage.dto.request.action.ActionPlanCompleteRequest;
 import com.kage.dto.request.action.ActionPlanCreateRequest;
 import com.kage.dto.request.action.ActionPlanUpdateRequest;
 import com.kage.dto.response.ActionPlanResponse;
@@ -8,6 +10,7 @@ import com.kage.entity.ActionPlan;
 import com.kage.entity.Activity;
 import com.kage.entity.Pillar;
 import com.kage.entity.User;
+import com.kage.enums.ActionEntryStatus;
 import com.kage.enums.RecordStatus;
 import com.kage.exception.NotFoundException;
 import com.kage.mapper.ActionPlanMapper;
@@ -37,6 +40,7 @@ public class ActionPlanServiceImpl implements ActionPlanService {
     private final DayEntryService dayEntryService;
     private final ActivityService activityService;
     private final PillarService pillarService;
+    private final ActionEntryService actionEntryService;
 
 
     @Override
@@ -95,9 +99,31 @@ public class ActionPlanServiceImpl implements ActionPlanService {
         ActionPlan actionPlan = loadOwnedActionPlan(request.actionPlanId(), userId);
 
 
-
         actionPlan.setActionPlanNotes(request.actionPlanNotes());
 
+        return actionPlanMapper.toDto(actionPlan);
+    }
+
+    @Override
+    public ActionPlanResponse completeActionPlan(ActionPlanCompleteRequest request, Long userId) {
+
+        ActionPlan actionPlan = loadOwnedActionPlan(request.actionPlanId(), userId);
+
+        ActionEntryCreateRequest actionEntryCreateRequest = new ActionEntryCreateRequest(
+                actionPlan.getActionPlanDate(),
+                actionPlan.getActionPlanName(),
+                ActionEntryStatus.COMPLETED,
+                actionPlan.getActionPlanNature(),
+                actionPlan.getActionPlanTrackingType(),
+                actionPlan.getActionPlanNotes(),
+                null,
+                null,
+                actionPlan,
+                null
+        );
+
+        actionEntryService.create(actionEntryCreateRequest, userId);
+        actionPlan.completePlan();
         return actionPlanMapper.toDto(actionPlan);
     }
 
@@ -115,7 +141,7 @@ public class ActionPlanServiceImpl implements ActionPlanService {
         return actionPlanRepository
                 .findByIdAndUserIdAndStatus(actionPlanId, userId, RecordStatus.ACTIVE)
                 .orElseThrow(() ->
-                        new NotFoundException("Pillar not found"));
+                        new NotFoundException("Action Plan not found"));
 
 
     }

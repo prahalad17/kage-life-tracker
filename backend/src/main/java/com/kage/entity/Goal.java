@@ -30,7 +30,7 @@ public class Goal extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pillar_metric_id")
-    private PillarMetric pillarMetric; // optional but powerful
+    private Metric metric; // optional but powerful
 
     @Column(nullable = false, length = 150)
     private String title;

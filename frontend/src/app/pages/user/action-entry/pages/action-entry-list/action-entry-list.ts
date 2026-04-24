@@ -287,6 +287,8 @@ export class ActionEntryList implements OnInit {
             pillarId: data.pillarName,
             actionEntryNotes: data.actionEntryNotes
             };
+            console.log(request);
+            
       
             this.actionEntryService.updateLog(request).subscribe({
               next: actionEntry  => {

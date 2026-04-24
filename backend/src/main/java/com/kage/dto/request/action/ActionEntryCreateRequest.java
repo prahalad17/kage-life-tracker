@@ -1,5 +1,6 @@
 package com.kage.dto.request.action;
 
+import com.kage.entity.ActionPlan;
 import com.kage.enums.ActionEntryStatus;
 import com.kage.enums.ActivityNature;
 import com.kage.enums.TrackingType;
@@ -19,5 +20,6 @@ public record ActionEntryCreateRequest(
         String actionEntryNotes,
         Long activityId,
         Long pillarId,
+        ActionPlan actionPlan,
         List<ActionEntryAttributesRequest> actionEntryAttributes) {
 }

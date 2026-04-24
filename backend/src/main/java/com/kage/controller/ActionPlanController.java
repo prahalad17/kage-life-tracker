@@ -3,6 +3,7 @@ package com.kage.controller;
 
 import com.kage.common.dto.request.SearchRequestDto;
 import com.kage.common.dto.response.PageResponse;
+import com.kage.dto.request.action.ActionPlanCompleteRequest;
 import com.kage.dto.request.action.ActionPlanCreateRequest;
 import com.kage.dto.request.action.ActionPlanUpdateRequest;
 import com.kage.dto.response.ActionPlanResponse;
@@ -104,6 +105,28 @@ public class ActionPlanController {
 
         ActionPlanResponse data =
                 actionPlanService.update(request, user.getUser().getId());
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>(
+                        true,
+                        "activity created successfully",
+                        data
+                ));
+    }
+
+    /**
+     * Complete An Action Plan
+     */
+    @PutMapping("/complete")
+    public ResponseEntity<ApiResponse<ActionPlanResponse>> complete(
+            @AuthenticationPrincipal CustomUserDetails user,
+            @RequestBody @Valid ActionPlanCompleteRequest
+                    request) {
+
+        log.info("Updating action entry for ={}", request.actionPlanId());
+
+        ActionPlanResponse data =
+                actionPlanService.completeActionPlan(request, user.getUser().getId());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse<>(

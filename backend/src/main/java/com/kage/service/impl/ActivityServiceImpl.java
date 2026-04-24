@@ -5,6 +5,7 @@ import com.kage.dto.request.activity.ActivityCreateRequest;
 import com.kage.dto.request.activity.ActivityUpdateRequest;
 import com.kage.dto.response.ActivityResponse;
 import com.kage.entity.Activity;
+import com.kage.entity.ActivitySchedule;
 import com.kage.entity.Pillar;
 import com.kage.entity.User;
 import com.kage.enums.RecordStatus;
@@ -25,6 +26,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
@@ -88,13 +91,12 @@ public class ActivityServiceImpl implements ActivityService {
         );
 
         // Create and attach dependent entity
-//        ActivitySchedule schedule = ActivitySchedule.create(
-//                activity,
-//                request.activityScheduleType(),
-//                request.getDays()
-//        );
-
-//        activity.attachSchedule(schedule);
+        ActivitySchedule schedule = ActivitySchedule.create(
+                activity,
+                request.activityScheduleType(),
+                request.days()
+        );
+        activity.attachSchedule(schedule);
 
         activity.setActivityDescription(request.activityDescription());
 
@@ -143,6 +145,20 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     /**
+     * Get all active activities for user
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public List<ActivityResponse> getAll(Long userId) {
+
+        return activityRepository
+                .findByUserIdAndStatus(userId, RecordStatus.ACTIVE)
+                .stream()
+                .map(activityMapper::toDto)
+                .toList();
+    }
+
+    /**
      * Update activity + schedule
      */
     @Override
@@ -174,11 +190,24 @@ public class ActivityServiceImpl implements ActivityService {
                 request.activityTrackingType()
         );
 
-//        activity.updateSchedule(
-//                request.activityScheduleType()),
-//                request.getDays()
-//        );
 
+        if (request.activityScheduleType() != null) {
+        if(activity.getSchedule() == null) {
+            // Create and attach dependent entity
+            ActivitySchedule schedule = ActivitySchedule.create(
+                    activity,
+                    request.activityScheduleType(),
+                    request.days()
+            );
+            activity.attachSchedule(schedule);
+        }else{
+            activity.updateSchedule(request.activityScheduleType(), request.days());
+        }
+
+        // Update schedule with proper handling of schedule type and days
+
+
+        }
 
         log.info("Activity updated with id={}", activity.getId());
 

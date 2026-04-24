@@ -11,7 +11,7 @@ import java.time.LocalDate;
  */
 @AllArgsConstructor
 @Getter
-public class ActivityDailyLogSchedulerRequest {
+public class ActionPlanSchedulerRequest {
 
     private LocalDate date;
 }

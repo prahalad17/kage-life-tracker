@@ -103,6 +103,10 @@ public class ActionEntryServiceImpl implements ActionEntryService {
             actionEntry.addPillar(pillar);
         }
 
+        if (request.actionPlan() != null) {
+            actionEntry.addActionPlan(request.actionPlan());
+        }
+
         actionEntry.setActionEntryNotes(request.actionEntryNotes());
 
         actionEntryRepository.save(actionEntry);
@@ -137,7 +141,7 @@ public class ActionEntryServiceImpl implements ActionEntryService {
             pillar = pillarService.loadOwnedActivePillar(request.pillarId(), userId);
         }
 
-        actionEntry.create(
+        actionEntry.update(
                 dayEntry,
                 user,
                 actionName,

@@ -24,6 +24,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -102,6 +104,21 @@ public class PillarServiceImpl implements PillarService {
 
         return pillarRepository.findAll(finalSpec, pageable)
                 .map(pillarMapper::toDto);
+    }
+
+    /**
+     * Get all active user pillars
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public List<PillarResponse> getAll(Long userId) {
+
+        log.debug("Fetching all active user pillars");
+
+        return pillarRepository.findByUserIdAndStatus(userId, RecordStatus.ACTIVE)
+                .stream()
+                .map(pillarMapper::toDto)
+                .toList();
     }
 
     /**

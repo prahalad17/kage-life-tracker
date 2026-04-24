@@ -20,7 +20,7 @@ export const appConfig: ApplicationConfig = {
         loaderInterceptor,        // (2) UI loading
         apiResponseInterceptor,   // (3) unwrap API responses
         authInterceptor,          // (4) attach access token
-        errorInterceptor,          // (5) final error handling
+        errorInterceptor,         // (5) final error handling
         authRefreshInterceptor,   // (6) refresh on 401 (( refresh moved down to handle auth errors ))
       ])
     ),

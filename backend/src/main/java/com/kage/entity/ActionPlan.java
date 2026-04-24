@@ -91,17 +91,35 @@ public class ActionPlan extends BaseEntity {
     }
 
     protected ActionPlan(
+            User user,
             String actionPlanName,
             LocalDate actionPlanDate,
             ActionPlanStatus actionPlanStatus,
             ActivityNature nature,
-            TrackingType trackingType
+            TrackingType trackingType,
+            PlanSource planSource
     ) {
+        this.user = requireNonNull(user, "user is required");
         this.actionPlanName = requireNonEmpty(actionPlanName, "actionName is required");
         this.actionPlanDate = requireNonNull(actionPlanDate, "actionPlanDate is required");
         this.actionPlanStatus = requireNonNull(actionPlanStatus, "actionStatus is required");
         this.actionPlanNature = requireNonNull(nature, "nature is required");
         this.actionPlanTrackingType = requireNonNull(trackingType, "trackingType is required");
+        this.actionPlanSource = planSource;
+    }
+
+    protected ActionPlan(
+            User user,
+            Activity activity,
+            LocalDate actionPlanDate
+    ) {
+        this.user = requireNonNull(user, "user is required");
+        this.activity = requireNonNull(activity, "activity is required");
+        this.actionPlanName = requireNonEmpty(activity.getActivityName(), "actionName is required");
+        this.actionPlanDate = requireNonNull(actionPlanDate, "actionPlanDate is required");
+        this.actionPlanStatus = ActionPlanStatus.SCHEDULED;
+        this.actionPlanNature = requireNonNull(activity.getActivityNature(), "nature is required");
+        this.actionPlanTrackingType = requireNonNull(activity.getActivityTrackingType(), "trackingType is required");
         this.actionPlanSource = PlanSource.SYSTEM_BASELINE;
     }
 
@@ -112,16 +130,14 @@ public class ActionPlan extends BaseEntity {
             ActionPlanStatus actionStatus,
             ActivityNature nature,
             TrackingType trackingType) {
-        return new ActionPlan(user, actionName, actionPlanDate, actionStatus, nature, trackingType);
+        return new ActionPlan(user, actionName, actionPlanDate, actionStatus, nature, trackingType, PlanSource.USER_ENTRY);
     }
 
     public static ActionPlan createSystemActionPlan(
-            String actionName,
-            LocalDate actionPlanDate,
-            ActionPlanStatus actionStatus,
-            ActivityNature nature,
-            TrackingType trackingType) {
-        return new ActionPlan(actionName, actionPlanDate, actionStatus, nature, trackingType);
+            User user,
+            Activity activity,
+            LocalDate actionPlanDate) {
+        return new ActionPlan(user, activity, actionPlanDate);
     }
 
     public void addActivity(Activity activity) {
@@ -135,6 +151,12 @@ public class ActionPlan extends BaseEntity {
             throw new IllegalStateException("activity is already set");
         }
         this.pillar = requireNonNull(pillar, "pillar is required");
+    }
+
+    public void completePlan() {
+
+        this.actionPlanStatus = ActionPlanStatus.COMPLETED;
+
     }
 
 }

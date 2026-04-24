@@ -8,6 +8,7 @@ import com.kage.dto.response.ActivityResponse;
 import com.kage.entity.Activity;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,6 +19,9 @@ public interface ActivityService {
     ActivityResponse create(@Valid ActivityCreateRequest request, Long userId);
 
     Page<ActivityResponse> getAll(Long userId, SearchRequestDto request);
+
+    @Transactional(readOnly = true)
+    List<ActivityResponse> getAll(Long userId);
 
     ActivityResponse update(@Valid ActivityUpdateRequest request, Long userId);
 

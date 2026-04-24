@@ -21,6 +21,7 @@ type DialogType = 'info' | 'delete' | '';
 @Component({
   selector: 'app-pillar-list',
   imports: [
+    DataTable,
     CommonModule,
     Overlay,
     DataForm,
@@ -45,21 +46,21 @@ export class PillarList implements OnInit {
 
     // ===== PAGINATION =====
       
-          totalElements=0
-          pageIndex=0
-          pageSize=0
-      
-          private searchRequestSubject = new BehaviorSubject<SearchRequestDto>({
-              page: 0,
-              size: 10,
-              sort: [
-                // {
-                //   field: "actionEntryDate",
-                //   direction: "DESC"
-                // }
-              ],
-              filters: []
-            });
+    totalElements=0
+    pageIndex=0
+    pageSize=0
+
+    private searchRequestSubject = new BehaviorSubject<SearchRequestDto>({
+        page: 0,
+        size: 10,
+        sort: [
+          // {
+          //   field: "actionEntryDate",
+          //   direction: "DESC"
+          // }
+        ],
+        filters: []
+    });
   
     
     // ===== OVERLAY STATE =====
@@ -114,35 +115,35 @@ export class PillarList implements OnInit {
   
   }
   
-     loadPillars() {
-      this.pillars$ = this.searchRequestSubject.pipe(
-            switchMap(request => {
-              this.loading = true;
-        
-              return this.userPillarService.search(request).pipe(
-                finalize(() => this.loading = false)
-              );
-            }),
-            shareReplay(1));
-    }
+  loadPillars() {
+  this.pillars$ = this.searchRequestSubject.pipe(
+        switchMap(request => {
+          this.loading = true;
+    
+          return this.userPillarService.search(request).pipe(
+            finalize(() => this.loading = false)
+          );
+        }),
+        shareReplay(1));
+}
   
     
-       // ===== OVERLAY HANDLING =====
-      openForm(
-        mode: 'create' | 'view' | 'edit',
-        title: string,
-        row: UserPillar | null,
-        closeOnBackdrop: boolean
-      ) {
-        this.formConfig = buildUserPillarFormConfig(mode);
-        this.selectedRow = row;
-    
-        this.overlayState = {
-          open: true,
-          title,
-          closeOnBackdrop
-        };
-      }
+    // ===== OVERLAY HANDLING =====
+  openForm(
+    mode: 'create' | 'view' | 'edit',
+    title: string,
+    row: UserPillar | null,
+    closeOnBackdrop: boolean
+  ) {
+    this.formConfig = buildUserPillarFormConfig(mode);
+    this.selectedRow = row;
+
+    this.overlayState = {
+      open: true,
+      title,
+      closeOnBackdrop
+    };
+  }
     
     
   

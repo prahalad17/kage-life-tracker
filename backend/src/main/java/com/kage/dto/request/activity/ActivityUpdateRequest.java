@@ -8,6 +8,9 @@ import com.kage.enums.TrackingType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.DayOfWeek;
+import java.util.Set;
+
 /**
  * DTO for {@link Activity}
  */
@@ -19,6 +22,7 @@ public record ActivityUpdateRequest(
         @NotNull ActivityNature activityNature,
         @NotNull TrackingType activityTrackingType,
         String activityDescription,
-        ScheduleType activityScheduleType,
+        @NotNull ScheduleType activityScheduleType,
+        Set<DayOfWeek> days,
         Long pillarId) {
 }

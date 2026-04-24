@@ -35,20 +35,20 @@ function getUserFields(mode: 'create' | 'edit' | 'view'): FormFieldConfig[] {
       disabled: mode !== 'create'
     },
 
-    {
-      name: 'pillarTemplateId', 
-      label: 'Pillar Template',
-      type: 'select',
-      placeholder: 'Pillar',
-      required: false,
-      optionsConfig :{
-        type :'api',
-        endpoint: '/api/v1/pillar-template',
-        labelKey: 'pillarName',
-        valueKey: 'id',
-        incomingKey:'pillarName' 
-      }
-    },
+    // {
+    //   name: 'pillarTemplateId', 
+    //   label: 'Pillar Template',
+    //   type: 'select',
+    //   placeholder: 'Pillar',
+    //   required: false,
+    //   optionsConfig :{
+    //     type :'api',
+    //     endpoint: '/api/v1/pillar-template',
+    //     labelKey: 'pillarName',
+    //     valueKey: 'id',
+    //     incomingKey:'pillarName' 
+    //   }
+    // },
     {
       name: 'pillarName', 
       label: 'Pillar Name',
@@ -119,4 +119,3 @@ function getUserActions(mode: 'create' | 'edit' | 'view'): FormActionConfig[] {
     }
   ];
 }
-

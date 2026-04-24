@@ -33,7 +33,7 @@ public class PlanItem extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pillar_metric_id")
-    private PillarMetric pillarMetric;
+    private Metric metric;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/pillar")
 @RequiredArgsConstructor
@@ -44,6 +46,27 @@ public class PillarController {
                         true,
                         "Fetched user pillars successfully",
                         new PageResponse<>(page)
+                )
+        );
+    }
+
+    /**
+     * Get all active user pillars
+     */
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<PillarResponse>>> getAll(
+            @AuthenticationPrincipal CustomUserDetails user) {
+
+        log.info("Fetching all active user pillars");
+
+        List<PillarResponse> data =
+                pillarService.getAll(user.getUser().getId());
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "Fetched user pillars successfully",
+                        data
                 )
         );
     }

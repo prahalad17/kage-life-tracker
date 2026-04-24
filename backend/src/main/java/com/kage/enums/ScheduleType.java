@@ -1,11 +1,12 @@
 package com.kage.enums;
 
 /**
- * Defines whether an activity is something to do or avoid.
+ * Defines Schedule types for an activity
  */
 public enum ScheduleType {
     DAILY,
     WEEKDAYS,
     WEEKENDS,
+    ONE_TIME,
     CUSTOM
 }

@@ -1,28 +1,30 @@
 package com.kage.entity;
 
-import com.kage.enums.PillarMetricType;
+import com.kage.enums.MetricType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "pillar_metric",
-        indexes = {
-                @Index(name = "idx_metric_pillar", columnList = "pillar_id")
-        }
-)
+@Table(name = "metric")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PillarMetric extends BaseEntity {
+public class Metric extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "pillar_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pillar_id")
     private Pillar pillar;
+
+    @Column(length = 100, nullable = false)
+    private String metricName;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PillarMetricType metricType;
+    private MetricType metricType;
+
+    @Column
+    private Double currentValue;
 
     @Column
     private Double targetValue; // optional goal reference
